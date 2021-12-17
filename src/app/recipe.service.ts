@@ -13,6 +13,11 @@ export enum UsVolumeUnit {
 }
 
 export class VolumeAmount {
+  /**
+   * Construct a volume amount
+   * @param quantity Scalar quantity
+   * @param units Unit type
+   */
   constructor(public readonly quantity: number,
               public readonly units: UsVolumeUnit) {
   }
@@ -23,54 +28,55 @@ export class VolumeAmount {
    * @param units The target units for this volume
    */
   convertTo(units: UsVolumeUnit): VolumeAmount {
-    const conversionFactor = units / this.units;
+    const conversionFactor = this.units / units;
     return new VolumeAmount(this.quantity * conversionFactor, units);
   }
 }
 
 export class RecipeIngredient {
-  readonly id: string;
-
-  /** Ingredient name (e.g. salt, sugar, apples) */
-  name: string;
-
-  /** Quantity by volume (optional) */
-  volumeAmount?: VolumeAmount;
-
-  /** Ingredient count (optional) */
-  quantity?: number;
-
-  /** Additional descriptive information */
-  description: string;
-
-  constructor() {
-    this.id = uuidv4();
+  /**
+   * Construct an ingredient object
+   * @param id Ingredient ID - defaults to a random UUID
+   * @param name Ingredient name (e.g. salt, pepper, apple)
+   * @param description Further information about the ingredient
+   * @param volumeAmount Ingredient quantity (in US volume units)
+   * @param quantity Ingredient quantity as a unit-less number
+   */
+  constructor(public readonly id: string = uuidv4(),
+              public name: string,
+              public description: string,
+              public volumeAmount?: VolumeAmount,
+              public quantity?: number) {
   }
 }
 
 export class RecipeStep {
-  readonly id: string;
-
-  /** Human-readable description of the step */
-  description: string;
-
-  /** A list of ingredient IDs */
-  ingredients: string[];
-
-  constructor() {
-    this.id = uuidv4();
+  /**
+   * Construct a recipe step
+   * @param id Step ID (defaults to a random UUID)
+   * @param description Human-readable description
+   * @param ingredients List of ingredient IDs
+   */
+  constructor(public readonly id: string = uuidv4(),
+              public description: string,
+              public ingredients: string[]) {
   }
 }
 
 export class Recipe {
-  readonly id: string;
-  title: string;
-  description: string;
-  steps: RecipeStep[];
-  ingredients: RecipeIngredient[];
-
-  constructor() {
-    this.id = uuidv4();
+  /**
+   * Construct an entire recipe
+   * @param id Recipe ID (defaults to a random UUID)
+   * @param title Recipe title
+   * @param description Recipe description text
+   * @param steps A list of recipe steps
+   * @param ingredients A list of recipe ingredients
+   */
+  constructor(public readonly id: string = uuidv4(),
+              public title: string,
+              public description: string,
+              public steps: RecipeStep[],
+              public ingredients: RecipeIngredient[]) {
   }
 }
 
