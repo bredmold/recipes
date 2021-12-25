@@ -2,15 +2,12 @@
   <div class="header">
     <mat-toolbar>
       <span>Recipes</span>
-      <button (click)="recipePicker()">Recipe title</button>
-      <button (click)="recipeEditor()">Edit</button>
+      <button (click)="recipePicker()">{{recipe.title}}</button>
+      <button (click)="recipeSave()">Save</button>
     </mat-toolbar>
   </div>
-  <div class="ingredients">
-    <app-ingredients></app-ingredients>
-  </div>
-  <div class="steps">
-    <app-steps></app-steps>
+  <div class="recipe">
+    <app-recipe [recipe]="recipe"></app-recipe>
   </div>
   <div class="footer">&copy;2021 Aaron Gideon Goldstein (bredmold@gmail.com)</div>
 </div>

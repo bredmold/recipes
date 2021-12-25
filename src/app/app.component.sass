@@ -1,13 +1,12 @@
 .recipe-app
   display: grid
   grid-template-rows: 10% auto 5%
-  grid-template-columns: 40% 60%
+  grid-template-columns: 100%
   padding: 0
   height: 100%
 
   .header
-    grid-column-start: 1
-    grid-column-end: 3
+    grid-column: 1
     grid-row: 1
     padding: 0
 
@@ -20,10 +19,7 @@
 
     mat-toolbar button
       background: inherit
-      padding-right: 45px
-      padding-top: 10px
-      padding-bottom: 10px
-      padding-left: 15px
+      padding: 10px 45px 10px 15px
       margin-right: 15px
       font-size: larger
       font-style: italic
@@ -31,19 +27,12 @@
       cursor: pointer
       height: 100%
 
-  .ingredients
+  .recipe
     grid-column: 1
     grid-row: 2
-    padding: 10px
-
-  .steps
-    grid-column: 2
-    grid-row: 2
-    padding: 10px
 
   .footer
-    grid-column-start: 1
-    grid-column-end: 3
+    grid-column: 1
     grid-row: 3
     padding: 10px
     text-align: right

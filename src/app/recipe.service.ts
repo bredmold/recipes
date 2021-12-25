@@ -18,8 +18,8 @@ export class VolumeAmount {
    * @param quantity Scalar quantity
    * @param units Unit type
    */
-  constructor(public readonly quantity: number,
-              public readonly units: UsVolumeUnit) {
+  constructor(public quantity: number,
+              public units: UsVolumeUnit) {
   }
 
   /**
@@ -36,17 +36,15 @@ export class VolumeAmount {
 export class RecipeIngredient {
   /**
    * Construct an ingredient object
-   * @param id Ingredient ID - defaults to a random UUID
    * @param name Ingredient name (e.g. salt, pepper, apple)
    * @param description Further information about the ingredient
    * @param volumeAmount Ingredient quantity (in US volume units)
-   * @param quantity Ingredient quantity as a unit-less number
+   * @param id Ingredient ID - defaults to a random UUID
    */
-  constructor(public readonly id: string = uuidv4(),
-              public name: string,
+  constructor(public name: string,
               public description: string,
-              public volumeAmount?: VolumeAmount,
-              public quantity?: number) {
+              public volumeAmount: VolumeAmount,
+              public readonly id: string = uuidv4()) {
   }
 }
 
@@ -72,11 +70,11 @@ export class Recipe {
    * @param steps A list of recipe steps
    * @param ingredients A list of recipe ingredients
    */
-  constructor(public readonly id: string = uuidv4(),
-              public title: string,
+  constructor(public title: string,
               public description: string,
               public steps: RecipeStep[],
-              public ingredients: RecipeIngredient[]) {
+              public ingredients: RecipeIngredient[],
+              public readonly id: string = uuidv4()) {
   }
 }
 
@@ -84,6 +82,21 @@ export class Recipe {
   providedIn: 'root'
 })
 export class RecipeService {
+  private activeRecipe = new Recipe(
+    "Example Recipe",
+    "Example recipe description",
+    [],
+    []
+  );
+
   constructor() {
+  }
+
+  setActiveRecipe(recipe: Recipe) {
+    this.activeRecipe = recipe;
+  }
+
+  getActiveRecipe(): Recipe {
+    return this.activeRecipe;
   }
 }
