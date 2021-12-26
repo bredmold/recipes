@@ -18,11 +18,19 @@ export class AppComponent implements OnInit {
   }
 
   recipeSave() {
-    console.log("save recipe");
-    console.log(this.recipe);
+    this.recipeService
+      .saveRecipe(this.recipe)
+      .then(() => {
+        console.log("Recipe saved");
+      });
   }
 
   ngOnInit(): void {
-    this.recipe = this.recipeService.getActiveRecipe();
+    this.recipeService
+      .storageSetup()
+      .then(() => this.recipeService.loadActiveRecipe())
+      .then(() => {
+        this.recipe = this.recipeService.getActiveRecipe();
+      });
   }
 }

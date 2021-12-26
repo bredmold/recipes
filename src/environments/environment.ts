@@ -3,7 +3,15 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  ddbConfig: {
+    endpoint: "http://127.0.0.1:8000",
+    region: "us-east-2",
+    credentials: {
+      accessKeyId: "nope",
+      secretAccessKey: "nope",
+    },
+  }
 };
 
 /*
