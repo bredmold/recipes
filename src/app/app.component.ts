@@ -1,10 +1,10 @@
-import {Component, OnInit} from '@angular/core';
-import {Recipe, RecipeService} from "./recipe.service";
+import { Component, OnInit } from '@angular/core';
+import { Recipe, RecipeService } from './recipe.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.sass']
+  styleUrls: ['./app.component.sass'],
 })
 export class AppComponent implements OnInit {
   recipe: Recipe;
@@ -14,15 +14,13 @@ export class AppComponent implements OnInit {
   }
 
   recipePicker() {
-    console.log("recipe picker");
+    console.log('recipe picker');
   }
 
   recipeSave() {
-    this.recipeService
-      .saveRecipe(this.recipe)
-      .then(() => {
-        console.log("Recipe saved");
-      });
+    this.recipeService.saveRecipe(this.recipe).then(() => {
+      console.log('Recipe saved');
+    });
   }
 
   ngOnInit(): void {

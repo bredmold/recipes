@@ -1,14 +1,14 @@
-import {v4 as uuidv4} from "uuid";
-import {Injectable} from "@angular/core";
+import { v4 as uuidv4 } from 'uuid';
+import { Injectable } from '@angular/core';
 import {
   CreateTableCommand,
   DynamoDBClient,
   ListTablesCommand,
   PutItemCommand,
-  QueryCommand
-} from "@aws-sdk/client-dynamodb";
-import {environment} from "../environments/environment"
-import {SessionService} from "./session.service";
+  QueryCommand,
+} from '@aws-sdk/client-dynamodb';
+import { environment } from '../environments/environment';
+import { SessionService } from './session.service';
 
 /** US system of volume units */
 export enum UsVolumeUnit {
@@ -22,25 +22,23 @@ export enum UsVolumeUnit {
 }
 
 const unitAbbreviationPairs = [
-  {unit: UsVolumeUnit.Teaspoon, abbreviation: "tsp"},
-  {unit: UsVolumeUnit.TableSpoon, abbreviation: "tbsp"},
-  {unit: UsVolumeUnit.Ounce, abbreviation: "oz"},
-  {unit: UsVolumeUnit.Cup, abbreviation: "cup"},
-  {unit: UsVolumeUnit.Pint, abbreviation: "pint"},
-  {unit: UsVolumeUnit.Quart, abbreviation: "qt"},
+  { unit: UsVolumeUnit.Teaspoon, abbreviation: 'tsp' },
+  { unit: UsVolumeUnit.TableSpoon, abbreviation: 'tbsp' },
+  { unit: UsVolumeUnit.Ounce, abbreviation: 'oz' },
+  { unit: UsVolumeUnit.Cup, abbreviation: 'cup' },
+  { unit: UsVolumeUnit.Pint, abbreviation: 'pint' },
+  { unit: UsVolumeUnit.Quart, abbreviation: 'qt' },
 ];
 
-const unitsToAbbreviations: Record<UsVolumeUnit, string> = unitAbbreviationPairs
-  .reduce((map, pair) => {
-    map[pair.unit] = pair.abbreviation;
-    return map;
-  }, {} as Record<UsVolumeUnit, string>);
+const unitsToAbbreviations: Record<UsVolumeUnit, string> = unitAbbreviationPairs.reduce((map, pair) => {
+  map[pair.unit] = pair.abbreviation;
+  return map;
+}, {} as Record<UsVolumeUnit, string>);
 
-const abbreviationsToUnits: Record<string, UsVolumeUnit> = unitAbbreviationPairs
-  .reduce((map, pair) => {
-    map[pair.abbreviation] = pair.unit;
-    return map;
-  }, {} as Record<string, UsVolumeUnit>);
+const abbreviationsToUnits: Record<string, UsVolumeUnit> = unitAbbreviationPairs.reduce((map, pair) => {
+  map[pair.abbreviation] = pair.unit;
+  return map;
+}, {} as Record<string, UsVolumeUnit>);
 
 export class VolumeAmount {
   /**
@@ -48,9 +46,7 @@ export class VolumeAmount {
    * @param quantity Scalar quantity
    * @param units Unit type
    */
-  constructor(public quantity: number,
-              public units: UsVolumeUnit) {
-  }
+  constructor(public quantity: number, public units: UsVolumeUnit) {}
 
   /**
    * Units conversion for volumes
@@ -66,14 +62,11 @@ export class VolumeAmount {
     return {
       quantity: this.quantity,
       units: unitsToAbbreviations[this.units],
-    }
+    };
   }
 
   static fromObject(volumeAmountObject: Record<string, any>): VolumeAmount {
-    return new VolumeAmount(
-      volumeAmountObject['quantity'],
-      abbreviationsToUnits[volumeAmountObject['units']]
-    );
+    return new VolumeAmount(volumeAmountObject['quantity'], abbreviationsToUnits[volumeAmountObject['units']]);
   }
 }
 
@@ -85,11 +78,12 @@ export class RecipeIngredient {
    * @param volumeAmount Ingredient quantity (in US volume units)
    * @param id Ingredient ID - defaults to a random UUID
    */
-  constructor(public name: string,
-              public description: string,
-              public volumeAmount: VolumeAmount,
-              public readonly id: string = uuidv4()) {
-  }
+  constructor(
+    public name: string,
+    public description: string,
+    public volumeAmount: VolumeAmount,
+    public readonly id: string = uuidv4()
+  ) {}
 
   toObject(): object {
     return {
@@ -97,7 +91,7 @@ export class RecipeIngredient {
       name: this.name,
       description: this.description,
       volumeAmount: this.volumeAmount.toObject(),
-    }
+    };
   }
 
   static fromObject(ingredientObject: Record<string, any>): RecipeIngredient {
@@ -117,25 +111,18 @@ export class RecipeStep {
    * @param description Human-readable description
    * @param ingredients List of ingredient IDs
    */
-  constructor(public readonly id: string = uuidv4(),
-              public description: string,
-              public ingredients: string[]) {
-  }
+  constructor(public readonly id: string = uuidv4(), public description: string, public ingredients: string[]) {}
 
   toObject(): object {
     return {
       id: this.id,
       description: this.description,
       ingredients: this.ingredients,
-    }
+    };
   }
 
   static fromObject(recipeStepObject: Record<string, any>): RecipeStep {
-    return new RecipeStep(
-      recipeStepObject['id'],
-      recipeStepObject['description'],
-      recipeStepObject['ingredients']
-    );
+    return new RecipeStep(recipeStepObject['id'], recipeStepObject['description'], recipeStepObject['ingredients']);
   }
 }
 
@@ -148,12 +135,13 @@ export class Recipe {
    * @param steps A list of recipe steps
    * @param ingredients A list of recipe ingredients
    */
-  constructor(public title: string,
-              public description: string,
-              public steps: RecipeStep[],
-              public ingredients: RecipeIngredient[],
-              public readonly id: string = uuidv4()) {
-  }
+  constructor(
+    public title: string,
+    public description: string,
+    public steps: RecipeStep[],
+    public ingredients: RecipeIngredient[],
+    public readonly id: string = uuidv4()
+  ) {}
 
   /**
    * Construct an object representation of this recipe, suitable for turning into JSON
@@ -163,8 +151,8 @@ export class Recipe {
       id: this.id,
       title: this.title,
       description: this.description,
-      steps: this.steps.map(s => s.toObject()),
-      ingredients: this.ingredients.map(i => i.toObject()),
+      steps: this.steps.map((s) => s.toObject()),
+      ingredients: this.ingredients.map((i) => i.toObject()),
     };
   }
 
@@ -180,18 +168,13 @@ export class Recipe {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RecipeService {
-  private activeRecipe = new Recipe(
-    "Example Recipe",
-    "Example recipe description",
-    [],
-    []
-  );
+  private activeRecipe = new Recipe('Example Recipe', 'Example recipe description', [], []);
 
   private readonly ddbClient: DynamoDBClient;
-  private readonly tableName = "recipes";
+  private readonly tableName = 'recipes';
 
   constructor(private sessionService: SessionService) {
     this.ddbClient = new DynamoDBClient(environment.ddbConfig);
@@ -204,10 +187,10 @@ export class RecipeService {
     const putItemCommand = new PutItemCommand({
       TableName: this.tableName,
       Item: {
-        ownerEmail: {S: ownerEmail},
-        recipeTitle: {S: recipe.title},
-        json: {S: JSON.stringify(recipe.toObject())}
-      }
+        ownerEmail: { S: ownerEmail },
+        recipeTitle: { S: recipe.title },
+        json: { S: JSON.stringify(recipe.toObject()) },
+      },
     });
     try {
       const putItemResult = this.ddbClient.send(putItemCommand);
@@ -219,20 +202,20 @@ export class RecipeService {
 
   async listRecipes(): Promise<Recipe[]> {
     const ownerEmail = this.sessionService.loggedInEmail();
-    if (!ownerEmail) throw "No logged in email";
+    if (!ownerEmail) throw 'No logged in email';
 
     const listRecipesCommand = new QueryCommand({
       TableName: this.tableName,
-      KeyConditionExpression: "ownerEmail = :ownerEmail",
+      KeyConditionExpression: 'ownerEmail = :ownerEmail',
       ExpressionAttributeValues: {
-        ":ownerEmail": {S: ownerEmail}
-      }
+        ':ownerEmail': { S: ownerEmail },
+      },
     });
     const listRecipesResult = await this.ddbClient.send(listRecipesCommand);
     if (listRecipesResult.Items) {
-      return listRecipesResult.Items?.map(item => {
+      return listRecipesResult.Items?.map((item) => {
         const json = item['json'].S;
-        const parsed = (JSON.parse(json as string));
+        const parsed = JSON.parse(json as string);
         return Recipe.fromObject(parsed);
       });
     } else {
@@ -245,7 +228,7 @@ export class RecipeService {
     if (allRecipes && allRecipes.length > 0) {
       this.activeRecipe = allRecipes[0];
     } else {
-      console.log("No active recipe, setting default");
+      console.log('No active recipe, setting default');
     }
   }
 
@@ -254,10 +237,10 @@ export class RecipeService {
     try {
       const listTablesResult = await this.ddbClient.send(command);
       const tables = listTablesResult.TableNames || [];
-      if (tables.find(t => t == this.tableName)) {
-        console.log("Found matching table");
+      if (tables.find((t) => t == this.tableName)) {
+        console.log('Found matching table');
       } else {
-        console.log("Setting up table");
+        console.log('Setting up table');
         await this.createTable();
       }
     } catch (err) {
@@ -269,14 +252,14 @@ export class RecipeService {
     const createTableCommand = new CreateTableCommand({
       TableName: this.tableName,
       AttributeDefinitions: [
-        {AttributeName: "ownerEmail", AttributeType: "S"},
-        {AttributeName: "recipeTitle", AttributeType: "S"},
+        { AttributeName: 'ownerEmail', AttributeType: 'S' },
+        { AttributeName: 'recipeTitle', AttributeType: 'S' },
       ],
       KeySchema: [
-        {AttributeName: "ownerEmail", KeyType: "HASH"},
-        {AttributeName: "recipeTitle", KeyType: "RANGE"},
+        { AttributeName: 'ownerEmail', KeyType: 'HASH' },
+        { AttributeName: 'recipeTitle', KeyType: 'RANGE' },
       ],
-      BillingMode: "PAY_PER_REQUEST",
+      BillingMode: 'PAY_PER_REQUEST',
     });
     const createTableResult = await this.ddbClient.send(createTableCommand);
     console.log(createTableResult);

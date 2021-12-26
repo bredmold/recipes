@@ -5,13 +5,13 @@
 export const environment = {
   production: false,
   ddbConfig: {
-    endpoint: "http://127.0.0.1:8000",
-    region: "us-east-2",
+    endpoint: 'http://127.0.0.1:8000',
+    region: 'us-east-2',
     credentials: {
-      accessKeyId: "nope",
-      secretAccessKey: "nope",
+      accessKeyId: 'nope',
+      secretAccessKey: 'nope',
     },
-  }
+  },
 };
 
 /*
