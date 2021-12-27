@@ -13,9 +13,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RecipeComponent } from './recipe/recipe.component';
+import { RecipePickerComponent } from './recipe-picker/recipe-picker.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
-  declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeComponent],
+  declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeComponent, RecipePickerComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -26,6 +29,8 @@ import { RecipeComponent } from './recipe/recipe.component';
     MatTooltipModule,
     MatSelectModule,
     ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

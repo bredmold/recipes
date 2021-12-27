@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Recipe, RecipeIngredient, UsVolumeUnit, VolumeAmount } from '../recipe.service';
+import { Recipe, RecipeIngredient, UsVolumeUnit, VolumeAmount } from '../types/recipe';
 
 @Component({
   selector: 'app-ingredients',

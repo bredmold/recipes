@@ -28,5 +28,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
-* Recipe picker
+* Add/remove recipe ingredients
+* Re-order recipe ingredients
 * Elaborate recipe steps
