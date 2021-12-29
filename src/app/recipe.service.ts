@@ -15,6 +15,8 @@ import { Observable, Subscriber } from 'rxjs';
   providedIn: 'root',
 })
 export class RecipeService {
+  private static readonly ACTIVE_RECIPE_KEY = 'recipe.service.active-id';
+
   public readonly activeRecipe: Observable<Recipe>;
   private recipeSubscriber!: Subscriber<Recipe>;
 
@@ -78,7 +80,18 @@ export class RecipeService {
   async loadActiveRecipe() {
     const allRecipes = await this.listRecipes();
     if (allRecipes && allRecipes.length > 0) {
-      this.setActiveRecipe(allRecipes[0]);
+      let activeRecipe: Recipe | undefined;
+
+      const activeRecipeId = window.localStorage.getItem(RecipeService.ACTIVE_RECIPE_KEY);
+      if (activeRecipeId) {
+        activeRecipe = allRecipes.find((r) => r.id == activeRecipeId);
+      }
+
+      if (!activeRecipe) {
+        activeRecipe = allRecipes[0];
+      }
+
+      this.setActiveRecipe(activeRecipe);
     } else {
       console.log('No active recipe, setting default');
     }
@@ -131,6 +144,7 @@ export class RecipeService {
   }
 
   setActiveRecipe(recipe: Recipe) {
+    window.localStorage.setItem(RecipeService.ACTIVE_RECIPE_KEY, recipe.id);
     this.recipeSubscriber.next(recipe);
   }
 }
