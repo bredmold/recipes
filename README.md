@@ -28,6 +28,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
-* Add/remove recipe ingredients
-* Re-order recipe ingredients
 * Elaborate recipe steps
+* Fix active recipe highlighting in recipe picker
+* Remember active recipe between sessions
+* Drag & drop list re-ordering

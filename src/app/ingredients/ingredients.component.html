@@ -1,4 +1,4 @@
-<div class="ingredients">
+<div class='ingredients'>
   List of ingredients
 
   <div class="ingredient-list">
@@ -32,6 +32,15 @@
                  (input)="ingredientName($event)"
                  [value]="ingredient.name" required>
         </mat-form-field>
+        <span class='row-action' (click)='removeIngredient(ingredient.id)'>
+          <span matTooltip='Remove Ingredient'>-</span>
+        </span>
+        <span class='row-action' (click)='moveIngredient(ingredient.id, "up")'>
+          <span matTooltip='Move up'>&uparrow;</span>
+        </span>
+        <span class='row-action' (click)='moveIngredient(ingredient.id, "down")'>
+          <span matTooltip='Move down'>&downarrow;</span>
+        </span>
       </mat-list-item>
       <mat-list-item class="add-ingredient" (click)="addIngredient(ingredients().length)">
         <span matTooltip="Add Ingredient">+</span>
