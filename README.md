@@ -29,5 +29,5 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 ## TODO List
 
 * Elaborate recipe steps
-* Fix active recipe highlighting in recipe picker
 * Drag & drop list re-ordering
+* Recipe picker hover highlight color should use theme colors

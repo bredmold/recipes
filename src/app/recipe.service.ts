@@ -9,7 +9,7 @@ import {
 import { environment } from '../environments/environment';
 import { SessionService } from './session.service';
 import { Recipe } from './types/recipe';
-import { Observable, Subscriber } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -18,16 +18,15 @@ export class RecipeService {
   private static readonly ACTIVE_RECIPE_KEY = 'recipe.service.active-id';
 
   public readonly activeRecipe: Observable<Recipe>;
-  private recipeSubscriber!: Subscriber<Recipe>;
+  private readonly activeRecipeSubject: BehaviorSubject<Recipe>;
 
   private readonly ddbClient: DynamoDBClient;
   private readonly tableName = 'recipes';
   private readonly titleIndexName = 'owner-title';
 
   constructor(private sessionService: SessionService) {
-    this.activeRecipe = new Observable<Recipe>((subscriber) => {
-      this.recipeSubscriber = subscriber;
-    });
+    this.activeRecipeSubject = new BehaviorSubject<Recipe>(new Recipe('', '', [], []));
+    this.activeRecipe = this.activeRecipeSubject as Observable<Recipe>;
 
     this.ddbClient = new DynamoDBClient(environment.ddbConfig);
   }
@@ -145,6 +144,10 @@ export class RecipeService {
 
   setActiveRecipe(recipe: Recipe) {
     window.localStorage.setItem(RecipeService.ACTIVE_RECIPE_KEY, recipe.id);
-    this.recipeSubscriber.next(recipe);
+    this.activeRecipeSubject.next(recipe);
+  }
+
+  getActiveRecipe(): Recipe {
+    return this.activeRecipeSubject.getValue();
   }
 }

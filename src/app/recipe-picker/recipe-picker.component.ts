@@ -18,9 +18,20 @@ export class RecipePickerComponent implements OnInit {
     private readonly recipePickerDialog: MatDialogRef<RecipePickerComponent>
   ) {}
 
+  itemClass(recipeId: string): string {
+    const classes = ['recipe-picker-item'];
+
+    const activeRecipe = this.recipeService.getActiveRecipe();
+    if (recipeId === activeRecipe.id) {
+      classes.push('recipe-picker-active');
+    }
+
+    return classes.join(' ');
+  }
+
   selectRecipe(recipeId: string) {
     console.log(`Selected: ${recipeId}`);
-    const selectedRecipe = this.recipes.find((r) => r.id == recipeId);
+    const selectedRecipe = this.recipes.find((r) => r.id === recipeId);
     if (selectedRecipe) {
       this.recipeService.setActiveRecipe(selectedRecipe);
       this.recipePickerDialog.close();
