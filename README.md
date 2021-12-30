@@ -28,6 +28,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
+* Tabbed view in recipe editor
 * Steps presentation needs to be fixed
 * Steps description should support Markdown
 * Drag & drop list re-ordering
