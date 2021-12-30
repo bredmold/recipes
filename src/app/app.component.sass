@@ -1,9 +1,10 @@
 .recipe-app
   display: grid
-  grid-template-rows: 10% auto 5%
-  grid-template-columns: 100%
+  grid-template-rows: 8% 1fr 5%
+  grid-template-columns: 1fr
   padding: 0
-  height: 100%
+  height: 100vh
+  width: 100vw
 
   .header
     grid-column: 1
@@ -30,6 +31,7 @@
   .recipe
     grid-column: 1
     grid-row: 2
+    overflow-y: scroll
 
   .footer
     grid-column: 1

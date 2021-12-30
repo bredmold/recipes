@@ -17,9 +17,17 @@ import { RecipePickerComponent } from './recipe-picker/recipe-picker.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { RecipeViewerComponent } from './recipe-viewer/recipe-viewer.component';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @NgModule({
-  declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeEditorComponent, RecipePickerComponent, RecipeViewerComponent],
+  declarations: [
+    AppComponent,
+    IngredientsComponent,
+    StepsComponent,
+    RecipeEditorComponent,
+    RecipePickerComponent,
+    RecipeViewerComponent,
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -32,6 +40,7 @@ import { RecipeViewerComponent } from './recipe-viewer/recipe-viewer.component';
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
+    MatTabsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

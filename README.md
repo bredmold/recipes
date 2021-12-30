@@ -28,12 +28,11 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
-* Tabbed view in recipe editor
-* Steps presentation needs to be fixed
+* Recipe viewer
 * Steps description should support Markdown
+* Edit descriptions for ingredients
 * Drag & drop list re-ordering
   * steps
   * ingredients
+* App navigation should be coded into the URL
 * Recipe picker hover highlight color should use theme colors
-* Edit descriptions for ingredients
-* Recipe viewer

@@ -5,10 +5,14 @@
       <input matInput #titleInput [value]='recipe.title' (input)='recipeTitle()'>
     </mat-form-field>
   </div>
-  <div class="ingredients">
-    <app-ingredients [recipe]="recipe"></app-ingredients>
-  </div>
-  <div class='steps'>
-    <app-steps [recipe]='recipe'></app-steps>
+  <div class='recipe-tabs'>
+    <mat-tab-group>
+      <mat-tab label='Ingredients'>
+        <app-ingredients [recipe]='recipe'></app-ingredients>
+      </mat-tab>
+      <mat-tab label='Steps'>
+        <app-steps [recipe]='recipe'></app-steps>
+      </mat-tab>
+    </mat-tab-group>
   </div>
 </div>
