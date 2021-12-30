@@ -34,18 +34,18 @@ export class IngredientsComponent {
 
   moveIngredient(ingredientId: string, direction: string) {
     if (this.recipe) {
-      const startIdx = this.recipe.ingredients.findIndex((i) => i.id == ingredientId);
-      if (startIdx == 0 && direction == 'up') {
+      const startIdx = this.recipe.ingredients.findIndex((i) => i.id === ingredientId);
+      if (startIdx === 0 && direction === 'up') {
         console.info('Cannot move first item "up"');
-      } else if (startIdx >= this.recipe.ingredients.length - 1 && direction == 'down') {
-        console.info('Cannot move list item "down"');
+      } else if (startIdx >= this.recipe.ingredients.length - 1 && direction === 'down') {
+        console.info('Cannot move last item "down"');
       } else if (startIdx < 0) {
         console.warn(`Unable to locate ingredient: ${ingredientId}`);
       } else {
         const ingredient = this.recipe.ingredients[startIdx];
         const minusOne = this.recipe.ingredients.filter((i) => i.id != ingredientId);
 
-        const targetIdx = direction == 'up' ? startIdx - 1 : startIdx + 1;
+        const targetIdx = direction === 'up' ? startIdx - 1 : startIdx + 1;
         const left = minusOne.slice(0, targetIdx);
         const middle = [ingredient];
         const right = minusOne.slice(targetIdx);
@@ -80,7 +80,7 @@ export class IngredientsComponent {
       const elementId: string = inputElement.id;
       const ingredientId: string = elementId.replace('volume-amount-', '');
 
-      const ingredient = this.recipe.ingredients.find((i) => i.id == ingredientId);
+      const ingredient = this.recipe.ingredients.find((i) => i.id === ingredientId);
       if (ingredient) {
         ingredient.volumeAmount.quantity = value;
       } else {
@@ -95,7 +95,7 @@ export class IngredientsComponent {
       const elementId: string = inputElement.id;
       const ingredientId: string = elementId.replace('ingredient-name-', '');
 
-      const ingredient = this.recipe.ingredients.find((i) => i.id == ingredientId);
+      const ingredient = this.recipe.ingredients.find((i) => i.id === ingredientId);
       if (ingredient) {
         ingredient.name = inputElement.value;
       } else {

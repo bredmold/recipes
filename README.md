@@ -28,6 +28,10 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
-* Elaborate recipe steps
+* Steps presentation needs to be fixed
+* Steps description should support Markdown
 * Drag & drop list re-ordering
+  * steps
+  * ingredients
 * Recipe picker hover highlight color should use theme colors
+* Ability to edit descriptions for ingredients

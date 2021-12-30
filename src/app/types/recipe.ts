@@ -101,7 +101,7 @@ export class RecipeStep {
    * @param description Human-readable description
    * @param ingredients List of ingredient IDs
    */
-  constructor(public readonly id: string = uuidv4(), public description: string, public ingredients: string[]) {}
+  constructor(public description: string, public ingredients: string[], public readonly id: string = uuidv4()) {}
 
   toObject(): object {
     return {
@@ -112,7 +112,7 @@ export class RecipeStep {
   }
 
   static fromObject(recipeStepObject: Record<string, any>): RecipeStep {
-    return new RecipeStep(recipeStepObject['id'], recipeStepObject['description'], recipeStepObject['ingredients']);
+    return new RecipeStep(recipeStepObject['description'], recipeStepObject['ingredients'], recipeStepObject['id']);
   }
 }
 
