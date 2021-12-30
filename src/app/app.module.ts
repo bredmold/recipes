@@ -16,9 +16,10 @@ import { RecipeEditorComponent } from './recipe-editor/recipe-editor.component';
 import { RecipePickerComponent } from './recipe-picker/recipe-picker.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { RecipeViewerComponent } from './recipe-viewer/recipe-viewer.component';
 
 @NgModule({
-  declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeEditorComponent, RecipePickerComponent],
+  declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeEditorComponent, RecipePickerComponent, RecipeViewerComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
