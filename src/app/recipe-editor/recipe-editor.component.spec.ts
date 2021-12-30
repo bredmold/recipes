@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RecipeComponent } from './recipe.component';
+import { RecipeEditorComponent } from './recipe-editor.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -14,13 +14,13 @@ import { StepsComponent } from '../steps/steps.component';
 import { AppComponent } from '../app.component';
 import { IngredientsComponent } from '../ingredients/ingredients.component';
 
-describe('RecipeComponent', () => {
-  let component: RecipeComponent;
-  let fixture: ComponentFixture<RecipeComponent>;
+describe('RecipeEditorComponent', () => {
+  let component: RecipeEditorComponent;
+  let fixture: ComponentFixture<RecipeEditorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeComponent],
+      declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeEditorComponent],
       imports: [
         BrowserModule,
         BrowserAnimationsModule,
@@ -36,7 +36,7 @@ describe('RecipeComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RecipeComponent);
+    fixture = TestBed.createComponent(RecipeEditorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

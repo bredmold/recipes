@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { StepsComponent } from './steps.component';
 import { AppComponent } from '../app.component';
 import { IngredientsComponent } from '../ingredients/ingredients.component';
-import { RecipeComponent } from '../recipe/recipe.component';
+import { RecipeEditorComponent } from '../recipe-editor/recipe-editor.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -20,7 +20,7 @@ describe('StepsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeComponent],
+      declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeEditorComponent],
       imports: [
         BrowserModule,
         BrowserAnimationsModule,

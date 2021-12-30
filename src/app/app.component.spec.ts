@@ -11,12 +11,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IngredientsComponent } from './ingredients/ingredients.component';
 import { StepsComponent } from './steps/steps.component';
-import { RecipeComponent } from './recipe/recipe.component';
+import { RecipeEditorComponent } from './recipe-editor/recipe-editor.component';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeComponent],
+      declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeEditorComponent],
       imports: [
         BrowserModule,
         BrowserAnimationsModule,

@@ -3,10 +3,10 @@ import { Recipe } from '../types/recipe';
 
 @Component({
   selector: 'app-recipe',
-  templateUrl: './recipe.component.html',
-  styleUrls: ['./recipe.component.sass'],
+  templateUrl: './recipe-editor.component.html',
+  styleUrls: ['./recipe-editor.component.sass'],
 })
-export class RecipeComponent implements OnInit {
+export class RecipeEditorComponent implements OnInit {
   @Input() recipe!: Recipe;
   @ViewChild('titleInput') titleInput!: ElementRef;
 

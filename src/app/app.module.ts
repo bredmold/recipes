@@ -12,13 +12,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RecipeComponent } from './recipe/recipe.component';
+import { RecipeEditorComponent } from './recipe-editor/recipe-editor.component';
 import { RecipePickerComponent } from './recipe-picker/recipe-picker.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
-  declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeComponent, RecipePickerComponent],
+  declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeEditorComponent, RecipePickerComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
