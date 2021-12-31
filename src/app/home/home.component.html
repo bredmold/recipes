@@ -1,0 +1,7 @@
+<div class='home'>
+  <mat-list>
+    <mat-list *ngFor='let recipe of allRecipes'>
+      <a [routerLink]='recipeLink(recipe.id)'>{{recipe.title}}</a>
+    </mat-list>
+  </mat-list>
+</div>

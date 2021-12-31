@@ -55,6 +55,10 @@ export class VolumeAmount {
     };
   }
 
+  render(): string {
+    return `${this.quantity} ${unitsToAbbreviations[this.units]}`;
+  }
+
   static fromObject(volumeAmountObject: Record<string, any>): VolumeAmount {
     return new VolumeAmount(volumeAmountObject['quantity'], abbreviationsToUnits[volumeAmountObject['units']]);
   }
@@ -82,6 +86,10 @@ export class RecipeIngredient {
       description: this.description,
       volumeAmount: this.volumeAmount.toObject(),
     };
+  }
+
+  render(): string {
+    return `${this.volumeAmount.render()} ${this.name}`;
   }
 
   static fromObject(ingredientObject: Record<string, any>): RecipeIngredient {

@@ -18,6 +18,9 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { RecipeViewerComponent } from './recipe-viewer/recipe-viewer.component';
 import { MatTabsModule } from '@angular/material/tabs';
+import { AppRoutingModule } from './app-routing.module';
+import { RouterModule } from '@angular/router';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +30,7 @@ import { MatTabsModule } from '@angular/material/tabs';
     RecipeEditorComponent,
     RecipePickerComponent,
     RecipeViewerComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule,
@@ -41,6 +45,8 @@ import { MatTabsModule } from '@angular/material/tabs';
     MatDialogModule,
     MatButtonModule,
     MatTabsModule,
+    AppRoutingModule,
+    RouterModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

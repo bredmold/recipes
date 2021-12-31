@@ -11,6 +11,7 @@ import { Recipe } from './types/recipe';
 })
 export class AppComponent implements OnInit {
   recipe: Recipe = new Recipe('recipe', 'desc', [], []);
+  viewEditLabel = 'Edit';
 
   constructor(private readonly recipeService: RecipeService, private readonly recipePicker: MatDialog) {
     this.recipeService.activeRecipe.subscribe((recipe) => {
@@ -28,6 +29,20 @@ export class AppComponent implements OnInit {
         console.log('Recipe saved');
       });
     }
+  }
+
+  viewEditToggle() {
+    if (this.viewEditLabel === 'View') {
+      console.log('Switching to view mode');
+      this.viewEditLabel = 'Edit';
+    } else {
+      console.log('Switching to Edit mode');
+      this.viewEditLabel = 'View';
+    }
+  }
+
+  isSaveDisabled(): boolean {
+    return this.viewEditLabel === 'Edit';
   }
 
   ngOnInit(): void {

@@ -1,5 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Recipe } from '../types/recipe';
+import { Component, OnInit } from '@angular/core';
+import { Recipe, RecipeIngredient, RecipeStep } from '../types/recipe';
+import { ActivatedRoute } from '@angular/router';
+import { RecipeService } from '../recipe.service';
 
 @Component({
   selector: 'app-recipe-viewer',
@@ -7,9 +9,37 @@ import { Recipe } from '../types/recipe';
   styleUrls: ['./recipe-viewer.component.sass'],
 })
 export class RecipeViewerComponent implements OnInit {
-  @Input() recipe!: Recipe;
+  recipe?: Recipe;
 
-  constructor() {}
+  constructor(private readonly route: ActivatedRoute, private readonly recipeService: RecipeService) {
+    this.route.params.subscribe((params) => {
+      const recipeId = params['id'];
+      this.recipeService.getRecipeById(recipeId).then(
+        (recipe) => {
+          this.recipe = recipe;
+        },
+        (err) => {
+          console.error(err);
+        }
+      );
+    });
+  }
+
+  ingredients(): RecipeIngredient[] {
+    if (this.recipe) {
+      return this.recipe.ingredients;
+    } else {
+      return [];
+    }
+  }
+
+  steps(): RecipeStep[] {
+    if (this.recipe) {
+      return this.recipe.steps;
+    } else {
+      return [];
+    }
+  }
 
   ngOnInit(): void {}
 }

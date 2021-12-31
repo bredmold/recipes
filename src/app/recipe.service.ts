@@ -5,6 +5,7 @@ import {
   ListTablesCommand,
   PutItemCommand,
   QueryCommand,
+  QueryCommandOutput,
 } from '@aws-sdk/client-dynamodb';
 import { environment } from '../environments/environment';
 import { SessionService } from './session.service';
@@ -65,14 +66,27 @@ export class RecipeService {
       },
     });
     const listRecipesResult = await this.ddbClient.send(listRecipesCommand);
-    if (listRecipesResult.Items) {
-      return listRecipesResult.Items?.map((item) => {
-        const json = item['json'].S;
-        const parsed = JSON.parse(json as string);
-        return Recipe.fromObject(parsed);
-      });
+    return this.parseQueryResponse(listRecipesResult);
+  }
+
+  async getRecipeById(recipeId: string): Promise<Recipe> {
+    const ownerEmail = this.sessionService.loggedInEmail();
+    if (!ownerEmail) throw 'No logged in email';
+
+    const recipeByIdCommand = new QueryCommand({
+      TableName: this.tableName,
+      KeyConditionExpression: 'ownerEmail = :ownerEmail AND recipeId = :recipeId',
+      ExpressionAttributeValues: {
+        ':ownerEmail': { S: ownerEmail },
+        ':recipeId': { S: recipeId },
+      },
+    });
+    const recipeByIdResult = await this.ddbClient.send(recipeByIdCommand);
+    const recipes = this.parseQueryResponse(recipeByIdResult);
+    if (recipes.length > 0) {
+      return recipes[0];
     } else {
-      return [];
+      throw `Unable to locate recipe: ${recipeId}`;
     }
   }
 
@@ -109,6 +123,18 @@ export class RecipeService {
       }
     } catch (err) {
       console.error(err);
+    }
+  }
+
+  private parseQueryResponse(queryResponse: QueryCommandOutput): Recipe[] {
+    if (queryResponse.Items) {
+      return queryResponse.Items?.map((item) => {
+        const json = item['json'].S;
+        const parsed = JSON.parse(json as string);
+        return Recipe.fromObject(parsed);
+      });
+    } else {
+      return [];
     }
   }
 

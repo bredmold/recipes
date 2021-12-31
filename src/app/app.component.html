@@ -1,13 +1,14 @@
 <div class="recipe-app">
   <div class="header">
     <mat-toolbar>
-      <span>Recipes</span>
+      <button routerLink=''>Recipes</button>
       <button (click)="openRecipePicker()">{{recipe.title}}</button>
-      <button (click)="recipeSave()">Save</button>
+      <button (click)="recipeSave()" [disabled]='isSaveDisabled()'>Save</button>
+      <button (click)='viewEditToggle()'>{{viewEditLabel}}</button>
     </mat-toolbar>
   </div>
   <div class="recipe">
-    <app-recipe [recipe]="recipe"></app-recipe>
+    <router-outlet></router-outlet>
   </div>
   <div class="footer">&copy;2021 Aaron Gideon Goldstein (bredmold@gmail.com)</div>
 </div>
