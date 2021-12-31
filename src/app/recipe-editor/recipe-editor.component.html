@@ -2,7 +2,7 @@
   <div class='recipe-header'>
     <mat-form-field>
       <mat-label>Title</mat-label>
-      <input matInput #titleInput [value]='recipe.title' (input)='recipeTitle()'>
+      <input matInput #titleInput [value]='recipe?.title' (input)='recipeTitle()'>
     </mat-form-field>
   </div>
   <div class='recipe-tabs'>

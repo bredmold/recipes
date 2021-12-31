@@ -17,6 +17,7 @@ export class RecipeViewerComponent implements OnInit {
       this.recipeService.getRecipeById(recipeId).then(
         (recipe) => {
           this.recipe = recipe;
+          this.recipeService.setViewRecipe(recipe);
         },
         (err) => {
           console.error(err);

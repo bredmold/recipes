@@ -10,32 +10,36 @@ import {
 import { environment } from '../environments/environment';
 import { SessionService } from './session.service';
 import { Recipe } from './types/recipe';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
+import { CacheService, TypedCache } from './cache.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RecipeService {
-  private static readonly ACTIVE_RECIPE_KEY = 'recipe.service.active-id';
-
-  public readonly activeRecipe: Observable<Recipe>;
-  private readonly activeRecipeSubject: BehaviorSubject<Recipe>;
+  public readonly viewRecipe: BehaviorSubject<Recipe | undefined>;
+  public readonly editRecipe: BehaviorSubject<Recipe | undefined>;
 
   private readonly ddbClient: DynamoDBClient;
   private readonly tableName = 'recipes';
   private readonly titleIndexName = 'owner-title';
 
-  constructor(private sessionService: SessionService) {
-    this.activeRecipeSubject = new BehaviorSubject<Recipe>(new Recipe('', '', [], []));
-    this.activeRecipe = this.activeRecipeSubject as Observable<Recipe>;
+  private readonly recipeCache: TypedCache<Recipe>;
+
+  constructor(private readonly sessionService: SessionService, private readonly cacheService: CacheService) {
+    this.viewRecipe = new BehaviorSubject<Recipe | undefined>(undefined);
+    this.editRecipe = new BehaviorSubject<Recipe | undefined>(undefined);
 
     this.ddbClient = new DynamoDBClient(environment.ddbConfig);
+
+    this.recipeCache = this.cacheService.createTypedCache();
   }
 
-  async saveRecipe(recipe: Recipe) {
+  async saveRecipe(recipe: Recipe): Promise<Recipe> {
     const ownerEmail = this.sessionService.loggedInEmail();
     if (!ownerEmail) throw 'No active session';
 
+    this.recipeCache.invalidate(recipe.id);
     const putItemCommand = new PutItemCommand({
       TableName: this.tableName,
       Item: {
@@ -45,12 +49,9 @@ export class RecipeService {
         json: { S: JSON.stringify(recipe.toObject()) },
       },
     });
-    try {
-      const putItemResult = this.ddbClient.send(putItemCommand);
-      console.log(putItemResult);
-    } catch (err) {
-      console.error(err);
-    }
+    const putItemResult = this.ddbClient.send(putItemCommand);
+    console.log(putItemResult);
+    return recipe;
   }
 
   async listRecipes(): Promise<Recipe[]> {
@@ -69,45 +70,30 @@ export class RecipeService {
     return this.parseQueryResponse(listRecipesResult);
   }
 
-  async getRecipeById(recipeId: string): Promise<Recipe> {
-    const ownerEmail = this.sessionService.loggedInEmail();
-    if (!ownerEmail) throw 'No logged in email';
+  getRecipeById(recipeId: string): Promise<Recipe> {
+    return this.recipeCache.makeCachedCall(
+      async () => {
+        const ownerEmail = this.sessionService.loggedInEmail();
+        if (!ownerEmail) throw 'No logged in email';
 
-    const recipeByIdCommand = new QueryCommand({
-      TableName: this.tableName,
-      KeyConditionExpression: 'ownerEmail = :ownerEmail AND recipeId = :recipeId',
-      ExpressionAttributeValues: {
-        ':ownerEmail': { S: ownerEmail },
-        ':recipeId': { S: recipeId },
+        const recipeByIdCommand = new QueryCommand({
+          TableName: this.tableName,
+          KeyConditionExpression: 'ownerEmail = :ownerEmail AND recipeId = :recipeId',
+          ExpressionAttributeValues: {
+            ':ownerEmail': { S: ownerEmail },
+            ':recipeId': { S: recipeId },
+          },
+        });
+        const recipeByIdResult = await this.ddbClient.send(recipeByIdCommand);
+        const recipes = this.parseQueryResponse(recipeByIdResult);
+        if (recipes.length > 0) {
+          return recipes[0];
+        } else {
+          throw `Unable to locate recipe: ${recipeId}`;
+        }
       },
-    });
-    const recipeByIdResult = await this.ddbClient.send(recipeByIdCommand);
-    const recipes = this.parseQueryResponse(recipeByIdResult);
-    if (recipes.length > 0) {
-      return recipes[0];
-    } else {
-      throw `Unable to locate recipe: ${recipeId}`;
-    }
-  }
-
-  async loadActiveRecipe() {
-    const allRecipes = await this.listRecipes();
-    if (allRecipes && allRecipes.length > 0) {
-      let activeRecipe: Recipe | undefined;
-
-      const activeRecipeId = window.localStorage.getItem(RecipeService.ACTIVE_RECIPE_KEY);
-      if (activeRecipeId) {
-        activeRecipe = allRecipes.find((r) => r.id == activeRecipeId);
-      }
-
-      if (!activeRecipe) {
-        activeRecipe = allRecipes[0];
-      }
-
-      this.setActiveRecipe(activeRecipe);
-    } else {
-      console.log('No active recipe, setting default');
-    }
+      { key: recipeId, ttl: 300000 }
+    );
   }
 
   async storageSetup() {
@@ -168,12 +154,18 @@ export class RecipeService {
     console.log(createTableResult);
   }
 
-  setActiveRecipe(recipe: Recipe) {
-    window.localStorage.setItem(RecipeService.ACTIVE_RECIPE_KEY, recipe.id);
-    this.activeRecipeSubject.next(recipe);
+  setViewRecipe(recipe?: Recipe) {
+    this.viewRecipe.next(recipe);
+    this.editRecipe.next(undefined);
   }
 
-  getActiveRecipe(): Recipe {
-    return this.activeRecipeSubject.getValue();
+  setEditRecipe(recipe?: Recipe) {
+    this.editRecipe.next(recipe);
+    this.viewRecipe.next(undefined);
+  }
+
+  clearActiveRecipes() {
+    this.viewRecipe.next(undefined);
+    this.editRecipe.next(undefined);
   }
 }

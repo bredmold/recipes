@@ -17,8 +17,15 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.recipeService.listRecipes().then((recipes) => {
-      this.allRecipes = recipes;
-    });
+    this.recipeService.listRecipes().then(
+      (recipes) => {
+        this.recipeService.clearActiveRecipes();
+        this.allRecipes = recipes;
+      },
+      (err) => {
+        this.recipeService.clearActiveRecipes();
+        console.error(err);
+      }
+    );
   }
 }

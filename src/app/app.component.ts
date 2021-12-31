@@ -10,12 +10,15 @@ import { Recipe } from './types/recipe';
   styleUrls: ['./app.component.sass'],
 })
 export class AppComponent implements OnInit {
-  recipe: Recipe = new Recipe('recipe', 'desc', [], []);
-  viewEditLabel = 'Edit';
+  viewRecipe?: Recipe = undefined;
+  editRecipe?: Recipe = undefined;
 
   constructor(private readonly recipeService: RecipeService, private readonly recipePicker: MatDialog) {
-    this.recipeService.activeRecipe.subscribe((recipe) => {
-      this.recipe = recipe;
+    this.recipeService.viewRecipe.subscribe((viewRecipe) => {
+      this.viewRecipe = viewRecipe;
+    });
+    this.recipeService.editRecipe.subscribe((editRecipe) => {
+      this.editRecipe = editRecipe;
     });
   }
 
@@ -24,28 +27,46 @@ export class AppComponent implements OnInit {
   }
 
   recipeSave() {
-    if (this.recipe) {
-      this.recipeService.saveRecipe(this.recipe).then(() => {
-        console.log('Recipe saved');
-      });
-    }
-  }
-
-  viewEditToggle() {
-    if (this.viewEditLabel === 'View') {
-      console.log('Switching to view mode');
-      this.viewEditLabel = 'Edit';
+    if (this.editRecipe) {
+      this.recipeService.saveRecipe(this.editRecipe).then(
+        (recipe) => {
+          console.log(`Recipe saved: ${recipe.id}`);
+        },
+        (err) => {
+          console.error(err);
+        }
+      );
     } else {
-      console.log('Switching to Edit mode');
-      this.viewEditLabel = 'View';
+      console.warn('No edit recipe to save');
     }
   }
 
   isSaveDisabled(): boolean {
-    return this.viewEditLabel === 'Edit';
+    return !this.editRecipe;
+  }
+
+  isEditDisabled(): boolean {
+    return !this.viewRecipe;
+  }
+
+  recipeTitle(): string {
+    if (this.viewRecipe) return this.viewRecipe.title;
+    else if (this.editRecipe) return this.editRecipe.title;
+    else return 'Recipe Picker';
+  }
+
+  editLink(): string {
+    return this.viewRecipe ? `recipe/${this.viewRecipe.id}/edit` : '';
   }
 
   ngOnInit(): void {
-    this.recipeService.storageSetup().then(() => this.recipeService.loadActiveRecipe());
+    this.recipeService.storageSetup().then(
+      () => {
+        console.log('storage initialized');
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
   }
 }

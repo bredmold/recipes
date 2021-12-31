@@ -2,9 +2,9 @@
   <div class="header">
     <mat-toolbar>
       <button routerLink=''>Recipes</button>
-      <button (click)="openRecipePicker()">{{recipe.title}}</button>
+      <button (click)="openRecipePicker()">{{recipeTitle()}}</button>
       <button (click)="recipeSave()" [disabled]='isSaveDisabled()'>Save</button>
-      <button (click)='viewEditToggle()'>{{viewEditLabel}}</button>
+      <button [routerLink]='editLink()' [disabled]='isEditDisabled()'>Edit</button>
     </mat-toolbar>
   </div>
   <div class="recipe">

@@ -28,20 +28,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
-* Routing for editor
-  * Load active recipe from URL
-* Header behavior in home component
-  * No active recipe
-  * save button inactive
-  * edit button inactive
-* Header behavior in edit component
-  * Current recipe title displays
-  * save button active
-  * edit button inactive
-* Header behavior in view component
-  * Current recipe title displays
-  * save button inactive
-  * edit button active
 * Save and edit buttons should be on right side of screen
 * Recipe viewer should render fractions
 * Steps description should support Markdown
