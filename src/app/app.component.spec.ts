@@ -12,6 +12,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { IngredientsComponent } from './ingredients/ingredients.component';
 import { StepsComponent } from './steps/steps.component';
 import { RecipeEditorComponent } from './recipe-editor/recipe-editor.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
@@ -20,6 +21,7 @@ describe('AppComponent', () => {
       imports: [
         BrowserModule,
         BrowserAnimationsModule,
+        MatDialogModule,
         MatToolbarModule,
         MatListModule,
         MatFormFieldModule,

@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RecipeViewerComponent } from './recipe-viewer.component';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 describe('RecipeViewerComponent', () => {
   let component: RecipeViewerComponent;
@@ -8,9 +10,16 @@ describe('RecipeViewerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RecipeViewerComponent ]
-    })
-    .compileComponents();
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            params: of({ id: 'test id' }),
+          },
+        },
+      ],
+      declarations: [RecipeViewerComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

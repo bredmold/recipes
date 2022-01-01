@@ -67,7 +67,7 @@ describe('RecipeIngredient', () => {
 
 describe('RecipeStep', () => {
   it('should convert to persistence format', () => {
-    expect(new RecipeStep('test id', 'test desc', ['ingredient id 1']).toObject()).toEqual({
+    expect(new RecipeStep('test desc', ['ingredient id 1'], 'test id').toObject()).toEqual({
       id: 'test id',
       description: 'test desc',
       ingredients: ['ingredient id 1'],
@@ -81,7 +81,7 @@ describe('RecipeStep', () => {
         description: 'test desc',
         ingredients: ['ingredient id 1'],
       })
-    ).toEqual(new RecipeStep('test id', 'test desc', ['ingredient id 1']));
+    ).toEqual(new RecipeStep('test desc', ['ingredient id 1'], 'test id'));
   });
 });
 

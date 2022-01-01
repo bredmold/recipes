@@ -13,6 +13,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { StepsComponent } from '../steps/steps.component';
 import { AppComponent } from '../app.component';
 import { IngredientsComponent } from '../ingredients/ingredients.component';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 describe('RecipeEditorComponent', () => {
   let component: RecipeEditorComponent;
@@ -20,6 +22,14 @@ describe('RecipeEditorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            params: of({ id: 'test id' }),
+          },
+        },
+      ],
       declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeEditorComponent],
       imports: [
         BrowserModule,
