@@ -7,11 +7,11 @@ import {
   QueryCommand,
   QueryCommandOutput,
 } from '@aws-sdk/client-dynamodb';
-import { environment } from '../environments/environment';
-import { SessionService } from './session.service';
-import { Recipe } from './types/recipe';
 import { BehaviorSubject } from 'rxjs';
 import { CacheService, TypedCache } from './cache.service';
+import { DdbService } from './ddb.service';
+import { SessionService } from './session.service';
+import { Recipe } from './types/recipe';
 
 @Injectable({
   providedIn: 'root',
@@ -26,13 +26,12 @@ export class RecipeService {
 
   private readonly recipeCache: TypedCache<Recipe>;
 
-  constructor(private readonly sessionService: SessionService, private readonly cacheService: CacheService) {
+  constructor(private readonly sessionService: SessionService, cacheService: CacheService, ddbService: DdbService) {
     this.viewRecipe = new BehaviorSubject<Recipe | undefined>(undefined);
     this.editRecipe = new BehaviorSubject<Recipe | undefined>(undefined);
 
-    this.ddbClient = new DynamoDBClient(environment.ddbConfig);
-
-    this.recipeCache = this.cacheService.createTypedCache();
+    this.ddbClient = ddbService.createDdbClient();
+    this.recipeCache = cacheService.createTypedCache();
   }
 
   async saveRecipe(recipe: Recipe): Promise<Recipe> {
