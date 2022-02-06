@@ -73,12 +73,10 @@ export class IngredientsComponent {
     }
   }
 
-  volumeAmount(event: Event) {
+  volumeAmount(ingredientId: string, event: Event) {
     if (this.recipe) {
       const inputElement: HTMLInputElement = event.target as HTMLInputElement;
       const value: number = parseFloat(inputElement.value);
-      const elementId: string = inputElement.id;
-      const ingredientId: string = elementId.replace('volume-amount-', '');
 
       const ingredient = this.recipe.ingredients.find((i) => i.id === ingredientId);
       if (ingredient) {
@@ -89,11 +87,9 @@ export class IngredientsComponent {
     }
   }
 
-  ingredientName(event: Event) {
+  ingredientName(ingredientId: string, event: Event) {
     if (this.recipe) {
       const inputElement: HTMLInputElement = event.target as HTMLInputElement;
-      const elementId: string = inputElement.id;
-      const ingredientId: string = elementId.replace('ingredient-name-', '');
 
       const ingredient = this.recipe.ingredients.find((i) => i.id === ingredientId);
       if (ingredient) {

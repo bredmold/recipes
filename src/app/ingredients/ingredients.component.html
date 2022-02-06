@@ -13,7 +13,7 @@
                  type="number"
                  [id]="'volume-amount-' + ingredient.id"
                  [value]="ingredient.volumeAmount.quantity"
-                 (input)="volumeAmount($event)">
+                 (input)="volumeAmount(ingredient.id, $event)">
         </mat-form-field>
         <mat-form-field>
           <mat-label>Volume Unit</mat-label>
@@ -29,7 +29,7 @@
           <input matInput
                  class="ingredient-name"
                  [id]="'ingredient-name-' + ingredient.id"
-                 (input)="ingredientName($event)"
+                 (input)="ingredientName(ingredient.id, $event)"
                  [value]="ingredient.name" required>
         </mat-form-field>
         <span class='row-action' (click)='removeIngredient(ingredient.id)'>
