@@ -32,7 +32,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
   * Recipe picker
   * Home
   * Recipe viewer
-  * Steps editor
 * Improve Home Component layout
 * Save and edit buttons should be on right side of screen
 * Recipe viewer should render fractions
@@ -43,3 +42,4 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
   * ingredients
 * Recipe picker hover highlight color should use theme colors
 * Better step editor layout
+* Recipe editor should be able to select tabs via URL

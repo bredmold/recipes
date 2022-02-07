@@ -11,6 +11,7 @@
           <mat-form-field class='step-description'>
             <mat-label>Description</mat-label>
             <textarea matInput placeholder='Description'
+                      [id]="'step-description-' + step.id"
                       (input)='stepDescription(step.id, $event)'
                       [value]='step.description'
                       required='true'></textarea>
@@ -18,10 +19,10 @@
           <span class='step-action' (click)='removeStep(step.id)'>
           <span matTooltip='Remove Step'>-</span>
           </span>
-            <span class='step-action' (click)='moveStep(step.id, "up")'>
+          <span class='step-action' (click)='moveStep(step.id, "up")'>
             <span matTooltip='Push step up'>&uparrow;</span>
           </span>
-            <span class='step-action' (click)='moveStep(step.id, "down")'>
+          <span class='step-action' (click)='moveStep(step.id, "down")'>
             <span matTooltip='Pull step down'>&downarrow;</span>
           </span>
         </div>
