@@ -29,7 +29,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 ## TODO List
 
 * Test coverage for components
-  * Recipe picker
   * Home
   * Recipe viewer
 * Improve Home Component layout
@@ -43,3 +42,4 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 * Recipe picker hover highlight color should use theme colors
 * Better step editor layout
 * Recipe editor should be able to select tabs via URL
+* Recipe doubling feature

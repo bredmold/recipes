@@ -1,8 +1,8 @@
-import { Component, ElementRef, Input, OnInit } from '@angular/core';
-import { RecipeService } from '../recipe.service';
-import { Recipe } from '../types/recipe';
-import { MatDialogRef } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import {Component, ElementRef, Input, OnInit} from '@angular/core';
+import {RecipeService} from '../recipe.service';
+import {Recipe} from '../types/recipe';
+import {MatDialogRef} from '@angular/material/dialog';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-recipe-picker',
@@ -18,7 +18,8 @@ export class RecipePickerComponent implements OnInit {
     private readonly recipeService: RecipeService,
     private readonly recipePickerDialog: MatDialogRef<RecipePickerComponent>,
     private readonly router: Router
-  ) {}
+  ) {
+  }
 
   itemClass(recipeId: string): string {
     const classes = ['recipe-picker-item'];
