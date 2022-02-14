@@ -1,14 +1,14 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Recipe } from '../types/recipe';
-import { ActivatedRoute } from '@angular/router';
-import { RecipeService } from '../recipe.service';
+import {Component, ElementRef, ViewChild} from '@angular/core';
+import {Recipe} from '../types/recipe';
+import {ActivatedRoute} from '@angular/router';
+import {RecipeService} from '../recipe.service';
 
 @Component({
   selector: 'app-recipe',
   templateUrl: './recipe-editor.component.html',
   styleUrls: ['./recipe-editor.component.sass'],
 })
-export class RecipeEditorComponent implements OnInit {
+export class RecipeEditorComponent {
   @ViewChild('titleInput') titleInput!: ElementRef;
   recipe?: Recipe;
 
@@ -39,6 +39,4 @@ export class RecipeEditorComponent implements OnInit {
       console.warn('No active recipe');
     }
   }
-
-  ngOnInit(): void {}
 }
