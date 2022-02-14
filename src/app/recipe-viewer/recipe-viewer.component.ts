@@ -1,14 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { Recipe, RecipeIngredient, RecipeStep } from '../types/recipe';
-import { ActivatedRoute } from '@angular/router';
-import { RecipeService } from '../recipe.service';
+import {Component} from '@angular/core';
+import {Recipe, RecipeIngredient, RecipeStep} from '../types/recipe';
+import {ActivatedRoute} from '@angular/router';
+import {RecipeService} from '../recipe.service';
 
 @Component({
   selector: 'app-recipe-viewer',
   templateUrl: './recipe-viewer.component.html',
   styleUrls: ['./recipe-viewer.component.sass'],
 })
-export class RecipeViewerComponent implements OnInit {
+export class RecipeViewerComponent {
   recipe?: Recipe;
 
   constructor(private readonly route: ActivatedRoute, private readonly recipeService: RecipeService) {
@@ -41,6 +41,4 @@ export class RecipeViewerComponent implements OnInit {
       return [];
     }
   }
-
-  ngOnInit(): void {}
 }

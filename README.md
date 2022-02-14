@@ -30,7 +30,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 * Test coverage for components
   * Home
-  * Recipe viewer
 * Improve Home Component layout
 * Save and edit buttons should be on right side of screen
 * Recipe viewer should render fractions
