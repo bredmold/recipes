@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {
   CreateTableCommand,
   CreateTableCommandOutput,
@@ -8,9 +8,9 @@ import {
   PutItemCommandOutput,
   QueryCommandOutput,
 } from '@aws-sdk/client-dynamodb';
-import { DdbService } from './ddb.service';
-import { RecipeService } from './recipe.service';
-import { Recipe } from './types/recipe';
+import {DdbService} from './ddb.service';
+import {RecipeService} from './recipe.service';
+import {Recipe} from './types/recipe';
 
 describe('RecipeService', () => {
   let ddbClient: any;
@@ -58,7 +58,7 @@ describe('RecipeService', () => {
     const queryResponse: QueryCommandOutput = {
       Items: [
         {
-          json: { S: JSON.stringify(recipe) },
+          json: {S: JSON.stringify(recipe)},
         },
       ],
       $metadata: {},
@@ -81,7 +81,7 @@ describe('RecipeService', () => {
     const queryResponse: QueryCommandOutput = {
       Items: [
         {
-          json: { S: JSON.stringify(recipe) },
+          json: {S: JSON.stringify(recipe)},
         },
       ],
       $metadata: {},
@@ -130,10 +130,10 @@ describe('RecipeService', () => {
       new PutItemCommand({
         TableName: 'recipes',
         Item: {
-          ownerEmail: { S: 'bredmold@gmail.com' },
-          recipeId: { S: 'id' },
-          recipeTitle: { S: 'title' },
-          json: { S: JSON.stringify(recipeToSave.toObject()) },
+          ownerEmail: {S: 'bredmold@gmail.com'},
+          recipeId: {S: 'id'},
+          recipeTitle: {S: 'title'},
+          json: {S: JSON.stringify(recipeToSave.toObject())},
         },
       }).input
     );
@@ -185,5 +185,35 @@ describe('RecipeService', () => {
     await service.storageSetup();
 
     expect(createTableArgs).toBeTruthy();
+  });
+
+  it('should set the view recipe', () => {
+    expect(service.viewRecipe.getValue()).toBeUndefined();
+    expect(service.editRecipe.getValue()).toBeUndefined();
+
+    const recipe = new Recipe('view', 'desc', [], []);
+    service.setViewRecipe(recipe);
+
+    expect(service.viewRecipe.getValue()).toEqual(recipe);
+    expect(service.editRecipe.getValue()).toBeUndefined();
+
+    service.clearActiveRecipes();
+    expect(service.viewRecipe.getValue()).toBeUndefined();
+    expect(service.editRecipe.getValue()).toBeUndefined();
+  });
+
+  it('should set the edit recipe', () => {
+    expect(service.viewRecipe.getValue()).toBeUndefined();
+    expect(service.editRecipe.getValue()).toBeUndefined();
+
+    const recipe = new Recipe('edit', 'desc', [], []);
+    service.setEditRecipe(recipe);
+
+    expect(service.viewRecipe.getValue()).toBeUndefined();
+    expect(service.editRecipe.getValue()).toEqual(recipe);
+
+    service.clearActiveRecipes();
+    expect(service.viewRecipe.getValue()).toBeUndefined();
+    expect(service.editRecipe.getValue()).toBeUndefined();
   });
 });
