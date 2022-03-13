@@ -29,6 +29,8 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 ## TODO List
 
 * Improve Home Component layout
+  * New recipe button
+  * Helpful message for no recipes
 * Save and edit buttons should be on right side of screen
 * Recipe viewer should render fractions
 * Steps description should support Markdown

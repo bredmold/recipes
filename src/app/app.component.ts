@@ -1,15 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { RecipeService } from './recipe.service';
-import { MatDialog } from '@angular/material/dialog';
-import { RecipePickerComponent } from './recipe-picker/recipe-picker.component';
-import { Recipe } from './types/recipe';
+import {Component} from '@angular/core';
+import {RecipeService} from './recipe.service';
+import {MatDialog} from '@angular/material/dialog';
+import {RecipePickerComponent} from './recipe-picker/recipe-picker.component';
+import {Recipe} from './types/recipe';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.sass'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   viewRecipe?: Recipe = undefined;
   editRecipe?: Recipe = undefined;
 
@@ -57,16 +57,5 @@ export class AppComponent implements OnInit {
 
   editLink(): string {
     return this.viewRecipe ? `recipe/${this.viewRecipe.id}/edit` : '';
-  }
-
-  ngOnInit(): void {
-    this.recipeService.storageSetup().then(
-      () => {
-        console.log('storage initialized');
-      },
-      (err) => {
-        console.error(err);
-      }
-    );
   }
 }

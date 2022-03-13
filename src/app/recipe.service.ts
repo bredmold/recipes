@@ -1,17 +1,10 @@
-import { Injectable } from '@angular/core';
-import {
-  CreateTableCommand,
-  DynamoDBClient,
-  ListTablesCommand,
-  PutItemCommand,
-  QueryCommand,
-  QueryCommandOutput,
-} from '@aws-sdk/client-dynamodb';
-import { BehaviorSubject } from 'rxjs';
-import { CacheService, TypedCache } from './cache.service';
-import { DdbService } from './ddb.service';
-import { SessionService } from './session.service';
-import { Recipe } from './types/recipe';
+import {Injectable} from '@angular/core';
+import {DynamoDBClient, PutItemCommand, QueryCommand, QueryCommandOutput,} from '@aws-sdk/client-dynamodb';
+import {BehaviorSubject} from 'rxjs';
+import {CacheService, TypedCache} from './cache.service';
+import {DdbService} from './ddb.service';
+import {SessionService} from './session.service';
+import {Recipe} from './types/recipe';
 
 @Injectable({
   providedIn: 'root',
@@ -42,10 +35,10 @@ export class RecipeService {
     const putItemCommand = new PutItemCommand({
       TableName: this.tableName,
       Item: {
-        ownerEmail: { S: ownerEmail },
-        recipeId: { S: recipe.id },
-        recipeTitle: { S: recipe.title },
-        json: { S: JSON.stringify(recipe.toObject()) },
+        ownerEmail: {S: ownerEmail},
+        recipeId: {S: recipe.id},
+        recipeTitle: {S: recipe.title},
+        json: {S: JSON.stringify(recipe.toObject())},
       },
     });
     const putItemResult = this.ddbClient.send(putItemCommand);
@@ -62,7 +55,7 @@ export class RecipeService {
       IndexName: this.titleIndexName,
       KeyConditionExpression: 'ownerEmail = :ownerEmail',
       ExpressionAttributeValues: {
-        ':ownerEmail': { S: ownerEmail },
+        ':ownerEmail': {S: ownerEmail},
       },
     });
     const listRecipesResult = await this.ddbClient.send(listRecipesCommand);
@@ -79,8 +72,8 @@ export class RecipeService {
           TableName: this.tableName,
           KeyConditionExpression: 'ownerEmail = :ownerEmail AND recipeId = :recipeId',
           ExpressionAttributeValues: {
-            ':ownerEmail': { S: ownerEmail },
-            ':recipeId': { S: recipeId },
+            ':ownerEmail': {S: ownerEmail},
+            ':recipeId': {S: recipeId},
           },
         });
         const recipeByIdResult = await this.ddbClient.send(recipeByIdCommand);
@@ -91,24 +84,8 @@ export class RecipeService {
           throw `Unable to locate recipe: ${recipeId}`;
         }
       },
-      { key: recipeId, ttl: 300000 }
+      {key: recipeId, ttl: 300000}
     );
-  }
-
-  async storageSetup() {
-    const command = new ListTablesCommand({});
-    try {
-      const listTablesResult = await this.ddbClient.send(command);
-      const tables = listTablesResult.TableNames || [];
-      if (tables.find((t) => t == this.tableName)) {
-        console.log('Found matching table');
-      } else {
-        console.log('Setting up table');
-        await this.createTable();
-      }
-    } catch (err) {
-      console.error(err);
-    }
   }
 
   private parseQueryResponse(queryResponse: QueryCommandOutput): Recipe[] {
@@ -121,36 +98,6 @@ export class RecipeService {
     } else {
       return [];
     }
-  }
-
-  private async createTable() {
-    const createTableCommand = new CreateTableCommand({
-      TableName: this.tableName,
-      AttributeDefinitions: [
-        { AttributeName: 'ownerEmail', AttributeType: 'S' },
-        { AttributeName: 'recipeId', AttributeType: 'S' },
-        { AttributeName: 'recipeTitle', AttributeType: 'S' },
-      ],
-      KeySchema: [
-        { AttributeName: 'ownerEmail', KeyType: 'HASH' },
-        { AttributeName: 'recipeId', KeyType: 'RANGE' },
-      ],
-      GlobalSecondaryIndexes: [
-        {
-          IndexName: this.titleIndexName,
-          KeySchema: [
-            { AttributeName: 'ownerEmail', KeyType: 'HASH' },
-            { AttributeName: 'recipeTitle', KeyType: 'RANGE' },
-          ],
-          Projection: {
-            ProjectionType: 'ALL',
-          },
-        },
-      ],
-      BillingMode: 'PAY_PER_REQUEST',
-    });
-    const createTableResult = await this.ddbClient.send(createTableCommand);
-    console.log(createTableResult);
   }
 
   setViewRecipe(recipe?: Recipe) {

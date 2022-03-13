@@ -1,13 +1,5 @@
 import {TestBed} from '@angular/core/testing';
-import {
-  CreateTableCommand,
-  CreateTableCommandOutput,
-  ListTablesCommand,
-  ListTablesCommandOutput,
-  PutItemCommand,
-  PutItemCommandOutput,
-  QueryCommandOutput,
-} from '@aws-sdk/client-dynamodb';
+import {PutItemCommand, PutItemCommandOutput, QueryCommandOutput,} from '@aws-sdk/client-dynamodb';
 import {DdbService} from './ddb.service';
 import {RecipeService} from './recipe.service';
 import {Recipe} from './types/recipe';
@@ -137,54 +129,6 @@ describe('RecipeService', () => {
         },
       }).input
     );
-  });
-
-  it('storageSetup should do nothing if table already exists', async () => {
-    const listTablesResponse: ListTablesCommandOutput = {
-      TableNames: ['recipes'],
-      $metadata: {},
-    };
-
-    let otherCalls = 0;
-    ddbClient.send.and.callFake((args: any) => {
-      if (args instanceof ListTablesCommand) {
-        return listTablesResponse;
-      } else {
-        otherCalls += 1;
-        return Promise.resolve({});
-      }
-    });
-
-    await service.storageSetup();
-
-    expect(otherCalls).toBe(0);
-  });
-
-  it('storageSetup should create the table if it is not present', async () => {
-    const listTablesResponse: ListTablesCommandOutput = {
-      TableNames: [],
-      $metadata: {},
-    };
-
-    const createTableResponse: CreateTableCommandOutput = {
-      $metadata: {},
-    };
-
-    let createTableArgs: CreateTableCommand | undefined;
-    ddbClient.send.and.callFake((args: any) => {
-      if (args instanceof ListTablesCommand) {
-        return listTablesResponse;
-      } else if (args instanceof CreateTableCommand) {
-        createTableArgs = args;
-        return createTableResponse;
-      } else {
-        return Promise.reject('Unexpected call');
-      }
-    });
-
-    await service.storageSetup();
-
-    expect(createTableArgs).toBeTruthy();
   });
 
   it('should set the view recipe', () => {

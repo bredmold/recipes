@@ -5,8 +5,17 @@ services:
     image: "amazon/dynamodb-local:latest"
     container_name: dynamodb-local
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     volumes:
       - "./docker/dynamodb:/home/dynamodblocal/data"
     working_dir: /home/dynamodblocal
     user: root
+
+  terraform:
+    image: "hashicorp/terraform:1.1.7"
+    entrypoint: [ "/bin/sh", "/opt/terraform/recipe.sh" ]
+    working_dir: /opt/terraform
+    depends_on:
+      - dynamodb-local
+    volumes:
+      - "./terraform:/opt/terraform"
