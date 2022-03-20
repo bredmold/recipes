@@ -1,4 +1,4 @@
-import { Recipe, RecipeIngredient, RecipeStep, UsVolumeUnit, VolumeAmount } from './recipe';
+import {Recipe, RecipeIngredient, RecipeStep, UsVolumeUnit, VolumeAmount} from './recipe';
 
 describe('VolumeAmount', () => {
   it('should convert tablespoons to teaspoons', () => {
@@ -27,6 +27,14 @@ describe('VolumeAmount', () => {
     expect(VolumeAmount.fromObject({ quantity: 12, units: 'cup' })).toEqual(new VolumeAmount(12, UsVolumeUnit.Cup));
     expect(VolumeAmount.fromObject({ quantity: 2, units: 'pint' })).toEqual(new VolumeAmount(2, UsVolumeUnit.Pint));
     expect(VolumeAmount.fromObject({ quantity: 1, units: 'qt' })).toEqual(new VolumeAmount(1, UsVolumeUnit.Quart));
+  });
+
+  it('should render fractions', () => {
+    expect(new VolumeAmount(0.25, UsVolumeUnit.Cup).render()).toEqual("¼ cup");
+    expect(new VolumeAmount(0.5, UsVolumeUnit.Cup).render()).toEqual("½ cup");
+    expect(new VolumeAmount(0.75, UsVolumeUnit.Cup).render()).toEqual("¾ cup");
+    expect(new VolumeAmount(1, UsVolumeUnit.Cup).render()).toEqual("1 cup");
+    expect(new VolumeAmount(1.5, UsVolumeUnit.Cup).render()).toEqual("1 ½ cup");
   });
 });
 

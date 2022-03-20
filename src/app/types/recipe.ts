@@ -1,5 +1,5 @@
 /** US system of volume units */
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 
 export enum UsVolumeUnit {
   // American Units
@@ -12,12 +12,12 @@ export enum UsVolumeUnit {
 }
 
 const unitAbbreviationPairs = [
-  { unit: UsVolumeUnit.Teaspoon, abbreviation: 'tsp' },
-  { unit: UsVolumeUnit.TableSpoon, abbreviation: 'tbsp' },
-  { unit: UsVolumeUnit.Ounce, abbreviation: 'oz' },
-  { unit: UsVolumeUnit.Cup, abbreviation: 'cup' },
-  { unit: UsVolumeUnit.Pint, abbreviation: 'pint' },
-  { unit: UsVolumeUnit.Quart, abbreviation: 'qt' },
+  {unit: UsVolumeUnit.Teaspoon, abbreviation: 'tsp'},
+  {unit: UsVolumeUnit.TableSpoon, abbreviation: 'tbsp'},
+  {unit: UsVolumeUnit.Ounce, abbreviation: 'oz'},
+  {unit: UsVolumeUnit.Cup, abbreviation: 'cup'},
+  {unit: UsVolumeUnit.Pint, abbreviation: 'pint'},
+  {unit: UsVolumeUnit.Quart, abbreviation: 'qt'},
 ];
 
 const unitsToAbbreviations: Record<UsVolumeUnit, string> = unitAbbreviationPairs.reduce((map, pair) => {
@@ -36,7 +36,13 @@ export class VolumeAmount {
    * @param quantity Scalar quantity
    * @param units Unit type
    */
-  constructor(public quantity: number, public units: UsVolumeUnit) {}
+  constructor(public quantity: number, public units: UsVolumeUnit) {
+  }
+
+  private static readonly FRACTION_DELTA = 0.01;
+  private static readonly ONE_QUARTER = "¼";
+  private static readonly ONE_HALF = "½";
+  private static readonly THREE_QUARTER = "¾";
 
   /**
    * Units conversion for volumes
@@ -55,8 +61,25 @@ export class VolumeAmount {
     };
   }
 
+  private renderQuantity(): string {
+    const intPart = Math.floor(this.quantity);
+    const fractionPart = this.quantity - intPart;
+
+    if (fractionPart >= VolumeAmount.FRACTION_DELTA) {
+      const renderedInt = (intPart > 0) ? `${intPart} ` : '';
+      if (Math.abs(fractionPart - 0.25) <= VolumeAmount.FRACTION_DELTA) {
+        return `${renderedInt}${VolumeAmount.ONE_QUARTER}`;
+      } else if (Math.abs(fractionPart - 0.5) <= VolumeAmount.FRACTION_DELTA) {
+        return `${renderedInt}${VolumeAmount.ONE_HALF}`;
+      } else if (Math.abs(fractionPart - 0.75) <= VolumeAmount.FRACTION_DELTA) {
+        return `${renderedInt}${VolumeAmount.THREE_QUARTER}`;
+      }
+    }
+    return this.quantity.toString();
+  }
+
   render(): string {
-    return `${this.quantity} ${unitsToAbbreviations[this.units]}`;
+    return `${this.renderQuantity()} ${unitsToAbbreviations[this.units]}`;
   }
 
   static fromObject(volumeAmountObject: Record<string, any>): VolumeAmount {
@@ -77,7 +100,8 @@ export class RecipeIngredient {
     public description: string,
     public volumeAmount: VolumeAmount,
     public readonly id: string = uuidv4()
-  ) {}
+  ) {
+  }
 
   toObject(): object {
     return {
@@ -109,7 +133,8 @@ export class RecipeStep {
    * @param description Human-readable description
    * @param ingredients List of ingredient IDs
    */
-  constructor(public description: string, public ingredients: string[], public readonly id: string = uuidv4()) {}
+  constructor(public description: string, public ingredients: string[], public readonly id: string = uuidv4()) {
+  }
 
   toObject(): object {
     return {
@@ -139,7 +164,8 @@ export class Recipe {
     public steps: RecipeStep[],
     public ingredients: RecipeIngredient[],
     public readonly id: string = uuidv4()
-  ) {}
+  ) {
+  }
 
   /**
    * Construct an object representation of this recipe, suitable for turning into JSON

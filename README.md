@@ -28,7 +28,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
-* Recipe viewer should render fractions
 * Steps description should support Markdown
 * Edit descriptions for ingredients
 * Drag & drop list re-ordering
