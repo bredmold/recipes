@@ -3,6 +3,7 @@
     <mat-toolbar>
       <button routerLink=''>Recipes</button>
       <button (click)="openRecipePicker()">{{recipeTitle()}}</button>
+      <span class="recipe-spacer"></span>
       <button (click)="recipeSave()" [disabled]='isSaveDisabled()'>Save</button>
       <button [routerLink]='editLink()' [disabled]='isEditDisabled()'>Edit</button>
     </mat-toolbar>
@@ -10,5 +11,5 @@
   <div class="recipe">
     <router-outlet></router-outlet>
   </div>
-  <div class="footer">&copy;2021 Aaron Gideon Goldstein (bredmold@gmail.com)</div>
+  <div class="footer">&copy;2022 Aaron Gideon Goldstein (bredmold@gmail.com)</div>
 </div>

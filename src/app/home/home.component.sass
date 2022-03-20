@@ -1,6 +1,23 @@
 .home
   padding-left: 1em
   font-size: larger
+  display: grid
+  grid-template-rows: 1fr
+  grid-template-columns: 1fr 13%
+  overflow: hidden
+
+  .recipe-list
+    grid-column: 1
+    grid-row: 1
+
+  .new-recipe
+    grid-column: 2
+    grid-row: 1
+    padding-top: 1em
+
+    button
+      font-size: large
+      text-decoration: underline
 
 .home-recipe
   margin-bottom: .5em

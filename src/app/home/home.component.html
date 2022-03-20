@@ -1,9 +1,17 @@
 <div class='home'>
-  <mat-list>
-    <mat-list *ngFor='let recipe of allRecipes'>
-      <div class="home-recipe">
-        <a [routerLink]='recipeLink(recipe.id)'>{{recipe.title}}</a>
-      </div>
+  <div class="recipe-list">
+    <mat-list>
+      <mat-list *ngFor='let recipe of allRecipes'>
+        <div class="home-recipe">
+          <a [routerLink]='recipeLink(recipe.id)'>{{recipe.title}}</a>
+        </div>
+      </mat-list>
     </mat-list>
-  </mat-list>
+    <div class="no-recipes" *ngIf="allRecipes.length == 0">
+      No recipes in storage.
+    </div>
+  </div>
+  <div class="new-recipe">
+    <button mat-button (click)="newRecipe()">New Recipe</button>
+  </div>
 </div>

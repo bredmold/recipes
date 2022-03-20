@@ -28,10 +28,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
-* Improve Home Component layout
-  * New recipe button
-  * Helpful message for no recipes
-* Save and edit buttons should be on right side of screen
 * Recipe viewer should render fractions
 * Steps description should support Markdown
 * Edit descriptions for ingredients
@@ -41,4 +37,9 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 * Recipe picker hover highlight color should use theme colors
 * Better step editor layout
 * Recipe editor should be able to select tabs via URL
-* Recipe doubling feature
+* Recipe doubling
+* Export recipes
+* Search by ingredients
+* Delete recipe button
+* Improve Home Component layout
+* Factor out commonalities from recipe picker and home component

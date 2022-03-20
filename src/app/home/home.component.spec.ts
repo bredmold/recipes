@@ -3,23 +3,32 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {HomeComponent} from './home.component';
 import {RecipeService} from "../recipe.service";
 import {Recipe} from "../types/recipe";
+import {Router} from "@angular/router";
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let recipeServiceSpy: any;
+  let routerSpy: any;
 
   beforeEach(async () => {
     recipeServiceSpy = {
       clearActiveRecipes: jasmine.createSpy('clearActiveRecipes'),
       listRecipes: jasmine.createSpy('listRecipes'),
     }
+
+    routerSpy = {navigate: jasmine.createSpy('navigate')};
+
     await TestBed.configureTestingModule({
       providers: [
         {
           provide: RecipeService,
           useValue: recipeServiceSpy
-        }
+        },
+        {
+          provide: Router,
+          useValue: routerSpy,
+        },
       ],
       declarations: [HomeComponent],
     }).compileComponents();
@@ -64,5 +73,18 @@ describe('HomeComponent', () => {
     await fixture.whenStable();
 
     expect(recipeServiceSpy.clearActiveRecipes.calls.count()).toEqual(1);
+  });
+
+  it('should navigate to a new recipe edit screen', () => {
+    createComponent([]);
+    routerSpy.navigate.and.returnValue(Promise.resolve(true));
+
+    component.newRecipe();
+
+    const navArgs = routerSpy.navigate.calls.first().args[0];
+    expect(navArgs).toHaveSize(1);
+
+    const navUri = navArgs[0] as string;
+    expect(navUri).toMatch(/^\/recipe\/[a-z0-9-]{36}\/edit$/);
   });
 });
