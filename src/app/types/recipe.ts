@@ -41,7 +41,9 @@ export class VolumeAmount {
 
   private static readonly FRACTION_DELTA = 0.01;
   private static readonly ONE_QUARTER = "¼";
+  private static readonly ONE_THIRD = "⅓";
   private static readonly ONE_HALF = "½";
+  private static readonly TWO_THIRD = "⅔";
   private static readonly THREE_QUARTER = "¾";
 
   /**
@@ -67,12 +69,19 @@ export class VolumeAmount {
 
     if (fractionPart >= VolumeAmount.FRACTION_DELTA) {
       const renderedInt = (intPart > 0) ? `${intPart} ` : '';
-      if (Math.abs(fractionPart - 0.25) <= VolumeAmount.FRACTION_DELTA) {
-        return `${renderedInt}${VolumeAmount.ONE_QUARTER}`;
-      } else if (Math.abs(fractionPart - 0.5) <= VolumeAmount.FRACTION_DELTA) {
-        return `${renderedInt}${VolumeAmount.ONE_HALF}`;
-      } else if (Math.abs(fractionPart - 0.75) <= VolumeAmount.FRACTION_DELTA) {
-        return `${renderedInt}${VolumeAmount.THREE_QUARTER}`;
+
+      const percent = Math.floor(fractionPart * 100);
+      switch (percent) {
+        case 25:
+          return `${renderedInt}${VolumeAmount.ONE_QUARTER}`;
+        case 33:
+          return `${renderedInt}${VolumeAmount.ONE_THIRD}`;
+        case 50:
+          return `${renderedInt}${VolumeAmount.ONE_HALF}`;
+        case 67:
+          return `${renderedInt}${VolumeAmount.TWO_THIRD}`;
+        case 75:
+          return `${renderedInt}${VolumeAmount.THREE_QUARTER}`;
       }
     }
     return this.quantity.toString();

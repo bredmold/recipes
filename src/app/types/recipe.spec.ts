@@ -7,31 +7,34 @@ describe('VolumeAmount', () => {
   });
 
   it('should convert correctly to persistence format', () => {
-    expect(new VolumeAmount(2, UsVolumeUnit.Teaspoon).toObject()).toEqual({ quantity: 2, units: 'tsp' });
-    expect(new VolumeAmount(1.5, UsVolumeUnit.TableSpoon).toObject()).toEqual({ quantity: 1.5, units: 'tbsp' });
-    expect(new VolumeAmount(6, UsVolumeUnit.Ounce).toObject()).toEqual({ quantity: 6, units: 'oz' });
-    expect(new VolumeAmount(12, UsVolumeUnit.Cup).toObject()).toEqual({ quantity: 12, units: 'cup' });
-    expect(new VolumeAmount(2, UsVolumeUnit.Pint).toObject()).toEqual({ quantity: 2, units: 'pint' });
-    expect(new VolumeAmount(1, UsVolumeUnit.Quart).toObject()).toEqual({ quantity: 1, units: 'qt' });
+    expect(new VolumeAmount(2, UsVolumeUnit.Teaspoon).toObject()).toEqual({quantity: 2, units: 'tsp'});
+    expect(new VolumeAmount(1.5, UsVolumeUnit.TableSpoon).toObject()).toEqual({quantity: 1.5, units: 'tbsp'});
+    expect(new VolumeAmount(6, UsVolumeUnit.Ounce).toObject()).toEqual({quantity: 6, units: 'oz'});
+    expect(new VolumeAmount(12, UsVolumeUnit.Cup).toObject()).toEqual({quantity: 12, units: 'cup'});
+    expect(new VolumeAmount(2, UsVolumeUnit.Pint).toObject()).toEqual({quantity: 2, units: 'pint'});
+    expect(new VolumeAmount(1, UsVolumeUnit.Quart).toObject()).toEqual({quantity: 1, units: 'qt'});
   });
 
   it('should restore correctly from persistence format', () => {
-    expect(VolumeAmount.fromObject({ quantity: 2, units: 'tsp' })).toEqual(new VolumeAmount(2, UsVolumeUnit.Teaspoon));
+    expect(VolumeAmount.fromObject({quantity: 2, units: 'tsp'})).toEqual(new VolumeAmount(2, UsVolumeUnit.Teaspoon));
     expect(
       VolumeAmount.fromObject({
         quantity: 1.5,
         units: 'tbsp',
       })
     ).toEqual(new VolumeAmount(1.5, UsVolumeUnit.TableSpoon));
-    expect(VolumeAmount.fromObject({ quantity: 6, units: 'oz' })).toEqual(new VolumeAmount(6, UsVolumeUnit.Ounce));
-    expect(VolumeAmount.fromObject({ quantity: 12, units: 'cup' })).toEqual(new VolumeAmount(12, UsVolumeUnit.Cup));
-    expect(VolumeAmount.fromObject({ quantity: 2, units: 'pint' })).toEqual(new VolumeAmount(2, UsVolumeUnit.Pint));
-    expect(VolumeAmount.fromObject({ quantity: 1, units: 'qt' })).toEqual(new VolumeAmount(1, UsVolumeUnit.Quart));
+    expect(VolumeAmount.fromObject({quantity: 6, units: 'oz'})).toEqual(new VolumeAmount(6, UsVolumeUnit.Ounce));
+    expect(VolumeAmount.fromObject({quantity: 12, units: 'cup'})).toEqual(new VolumeAmount(12, UsVolumeUnit.Cup));
+    expect(VolumeAmount.fromObject({quantity: 2, units: 'pint'})).toEqual(new VolumeAmount(2, UsVolumeUnit.Pint));
+    expect(VolumeAmount.fromObject({quantity: 1, units: 'qt'})).toEqual(new VolumeAmount(1, UsVolumeUnit.Quart));
   });
 
   it('should render fractions', () => {
+    expect(new VolumeAmount(0.2, UsVolumeUnit.Cup).render()).toEqual("0.2 cup");
     expect(new VolumeAmount(0.25, UsVolumeUnit.Cup).render()).toEqual("¼ cup");
+    expect(new VolumeAmount(0.33, UsVolumeUnit.Cup).render()).toEqual("⅓ cup");
     expect(new VolumeAmount(0.5, UsVolumeUnit.Cup).render()).toEqual("½ cup");
+    expect(new VolumeAmount(0.67, UsVolumeUnit.Cup).render()).toEqual("⅔ cup");
     expect(new VolumeAmount(0.75, UsVolumeUnit.Cup).render()).toEqual("¾ cup");
     expect(new VolumeAmount(1, UsVolumeUnit.Cup).render()).toEqual("1 cup");
     expect(new VolumeAmount(1.5, UsVolumeUnit.Cup).render()).toEqual("1 ½ cup");
