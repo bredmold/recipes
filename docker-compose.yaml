@@ -13,7 +13,7 @@ services:
 
   terraform:
     image: "hashicorp/terraform:1.1.7"
-    entrypoint: [ "/bin/sh", "/opt/terraform/recipe.sh" ]
+    entrypoint: [ "/bin/sh", "/opt/terraform/recipe.sh", "docker" ]
     working_dir: /opt/terraform
     depends_on:
       - dynamodb-local

@@ -9,24 +9,18 @@ terraform {
   }
 }
 
-variable "ddb_endpoint" {
-  type        = string
-  default     = "http://127.0.0.1:8000"
-  description = "DynamoDB host"
+variable "local_testing" {
+  type        = bool
+  default     = true
+  description = "If true, run local testing"
 }
 
 provider "aws" {
-  region     = "us-east-2"
-  access_key = "nope"
-  secret_key = "nope"
+  region = "us-west-2"
 
-  skip_credentials_validation = true
-  skip_metadata_api_check     = true
-  skip_requesting_account_id  = true
-
-  endpoints {
-    dynamodb = var.ddb_endpoint
-  }
+  skip_credentials_validation = var.local_testing
+  skip_metadata_api_check     = var.local_testing
+  skip_requesting_account_id  = var.local_testing
 }
 
 resource "aws_dynamodb_table" "recipe_table" {

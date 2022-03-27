@@ -28,8 +28,10 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
+* Cognito authentication
+  * Login
+  * Change password
 * Steps description should support Markdown
-* AWS Authentication
 * Deploy to AWS
   * Validate on iPad
 * Recipe viewer
