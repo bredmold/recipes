@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
-import {CognitoAccessToken, CognitoUser, CognitoUserSession} from "amazon-cognito-identity-js";
+import {CognitoAccessToken, CognitoUser, CognitoUserPool, CognitoUserSession} from "amazon-cognito-identity-js";
+import {environment} from "../environments/environment";
 
 interface RecipeSession {
   user: CognitoUser,
@@ -17,8 +18,19 @@ export class SessionService {
     this.activeSession = new BehaviorSubject<RecipeSession | undefined>(undefined)
   }
 
-  activateSession(user: CognitoUser, session: CognitoUserSession) {
-    this.activeSession.next({user: user, session: session});
+  prepareUser(email_address: string): CognitoUser {
+    const poolData = {
+      UserPoolId: environment.cognitoUserPoolId,
+      ClientId: environment.cognitoAppClientId
+    };
+
+    const userPool = new CognitoUserPool(poolData);
+    const userData = {Username: email_address, Pool: userPool};
+    return new CognitoUser(userData);
+  }
+
+  activateSession(cognitoUser: CognitoUser, session: CognitoUserSession) {
+    this.activeSession.next({user: cognitoUser, session: session});
   }
 
   deactivateSession() {

@@ -22,7 +22,6 @@ import {AppRoutingModule} from './app-routing.module';
 import {RouterModule} from '@angular/router';
 import {HomeComponent} from './home/home.component';
 import {SignInComponent} from './auth/sign-in/sign-in.component';
-import {ChangePasswordComponent} from './auth/change-password/change-password.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +33,6 @@ import {ChangePasswordComponent} from './auth/change-password/change-password.co
     RecipeViewerComponent,
     HomeComponent,
     SignInComponent,
-    ChangePasswordComponent,
   ],
   imports: [
     BrowserModule,
