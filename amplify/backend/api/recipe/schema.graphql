@@ -1,0 +1,34 @@
+enum UsVolumeUnits {
+  TEASPOON
+  TABLESPOON
+  OUNCE
+  CUP
+  PINT
+  QUART
+}
+
+type VolumeAmount {
+  quantity: Float!
+  units: UsVolumeUnits!
+}
+
+type RecipeIngredient {
+  id: ID!
+  name: String!
+  description: String!
+  volumeAmount: VolumeAmount!
+}
+
+type RecipeStep {
+  id: ID!
+  description: String!
+  ingredients: [ID!]!
+}
+
+type Recipe @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  title: String!
+  description: String!
+  steps: [RecipeStep!]!
+  ingredients: [RecipeIngredient!]!
+}

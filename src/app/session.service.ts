@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
-import {CognitoAccessToken, CognitoUser, CognitoUserPool, CognitoUserSession} from "amazon-cognito-identity-js";
+import {CognitoUser, CognitoUserPool, CognitoUserSession} from "amazon-cognito-identity-js";
 import {environment} from "../environments/environment";
 
 interface RecipeSession {
@@ -45,10 +45,5 @@ export class SessionService {
   loggedInEmail(): string | undefined {
     const session = this.activeSession.getValue();
     return session ? session.user.getUsername() : undefined;
-  }
-
-  awsToken(): CognitoAccessToken | undefined {
-    const session = this.activeSession.getValue();
-    return session ? session.session.getAccessToken() : undefined;
   }
 }

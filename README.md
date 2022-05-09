@@ -28,9 +28,10 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
+* Update tests after addition of AWS Amplify
+  * Can we remove the model definition?
 * Cognito authentication
-  * Login
-  * Change password
+  * Testing
 * Steps description should support Markdown
 * Deploy to AWS
   * Validate on iPad

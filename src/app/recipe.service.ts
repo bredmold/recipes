@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {DynamoDBClient, PutItemCommand, QueryCommand, QueryCommandOutput,} from '@aws-sdk/client-dynamodb';
+import {PutItemCommand, QueryCommand, QueryCommandOutput,} from '@aws-sdk/client-dynamodb';
 import {BehaviorSubject} from 'rxjs';
 import {CacheService, TypedCache} from './cache.service';
 import {DdbService} from './ddb.service';
@@ -13,17 +13,15 @@ export class RecipeService {
   public readonly viewRecipe: BehaviorSubject<Recipe | undefined>;
   public readonly editRecipe: BehaviorSubject<Recipe | undefined>;
 
-  private readonly ddbClient: DynamoDBClient;
   private readonly tableName = 'recipes';
   private readonly titleIndexName = 'owner-title';
 
   private readonly recipeCache: TypedCache<Recipe>;
 
-  constructor(private readonly sessionService: SessionService, cacheService: CacheService, ddbService: DdbService) {
+  constructor(private readonly sessionService: SessionService, cacheService: CacheService, private readonly ddbService: DdbService) {
     this.viewRecipe = new BehaviorSubject<Recipe | undefined>(undefined);
     this.editRecipe = new BehaviorSubject<Recipe | undefined>(undefined);
 
-    this.ddbClient = ddbService.createDdbClient();
     this.recipeCache = cacheService.createTypedCache();
   }
 
@@ -41,7 +39,7 @@ export class RecipeService {
         json: {S: JSON.stringify(recipe.toObject())},
       },
     });
-    const putItemResult = this.ddbClient.send(putItemCommand);
+    const putItemResult = await this.ddbService.putItem(putItemCommand);
     console.log(putItemResult);
     return recipe;
   }
@@ -58,7 +56,7 @@ export class RecipeService {
         ':ownerEmail': {S: ownerEmail},
       },
     });
-    const listRecipesResult = await this.ddbClient.send(listRecipesCommand);
+    const listRecipesResult = await this.ddbService.query(listRecipesCommand);
     return this.parseQueryResponse(listRecipesResult);
   }
 
@@ -76,7 +74,7 @@ export class RecipeService {
             ':recipeId': {S: recipeId},
           },
         });
-        const recipeByIdResult = await this.ddbClient.send(recipeByIdCommand);
+        const recipeByIdResult = await this.ddbService.query(recipeByIdCommand);
         const recipes = this.parseQueryResponse(recipeByIdResult);
         if (recipes.length > 0) {
           return recipes[0];

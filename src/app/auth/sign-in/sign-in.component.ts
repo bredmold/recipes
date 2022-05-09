@@ -1,8 +1,9 @@
 import {Component} from '@angular/core';
 import {Router} from "@angular/router";
 import {NgForm} from "@angular/forms";
-import {AuthenticationDetails, CognitoUser} from 'amazon-cognito-identity-js';
+import {CognitoUser, CognitoUserSession} from 'amazon-cognito-identity-js';
 import {SessionService} from "../../session.service";
+import {Auth} from 'aws-amplify';
 
 @Component({
   selector: 'app-sign-in',
@@ -32,41 +33,26 @@ export class SignInComponent {
     }
   }
 
-  private signIn() {
+  private async signIn() {
     this.passwordChallenge = false;
-    const authenticationDetails = new AuthenticationDetails({
-      Username: this.email_address,
-      Password: this.password,
-    });
 
-    this.prepareUser().authenticateUser(authenticationDetails, {
-      newPasswordRequired: (userAttributes) => {
-        delete userAttributes.email;
-        delete userAttributes.email_verified;
-        this.sessionUserAttributes = userAttributes;
-        this.passwordChallenge = true;
-      },
-      onSuccess: (cognitoSession) => {
-        this.sessionService.activateSession(this.prepareUser(), cognitoSession);
-        this.router.navigate(['']).then(
-          () => {
-            console.log('Logged in');
-          },
-          err => {
-            console.error(err);
-          }
-        );
-      },
-      onFailure: (err) => {
-        console.error(err);
-        this.isLoading = false;
-      },
-    });
+    try {
+      const user: CognitoUser = await Auth.signIn(this.email_address, this.password);
+      const session: CognitoUserSession = await Auth.currentSession();
+      this.sessionService.activateSession(user, session);
+
+      await this.router.navigate([''])
+      console.log('Logged in');
+    } catch (err) {
+      console.error(err);
+      this.isLoading = false;
+    }
   }
 
   private completePasswordChallenge() {
     this.prepareUser().completeNewPasswordChallenge(this.new_password, this.sessionUserAttributes, {
-      mfaSetup: () => {},
+      mfaSetup: () => {
+      },
       onSuccess: cognitoSession => {
         this.sessionService.activateSession(this.prepareUser(), cognitoSession);
         this.isLoading = false;

@@ -1,0 +1,43 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-recipe-staging-230538-authRole",
+      "UnauthRoleArn": "arn:aws:iam::700942521824:role/amplify-recipe-staging-230538-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::700942521824:role/amplify-recipe-staging-230538-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-recipe-staging-230538-deployment",
+      "UnauthRoleName": "amplify-recipe-staging-230538-unauthRole",
+      "StackName": "amplify-recipe-staging-230538",
+      "StackId": "arn:aws:cloudformation:us-west-2:700942521824:stack/amplify-recipe-staging-230538/609bf000-cf23-11ec-8e22-068fb8f09687",
+      "AmplifyAppId": "d2jsdwmjuc32q3"
+    },
+    "categories": {
+      "auth": {
+        "recipe": {
+          "userPoolId": "us-west-2_djFbovgCe",
+          "userPoolName": "recipe users",
+          "webClientId": "81sf9eo2hd7migok9r3hs96n3",
+          "nativeClientId": "81sf9eo2hd7migok9r3hs96n3",
+          "identityPoolId": "us-west-2:c8065941-de2b-4969-84d2-502b5407579a",
+          "identityPoolName": "recipe identities",
+          "allowUnauthenticatedIdentities": false,
+          "authRoleArn": "arn:aws:iam::700942521824:role/recipe-app-user-role",
+          "authRoleName": "recipe-app-user-role",
+          "unauthRoleArn": "arn:aws:iam::700942521824:role/recipe-app-unauth-role",
+          "unauthRoleName": "recipe-app-unauth-role"
+        }
+      },
+      "storage": {
+        "recipes": {
+          "tableName": "recipes",
+          "region": "us-west-2",
+          "arn": "arn:aws:dynamodb:us-west-2:700942521824:table/recipes",
+          "partitionKeyName": "ownerEmail",
+          "partitionKeyType": "S",
+          "sortKeyName": "recipeId",
+          "sortKeyType": "S"
+        }
+      }
+    }
+  }
+}

@@ -22,6 +22,7 @@ import {AppRoutingModule} from './app-routing.module';
 import {RouterModule} from '@angular/router';
 import {HomeComponent} from './home/home.component';
 import {SignInComponent} from './auth/sign-in/sign-in.component';
+import {AmplifyAuthenticatorModule} from "@aws-amplify/ui-angular";
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import {SignInComponent} from './auth/sign-in/sign-in.component';
     SignInComponent,
   ],
   imports: [
+    AmplifyAuthenticatorModule,
     BrowserModule,
     BrowserAnimationsModule,
     MatToolbarModule,
