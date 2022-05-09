@@ -26,17 +26,6 @@
           "unauthRoleArn": "arn:aws:iam::700942521824:role/recipe-app-unauth-role",
           "unauthRoleName": "recipe-app-unauth-role"
         }
-      },
-      "storage": {
-        "recipes": {
-          "tableName": "recipes",
-          "region": "us-west-2",
-          "arn": "arn:aws:dynamodb:us-west-2:700942521824:table/recipes",
-          "partitionKeyName": "ownerEmail",
-          "partitionKeyType": "S",
-          "sortKeyName": "recipeId",
-          "sortKeyType": "S"
-        }
       }
     }
   }
