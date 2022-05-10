@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
 import {CognitoUser, CognitoUserPool, CognitoUserSession} from "amazon-cognito-identity-js";
-import {environment} from "../environments/environment";
+import awsconfig from '../aws-exports'
 
 interface RecipeSession {
   user: CognitoUser,
@@ -20,8 +20,8 @@ export class SessionService {
 
   prepareUser(email_address: string): CognitoUser {
     const poolData = {
-      UserPoolId: environment.cognitoUserPoolId,
-      ClientId: environment.cognitoAppClientId
+      UserPoolId: awsconfig.aws_user_pools_id,
+      ClientId: awsconfig.aws_user_pools_web_client_id,
     };
 
     const userPool = new CognitoUserPool(poolData);
