@@ -181,3 +181,20 @@ resource "aws_cognito_identity_pool_roles_attachment" "recipe_auth_role_attach" 
     "unauthenticated" = aws_iam_role.recipe_unauth_role.arn
   }
 }
+
+resource "aws_s3_bucket" "recipe_hosting" {
+  bucket = "recipe-hosting"
+}
+
+resource "aws_s3_bucket_versioning" "recipe_versioning" {
+  bucket = aws_s3_bucket.recipe_hosting.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_acl" "recipe_acl" {
+  bucket = aws_s3_bucket.recipe_hosting.id
+  acl    = "public-read"
+}
