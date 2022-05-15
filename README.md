@@ -29,17 +29,18 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 ## TODO List
 
 * Update tests after addition of AWS Amplify
-  * Can we remove the model definition?
+* Automate S3 deployment
 * Cognito authentication
   * Testing
 * Steps description should support Markdown
-* Deploy to AWS
-  * Validate on iPad
 * Recipe viewer
-  * Responsive layout for phone
+  * Layout for phone
+  * Portrait layout for iPad
 * Input validation
   * Prevent negative quantities
+  * Prevent empty ingredient names
 * Edit descriptions for ingredients
+* Show descriptions for ingredients in recipe viewer
 * Drag & drop list re-ordering
   * steps
   * ingredients
