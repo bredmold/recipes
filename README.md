@@ -14,9 +14,26 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
+### Build for deploy
+
+Run `ng build:prod` to build the production version of the project.
+
 ## Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+
+### Running pre-build tests
+
+Run `ng test:once` to execute the unit tests a single time using a headless browser.
+
+## Deploying to S3
+
+Run `./scripts/upload.sh`. This will do the following:
+* Run unit tests
+* Build the prod version of the application
+* Copy artifacts to S3
+
+After this, you will be able to visit the application at: https://recipe-hosting.s3.us-west-2.amazonaws.com/index.html
 
 ## Running end-to-end tests
 
@@ -28,14 +45,10 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
-* Update tests after addition of AWS Amplify
-* Automate S3 deployment
-* Cognito authentication
-  * Testing
-* Steps description should support Markdown
 * Recipe viewer
   * Layout for phone
   * Portrait layout for iPad
+* Steps description should support Markdown
 * Input validation
   * Prevent negative quantities
   * Prevent empty ingredient names
@@ -53,3 +66,5 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 * Delete recipe button
 * Improve Home Component layout
 * Factor out commonalities from recipe picker and home component
+* Cognito authentication
+  * Testing
