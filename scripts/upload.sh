@@ -8,11 +8,13 @@ die() {
 PRG_DIR=$(dirname "$0")
 cd "${PRG_DIR}/.." || die "Unable to locate project dir"
 
-STATUS=$(git status --porcelain | wc -l)
-if [ "$STATUS" != "1" ]; then
-  die "Cannot deploy a dirty workspace"
-fi
+VERSION="$1"
 
-npm run test:once &&
+if [ "$VERSION" = "" ]; then
+  die "First arg must be one of: major minor patch"
+fi
+shift
+
+npm version "$VERSION" &&
   npm run build:prod &&
   aws s3 sync dist/recipe s3://recipe-hosting

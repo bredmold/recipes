@@ -9,6 +9,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:once": "ng test --browsers=FirefoxHeadless --watch=false",
+    "preversion": "test:once",
     "amplify-modelgen": "node amplify/scripts/amplify-modelgen.js",
     "amplify-push": "node amplify/scripts/amplify-push.js"
   },
