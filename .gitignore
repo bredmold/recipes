@@ -48,6 +48,9 @@ Thumbs.db
 # Local DDB files
 /docker
 
+# Misc files
+*.log
+
 # Terraform state
 .terraform
 .terraform.lock.hcl

@@ -7,17 +7,17 @@ import {
   QueryCommandOutput
 } from '@aws-sdk/client-dynamodb';
 import {environment} from '../environments/environment';
-import {Auth} from "aws-amplify";
+import {SessionService} from "./session.service";
 
 @Injectable({
   providedIn: 'root',
 })
 export class DdbService {
-  constructor() {
+  constructor(private readonly sessionService: SessionService) {
   }
 
-  private static getDdbClient(): DynamoDBClient {
-    const credentials = Auth.Credentials.get();
+  private getDdbClient(): DynamoDBClient {
+    const credentials = this.sessionService.sessionCredentials();
     if (credentials) {
       return new DynamoDBClient({
         region: environment.region,
@@ -29,10 +29,10 @@ export class DdbService {
   }
 
   putItem(command: PutItemCommand): Promise<PutItemCommandOutput> {
-    return DdbService.getDdbClient().send(command)
+    return this.getDdbClient().send(command)
   }
 
   query(command: QueryCommand): Promise<QueryCommandOutput> {
-    return DdbService.getDdbClient().send(command);
+    return this.getDdbClient().send(command);
   }
 }

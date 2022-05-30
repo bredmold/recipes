@@ -3,22 +3,27 @@ import {PutItemCommand, PutItemCommandOutput, QueryCommandOutput,} from '@aws-sd
 import {DdbService} from './ddb.service';
 import {RecipeService} from './recipe.service';
 import {Recipe} from './types/recipe';
+import {SessionService} from "./session.service";
 
 describe('RecipeService', () => {
-  let ddbClient: any;
+  let ddbService: any;
+  let sessionService: any;
   let service: RecipeService;
 
   beforeEach(() => {
-    ddbClient = jasmine.createSpyObj('DynamoDBClient', ['send']);
+    ddbService = jasmine.createSpyObj('DdbService', ['query', 'putItem']);
+    sessionService = jasmine.createSpyObj('SessionService', ['loggedInEmail']);
 
     TestBed.configureTestingModule({
       providers: [
         {
           provide: DdbService,
-          useValue: {
-            createDdbClient: () => ddbClient,
-          },
+          useValue: ddbService,
         },
+        {
+          provide: SessionService,
+          useValue: sessionService,
+        }
       ],
     });
     service = TestBed.inject(RecipeService);
@@ -29,17 +34,19 @@ describe('RecipeService', () => {
   });
 
   it('empty recipe list', async () => {
+    sessionService.loggedInEmail.and.returnValue('user@example.com');
     const queryResponse: QueryCommandOutput = {
       Items: [],
       $metadata: {},
     };
-    ddbClient.send.and.returnValue(queryResponse);
+    ddbService.query.and.returnValue(Promise.resolve(queryResponse));
 
     const recipes = await service.listRecipes();
     expect(recipes).toHaveSize(0);
   });
 
   it('should return a single recipe', async () => {
+    sessionService.loggedInEmail.and.returnValue('user@example.com');
     const recipe = {
       title: 'title',
       description: 'desc',
@@ -56,13 +63,14 @@ describe('RecipeService', () => {
       $metadata: {},
     };
 
-    ddbClient.send.and.returnValue(queryResponse);
+    ddbService.query.and.returnValue(Promise.resolve(queryResponse));
 
     const recipes = await service.listRecipes();
     expect(recipes).toEqual([new Recipe('title', 'desc', [], [], 'id')]);
   });
 
   it('should resolve the promise when calling getRecipeById', async () => {
+    sessionService.loggedInEmail.and.returnValue('user@example.com');
     const recipe = {
       title: 'title',
       description: 'desc',
@@ -79,7 +87,7 @@ describe('RecipeService', () => {
       $metadata: {},
     };
 
-    ddbClient.send.and.returnValue(queryResponse);
+    ddbService.query.and.returnValue(Promise.resolve(queryResponse));
 
     const recipeResponse = await service.getRecipeById('id');
 
@@ -87,12 +95,13 @@ describe('RecipeService', () => {
   });
 
   it('should throw when getRecipeById fails', async () => {
+    sessionService.loggedInEmail.and.returnValue('user@example.com');
     const queryResponse: QueryCommandOutput = {
       Items: [],
       $metadata: {},
     };
 
-    ddbClient.send.and.returnValue(queryResponse);
+    ddbService.query.and.returnValue(Promise.resolve(queryResponse));
 
     try {
       await service.getRecipeById('id');
@@ -103,12 +112,13 @@ describe('RecipeService', () => {
   });
 
   it('saveRecipe should call putItem', async () => {
+    sessionService.loggedInEmail.and.returnValue('user@example.com');
     const putItemResponse: PutItemCommandOutput = {
       $metadata: {},
     };
 
     let putItemCommand: PutItemCommand | undefined;
-    ddbClient.send.and.callFake((args: PutItemCommand) => {
+    ddbService.putItem.and.callFake((args: PutItemCommand) => {
       putItemCommand = args;
       return Promise.resolve(putItemResponse);
     });
@@ -122,7 +132,7 @@ describe('RecipeService', () => {
       new PutItemCommand({
         TableName: 'recipes',
         Item: {
-          ownerEmail: {S: 'bredmold@gmail.com'},
+          ownerEmail: {S: 'user@example.com'},
           recipeId: {S: 'id'},
           recipeTitle: {S: 'title'},
           json: {S: JSON.stringify(recipeToSave.toObject())},
@@ -132,6 +142,7 @@ describe('RecipeService', () => {
   });
 
   it('should set the view recipe', () => {
+    sessionService.loggedInEmail.and.returnValue('user@example.com');
     expect(service.viewRecipe.getValue()).toBeUndefined();
     expect(service.editRecipe.getValue()).toBeUndefined();
 
@@ -147,6 +158,7 @@ describe('RecipeService', () => {
   });
 
   it('should set the edit recipe', () => {
+    sessionService.loggedInEmail.and.returnValue('user@example.com');
     expect(service.viewRecipe.getValue()).toBeUndefined();
     expect(service.editRecipe.getValue()).toBeUndefined();
 

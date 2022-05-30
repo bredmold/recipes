@@ -1,6 +1,5 @@
 import {Component} from '@angular/core';
 import {Router} from "@angular/router";
-import {NgForm} from "@angular/forms";
 import {CognitoUser, CognitoUserSession} from 'amazon-cognito-identity-js';
 import {SessionService} from "../../session.service";
 import {Auth} from 'aws-amplify';
@@ -24,24 +23,40 @@ export class SignInComponent {
   constructor(private router: Router, private sessionService: SessionService) {
   }
 
-  private prepareUser(): CognitoUser {
-    if (this.cognitoUser) {
-      return this.cognitoUser;
-    } else {
-      this.cognitoUser = this.sessionService.prepareUser(this.email_address);
-      return this.cognitoUser;
-    }
+  private valid(): boolean {
+    return (this.email_address.length > 0
+      && this.password.length > 0);
   }
 
   private async signIn() {
     this.passwordChallenge = false;
 
     try {
-      const user: CognitoUser = await Auth.signIn(this.email_address, this.password);
+      const user = await Auth.signIn(this.email_address, this.password);
+      if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
+        this.cognitoUser = user;
+        this.sessionUserAttributes = user.challengeParam;
+        this.passwordChallenge = true;
+      } else {
+        const session: CognitoUserSession = await Auth.currentSession();
+        this.sessionService.activateSession(user, session);
+
+        await this.router.navigate([''])
+        console.log('Logged in');
+      }
+    } catch (err) {
+      console.error(err);
+      this.isLoading = false;
+    }
+  }
+
+  private async completePasswordChallenge() {
+    try {
+      const user = await Auth.completeNewPassword(this.cognitoUser, this.new_password);
       const session: CognitoUserSession = await Auth.currentSession();
       this.sessionService.activateSession(user, session);
 
-      await this.router.navigate([''])
+      await this.router.navigate(['']);
       console.log('Logged in');
     } catch (err) {
       console.error(err);
@@ -49,39 +64,16 @@ export class SignInComponent {
     }
   }
 
-  private completePasswordChallenge() {
-    this.prepareUser().completeNewPasswordChallenge(this.new_password, this.sessionUserAttributes, {
-      mfaSetup: () => {
-      },
-      onSuccess: cognitoSession => {
-        this.sessionService.activateSession(this.prepareUser(), cognitoSession);
-        this.isLoading = false;
-        this.passwordChallenge = false;
-        this.cognitoUser = undefined;
-        this.router.navigate(['']).then(
-          () => {
-            console.log('Logged in after password challenge');
-          },
-          err => {
-            console.error(err);
-          }
-        );
-      },
-      onFailure: err => {
-        console.error(err);
-        this.isLoading = false;
-      }
-    });
-  }
-
-  onSignIn(form: NgForm) {
-    if (form.valid) {
+  onSignIn() {
+    if (this.valid()) {
       this.isLoading = true;
 
       if (this.passwordChallenge) {
-        this.completePasswordChallenge();
+        this.completePasswordChallenge().then(() => {
+        });
       } else {
-        this.signIn();
+        this.signIn().then(() => {
+        });
       }
     }
   }

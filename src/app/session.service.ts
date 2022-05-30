@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
-import {CognitoUser, CognitoUserPool, CognitoUserSession} from "amazon-cognito-identity-js";
-import awsconfig from '../aws-exports'
+import {CognitoUser, CognitoUserSession} from "amazon-cognito-identity-js";
+import {Auth} from "aws-amplify";
+import {ICredentials} from "aws-amplify/lib/Common/types/types";
 
 interface RecipeSession {
   user: CognitoUser,
@@ -18,22 +19,12 @@ export class SessionService {
     this.activeSession = new BehaviorSubject<RecipeSession | undefined>(undefined)
   }
 
-  prepareUser(email_address: string): CognitoUser {
-    const poolData = {
-      UserPoolId: awsconfig.aws_user_pools_id,
-      ClientId: awsconfig.aws_user_pools_web_client_id,
-    };
-
-    const userPool = new CognitoUserPool(poolData);
-    const userData = {Username: email_address, Pool: userPool};
-    return new CognitoUser(userData);
-  }
-
   activateSession(cognitoUser: CognitoUser, session: CognitoUserSession) {
     this.activeSession.next({user: cognitoUser, session: session});
   }
 
-  deactivateSession() {
+  async deactivateSession() {
+    await Auth.signOut();
     this.activeSession.next(undefined);
   }
 
@@ -45,5 +36,9 @@ export class SessionService {
   loggedInEmail(): string | undefined {
     const session = this.activeSession.getValue();
     return session ? session.user.getUsername() : undefined;
+  }
+
+  sessionCredentials(): ICredentials {
+    return Auth.Credentials.get();
   }
 }
