@@ -3,6 +3,7 @@ import {RecipeService} from './recipe.service';
 import {MatDialog} from '@angular/material/dialog';
 import {RecipePickerComponent} from './recipe-picker/recipe-picker.component';
 import {Recipe} from './types/recipe';
+import packageJson from '../../package.json'
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,8 @@ import {Recipe} from './types/recipe';
 export class AppComponent {
   viewRecipe?: Recipe = undefined;
   editRecipe?: Recipe = undefined;
+
+  version: string = packageJson.version
 
   constructor(private readonly recipeService: RecipeService, private readonly recipePicker: MatDialog) {
     this.recipeService.viewRecipe.subscribe((viewRecipe) => {
