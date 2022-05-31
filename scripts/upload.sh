@@ -17,4 +17,4 @@ shift
 
 npm version "$VERSION" &&
   npm run build:prod &&
-  aws s3 sync dist/recipe s3://recipe-hosting
+  aws s3 sync --delete dist/recipe s3://recipe-hosting
