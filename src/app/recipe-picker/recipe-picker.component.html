@@ -1,14 +1,12 @@
 <h1 mat-dialog-title>Recipe Picker</h1>
 <div mat-dialog-content>
   <mat-list>
-    <mat-list-item *ngFor='let recipe of recipes'
-                   [class]='itemClass(recipe.id)'
-                   (click)='selectRecipe(recipe.id)'>
-      {{recipe.title}}
+    <mat-list-item *ngFor="let recipe of recipes" [class]="itemClass(recipe.id)" (click)="selectRecipe(recipe.id)">
+      {{ recipe.title }}
     </mat-list-item>
   </mat-list>
 </div>
 <div mat-dialog-actions>
-  <button mat-button (click)='newRecipe()'>New</button>
-  <button mat-button mat-dialog-close=''>Close</button>
+  <button mat-button (click)="newRecipe()">New</button>
+  <button mat-button mat-dialog-close="">Close</button>
 </div>

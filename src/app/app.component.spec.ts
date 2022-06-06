@@ -1,26 +1,28 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {AppComponent} from './app.component';
-import {BrowserModule} from '@angular/platform-browser';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatToolbarModule} from '@angular/material/toolbar';
-import {MatListModule} from '@angular/material/list';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {MatSelectModule} from '@angular/material/select';
-import {ReactiveFormsModule} from '@angular/forms';
-import {IngredientsComponent} from './ingredients/ingredients.component';
-import {StepsComponent} from './steps/steps.component';
-import {RecipeEditorComponent} from './recipe-editor/recipe-editor.component';
-import {MatDialogModule} from '@angular/material/dialog';
-import {RecipeService} from "./recipe.service";
-import {BehaviorSubject} from "rxjs";
-import {Recipe} from "./types/recipe";
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AppComponent } from './app.component';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatListModule } from '@angular/material/list';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
+import { ReactiveFormsModule } from '@angular/forms';
+import { IngredientsComponent } from './ingredients/ingredients.component';
+import { StepsComponent } from './steps/steps.component';
+import { RecipeEditorComponent } from './recipe-editor/recipe-editor.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { RecipeService } from './recipe.service';
+import { BehaviorSubject } from 'rxjs';
+import { Recipe } from './types/recipe';
+import { Router } from '@angular/router';
 
 describe('AppComponent', () => {
   let app: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
   let recipeServiceSpy: any;
+  let routerSpy: any;
 
   beforeEach(async () => {
     recipeServiceSpy = {
@@ -29,12 +31,19 @@ describe('AppComponent', () => {
       saveRecipe: jasmine.createSpy('saveRecipe'),
       storageSetup: jasmine.createSpy('storageSetup'),
     };
+
+    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+
     await TestBed.configureTestingModule({
       providers: [
         {
           provide: RecipeService,
           useValue: recipeServiceSpy,
-        }
+        },
+        {
+          provide: Router,
+          useValue: routerSpy,
+        },
       ],
       declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeEditorComponent],
       imports: [

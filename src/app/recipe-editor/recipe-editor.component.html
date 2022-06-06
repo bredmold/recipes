@@ -1,17 +1,17 @@
-<div class='recipe-main'>
-  <div class='recipe-header'>
+<div class="recipe-main">
+  <div class="recipe-header">
     <mat-form-field>
       <mat-label>Title</mat-label>
-      <input matInput #titleInput id="titleInput" [value]='recipe?.title' (input)='recipeTitle()'>
+      <input matInput #titleInput id="titleInput" [value]="recipe?.title" (input)="recipeTitle()" />
     </mat-form-field>
   </div>
-  <div class='recipe-tabs'>
+  <div class="recipe-tabs">
     <mat-tab-group>
-      <mat-tab label='Ingredients'>
-        <app-ingredients [recipe]='recipe'></app-ingredients>
+      <mat-tab label="Ingredients">
+        <app-ingredients [recipe]="recipe"></app-ingredients>
       </mat-tab>
-      <mat-tab label='Steps'>
-        <app-steps [recipe]='recipe'></app-steps>
+      <mat-tab label="Steps">
+        <app-steps [recipe]="recipe"></app-steps>
       </mat-tab>
     </mat-tab-group>
   </div>

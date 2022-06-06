@@ -1,9 +1,9 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {HomeComponent} from './home.component';
-import {RecipeService} from "../recipe.service";
-import {Recipe} from "../types/recipe";
-import {Router} from "@angular/router";
+import { HomeComponent } from './home.component';
+import { RecipeService } from '../recipe.service';
+import { Recipe } from '../types/recipe';
+import { Router } from '@angular/router';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -15,15 +15,15 @@ describe('HomeComponent', () => {
     recipeServiceSpy = {
       clearActiveRecipes: jasmine.createSpy('clearActiveRecipes'),
       listRecipes: jasmine.createSpy('listRecipes'),
-    }
+    };
 
-    routerSpy = {navigate: jasmine.createSpy('navigate')};
+    routerSpy = { navigate: jasmine.createSpy('navigate') };
 
     await TestBed.configureTestingModule({
       providers: [
         {
           provide: RecipeService,
-          useValue: recipeServiceSpy
+          useValue: recipeServiceSpy,
         },
         {
           provide: Router,
@@ -57,7 +57,7 @@ describe('HomeComponent', () => {
 
   it('should generate an appropriate recipe link', () => {
     createComponent([]);
-    const link = component.recipeLink('testid')
+    const link = component.recipeLink('testid');
     expect(link).toBe('recipe/testid');
   });
 

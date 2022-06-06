@@ -1,10 +1,10 @@
-import {Injectable} from '@angular/core';
-import {PutItemCommand, QueryCommand, QueryCommandOutput,} from '@aws-sdk/client-dynamodb';
-import {BehaviorSubject} from 'rxjs';
-import {CacheService, TypedCache} from './cache.service';
-import {DdbService} from './ddb.service';
-import {SessionService} from './session.service';
-import {Recipe} from './types/recipe';
+import { Injectable } from '@angular/core';
+import { PutItemCommand, QueryCommand, QueryCommandOutput } from '@aws-sdk/client-dynamodb';
+import { BehaviorSubject } from 'rxjs';
+import { CacheService, TypedCache } from './cache.service';
+import { DdbService } from './ddb.service';
+import { SessionService } from './session.service';
+import { Recipe } from './types/recipe';
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +18,11 @@ export class RecipeService {
 
   private readonly recipeCache: TypedCache<Recipe>;
 
-  constructor(private readonly sessionService: SessionService, cacheService: CacheService, private readonly ddbService: DdbService) {
+  constructor(
+    private readonly sessionService: SessionService,
+    cacheService: CacheService,
+    private readonly ddbService: DdbService
+  ) {
     this.viewRecipe = new BehaviorSubject<Recipe | undefined>(undefined);
     this.editRecipe = new BehaviorSubject<Recipe | undefined>(undefined);
 
@@ -33,10 +37,10 @@ export class RecipeService {
     const putItemCommand = new PutItemCommand({
       TableName: this.tableName,
       Item: {
-        ownerEmail: {S: ownerEmail},
-        recipeId: {S: recipe.id},
-        recipeTitle: {S: recipe.title},
-        json: {S: JSON.stringify(recipe.toObject())},
+        ownerEmail: { S: ownerEmail },
+        recipeId: { S: recipe.id },
+        recipeTitle: { S: recipe.title },
+        json: { S: JSON.stringify(recipe.toObject()) },
       },
     });
     const putItemResult = await this.ddbService.putItem(putItemCommand);
@@ -53,7 +57,7 @@ export class RecipeService {
       IndexName: this.titleIndexName,
       KeyConditionExpression: 'ownerEmail = :ownerEmail',
       ExpressionAttributeValues: {
-        ':ownerEmail': {S: ownerEmail},
+        ':ownerEmail': { S: ownerEmail },
       },
     });
     const listRecipesResult = await this.ddbService.query(listRecipesCommand);
@@ -70,8 +74,8 @@ export class RecipeService {
           TableName: this.tableName,
           KeyConditionExpression: 'ownerEmail = :ownerEmail AND recipeId = :recipeId',
           ExpressionAttributeValues: {
-            ':ownerEmail': {S: ownerEmail},
-            ':recipeId': {S: recipeId},
+            ':ownerEmail': { S: ownerEmail },
+            ':recipeId': { S: recipeId },
           },
         });
         const recipeByIdResult = await this.ddbService.query(recipeByIdCommand);
@@ -82,7 +86,7 @@ export class RecipeService {
           throw `Unable to locate recipe: ${recipeId}`;
         }
       },
-      {key: recipeId, ttl: 300000}
+      { key: recipeId, ttl: 300000 }
     );
   }
 

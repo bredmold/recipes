@@ -1,9 +1,9 @@
-import {TestBed} from '@angular/core/testing';
-import {PutItemCommand, PutItemCommandOutput, QueryCommandOutput,} from '@aws-sdk/client-dynamodb';
-import {DdbService} from './ddb.service';
-import {RecipeService} from './recipe.service';
-import {Recipe} from './types/recipe';
-import {SessionService} from "./session.service";
+import { TestBed } from '@angular/core/testing';
+import { PutItemCommand, PutItemCommandOutput, QueryCommandOutput } from '@aws-sdk/client-dynamodb';
+import { DdbService } from './ddb.service';
+import { RecipeService } from './recipe.service';
+import { Recipe } from './types/recipe';
+import { SessionService } from './session.service';
 
 describe('RecipeService', () => {
   let ddbService: any;
@@ -23,7 +23,7 @@ describe('RecipeService', () => {
         {
           provide: SessionService,
           useValue: sessionService,
-        }
+        },
       ],
     });
     service = TestBed.inject(RecipeService);
@@ -57,7 +57,7 @@ describe('RecipeService', () => {
     const queryResponse: QueryCommandOutput = {
       Items: [
         {
-          json: {S: JSON.stringify(recipe)},
+          json: { S: JSON.stringify(recipe) },
         },
       ],
       $metadata: {},
@@ -66,7 +66,7 @@ describe('RecipeService', () => {
     ddbService.query.and.returnValue(Promise.resolve(queryResponse));
 
     const recipes = await service.listRecipes();
-    expect(recipes).toEqual([new Recipe('title', 'desc', [], [], 'id')]);
+    expect(recipes).toEqual([new Recipe('title', 'desc', [], [], 'id', '1')]);
   });
 
   it('should resolve the promise when calling getRecipeById', async () => {
@@ -81,7 +81,7 @@ describe('RecipeService', () => {
     const queryResponse: QueryCommandOutput = {
       Items: [
         {
-          json: {S: JSON.stringify(recipe)},
+          json: { S: JSON.stringify(recipe) },
         },
       ],
       $metadata: {},
@@ -91,7 +91,7 @@ describe('RecipeService', () => {
 
     const recipeResponse = await service.getRecipeById('id');
 
-    expect(recipeResponse).toEqual(new Recipe('title', 'desc', [], [], 'id'));
+    expect(recipeResponse).toEqual(new Recipe('title', 'desc', [], [], 'id', '1'));
   });
 
   it('should throw when getRecipeById fails', async () => {
@@ -132,10 +132,10 @@ describe('RecipeService', () => {
       new PutItemCommand({
         TableName: 'recipes',
         Item: {
-          ownerEmail: {S: 'user@example.com'},
-          recipeId: {S: 'id'},
-          recipeTitle: {S: 'title'},
-          json: {S: JSON.stringify(recipeToSave.toObject())},
+          ownerEmail: { S: 'user@example.com' },
+          recipeId: { S: 'id' },
+          recipeTitle: { S: 'title' },
+          json: { S: JSON.stringify(recipeToSave.toObject()) },
         },
       }).input
     );

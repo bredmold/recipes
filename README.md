@@ -45,6 +45,10 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
+* Logout button - closes out active Cognito session
+* Amounts
+  * US weight measures
+  * Quantities of "stuff" (e.g. clove of garlic)
 * Recipe viewer
   * Layout for phone
   * Portrait layout for iPad

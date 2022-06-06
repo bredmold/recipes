@@ -1,22 +1,22 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {RecipeEditorComponent} from './recipe-editor.component';
-import {BrowserModule} from '@angular/platform-browser';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatToolbarModule} from '@angular/material/toolbar';
-import {MatListModule} from '@angular/material/list';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {MatSelectModule} from '@angular/material/select';
-import {ReactiveFormsModule} from '@angular/forms';
-import {StepsComponent} from '../steps/steps.component';
-import {AppComponent} from '../app.component';
-import {IngredientsComponent} from '../ingredients/ingredients.component';
-import {ActivatedRoute} from '@angular/router';
-import {RecipeService} from "../recipe.service";
-import {ActivatedRouteStub} from "../../testing/activated-route-stub";
-import {Recipe} from "../types/recipe";
+import { RecipeEditorComponent } from './recipe-editor.component';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatListModule } from '@angular/material/list';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
+import { ReactiveFormsModule } from '@angular/forms';
+import { StepsComponent } from '../steps/steps.component';
+import { AppComponent } from '../app.component';
+import { IngredientsComponent } from '../ingredients/ingredients.component';
+import { ActivatedRoute } from '@angular/router';
+import { RecipeService } from '../recipe.service';
+import { ActivatedRouteStub } from '../../testing/activated-route-stub';
+import { Recipe } from '../types/recipe';
 
 describe('RecipeEditorComponent', () => {
   let component: RecipeEditorComponent;
@@ -41,7 +41,7 @@ describe('RecipeEditorComponent', () => {
         },
         {
           provide: RecipeService,
-          useValue: recipeServiceSpy
+          useValue: recipeServiceSpy,
         },
       ],
       declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeEditorComponent],
@@ -73,7 +73,7 @@ describe('RecipeEditorComponent', () => {
     const recipe = new Recipe('title', 'desc', [], []);
     recipeServiceSpy.getRecipeById.withArgs(recipe.id).and.returnValue(Promise.resolve(recipe));
 
-    activeRoute.setParamMap({id: recipe.id});
+    activeRoute.setParamMap({ id: recipe.id });
 
     await fixture.whenStable();
 

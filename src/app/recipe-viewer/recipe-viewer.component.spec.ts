@@ -1,10 +1,10 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {RecipeViewerComponent} from './recipe-viewer.component';
-import {ActivatedRoute} from '@angular/router';
-import {ActivatedRouteStub} from "../../testing/activated-route-stub";
-import {Recipe} from "../types/recipe";
-import {RecipeService} from "../recipe.service";
+import { RecipeViewerComponent } from './recipe-viewer.component';
+import { ActivatedRoute } from '@angular/router';
+import { ActivatedRouteStub } from '../../testing/activated-route-stub';
+import { Recipe } from '../types/recipe';
+import { RecipeService } from '../recipe.service';
 
 describe('RecipeViewerComponent', () => {
   let component: RecipeViewerComponent;
@@ -50,7 +50,7 @@ describe('RecipeViewerComponent', () => {
     const recipe = new Recipe('title', 'desc', [], []);
     recipeServiceSpy.getRecipeById.withArgs(recipe.id).and.returnValue(Promise.resolve(recipe));
 
-    activeRoute.setParamMap({id: recipe.id});
+    activeRoute.setParamMap({ id: recipe.id });
     await fixture.whenStable();
 
     expect(component.recipe).toEqual(recipe);

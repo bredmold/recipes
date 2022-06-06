@@ -1,5 +1,5 @@
-import {Params} from '@angular/router';
-import {ReplaySubject} from 'rxjs';
+import { Params } from '@angular/router';
+import { ReplaySubject } from 'rxjs';
 
 /**
  * An ActivateRoute test double with a `paramMap` observable.

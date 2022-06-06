@@ -1,15 +1,24 @@
 <div class="recipe-app">
   <div class="header">
     <mat-toolbar>
-      <button routerLink=''>Recipes</button>
-      <button (click)="openRecipePicker()">{{recipeTitle()}}</button>
+      <button routerLink="">Recipes</button>
+      <button (click)="openRecipePicker()">{{ recipeTitle() }}</button>
       <span class="recipe-spacer"></span>
-      <button (click)="recipeSave()" [disabled]='isSaveDisabled()'>Save</button>
-      <button [routerLink]='editLink()' [disabled]='isEditDisabled()'>Edit</button>
+      <button (click)="recipeSave()" [disabled]="isSaveDisabled()">Save</button>
+      <button [routerLink]="editLink()" [disabled]="isEditDisabled()">Edit</button>
     </mat-toolbar>
   </div>
   <div class="recipe">
     <router-outlet></router-outlet>
   </div>
-  <div class="footer">Recipes v{{version}} &copy;2022 Aaron Gideon Goldstein (bredmold@gmail.com)</div>
+  <div class="footer">
+    <div class="footer-buttons">
+      <a href="/index.html">reload</a>
+      &nbsp;
+      <a *ngIf="loggedIn()" (click)="logout()" class="footer-logout">logout</a>
+    </div>
+    <div class="footer-copyright">
+      Recipes v{{ version }} &copy;{{ year }} Aaron Gideon Goldstein (bredmold@gmail.com)
+    </div>
+  </div>
 </div>

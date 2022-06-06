@@ -3,45 +3,51 @@
     <div class="email">
       <mat-form-field>
         <mat-label>Email Address</mat-label>
-        <input matInput
-               name="email"
-               ngModel
-               type="email"
-               #emailInput="ngModel"
-               [(ngModel)]="email_address"
-               email
-               placeholder="Enter Username"
-               required>
+        <input
+          matInput
+          name="email"
+          ngModel
+          type="email"
+          #emailInput="ngModel"
+          [(ngModel)]="email_address"
+          email
+          placeholder="Enter Username"
+          required
+        />
       </mat-form-field>
     </div>
 
     <div class="password">
       <mat-form-field>
         <mat-label>Password</mat-label>
-        <input matInput
-               [(ngModel)]="password"
-               ngModel
-               type="password"
-               minlength="8"
-               #passwordInput="ngModel"
-               required
-               name="password"
-               placeholder="Enter Password">
+        <input
+          matInput
+          [(ngModel)]="password"
+          ngModel
+          type="password"
+          minlength="8"
+          #passwordInput="ngModel"
+          required
+          name="password"
+          placeholder="Enter Password"
+        />
       </mat-form-field>
     </div>
 
     <div class="newPassword" *ngIf="passwordChallenge">
       <mat-form-field>
         <mat-label>New Password</mat-label>
-        <input matInput
-               [(ngModel)]="new_password"
-               ngModel
-               type="password"
-               minlength="8"
-               #passwordInput="ngModel"
-               required
-               name="new_password"
-               placeholder="New Password">
+        <input
+          matInput
+          [(ngModel)]="new_password"
+          ngModel
+          type="password"
+          minlength="8"
+          #passwordInput="ngModel"
+          required
+          name="new_password"
+          placeholder="New Password"
+        />
       </mat-form-field>
     </div>
 

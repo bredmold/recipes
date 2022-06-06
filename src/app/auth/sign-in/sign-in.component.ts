@@ -1,18 +1,18 @@
-import {Component} from '@angular/core';
-import {Router} from "@angular/router";
-import {CognitoUser, CognitoUserSession} from 'amazon-cognito-identity-js';
-import {SessionService} from "../../session.service";
-import {Auth} from 'aws-amplify';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { CognitoUser, CognitoUserSession } from 'amazon-cognito-identity-js';
+import { SessionService } from '../../session.service';
+import { Auth } from 'aws-amplify';
 
 @Component({
   selector: 'app-sign-in',
   templateUrl: './sign-in.component.html',
-  styleUrls: ['./sign-in.component.sass']
+  styleUrls: ['./sign-in.component.sass'],
 })
 export class SignInComponent {
   isLoading: boolean = false;
-  email_address: string = "";
-  password: string = "";
+  email_address: string = '';
+  password: string = '';
   new_password: string = '';
 
   sessionUserAttributes: any;
@@ -20,12 +20,10 @@ export class SignInComponent {
 
   private cognitoUser?: CognitoUser = undefined;
 
-  constructor(private router: Router, private sessionService: SessionService) {
-  }
+  constructor(private router: Router, private sessionService: SessionService) {}
 
   private valid(): boolean {
-    return (this.email_address.length > 0
-      && this.password.length > 0);
+    return this.email_address.length > 0 && this.password.length > 0;
   }
 
   private async signIn() {
@@ -41,7 +39,7 @@ export class SignInComponent {
         const session: CognitoUserSession = await Auth.currentSession();
         this.sessionService.activateSession(user, session);
 
-        await this.router.navigate([''])
+        await this.router.navigate(['']);
         console.log('Logged in');
       }
     } catch (err) {
@@ -69,11 +67,9 @@ export class SignInComponent {
       this.isLoading = true;
 
       if (this.passwordChallenge) {
-        this.completePasswordChallenge().then(() => {
-        });
+        this.completePasswordChallenge().then(() => {});
       } else {
-        this.signIn().then(() => {
-        });
+        this.signIn().then(() => {});
       }
     }
   }

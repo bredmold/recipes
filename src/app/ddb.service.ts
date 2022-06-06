@@ -1,20 +1,19 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   DynamoDBClient,
   PutItemCommand,
   PutItemCommandOutput,
   QueryCommand,
-  QueryCommandOutput
+  QueryCommandOutput,
 } from '@aws-sdk/client-dynamodb';
-import {environment} from '../environments/environment';
-import {SessionService} from "./session.service";
+import { environment } from '../environments/environment';
+import { SessionService } from './session.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DdbService {
-  constructor(private readonly sessionService: SessionService) {
-  }
+  constructor(private readonly sessionService: SessionService) {}
 
   private getDdbClient(): DynamoDBClient {
     const credentials = this.sessionService.sessionCredentials();
@@ -29,7 +28,7 @@ export class DdbService {
   }
 
   putItem(command: PutItemCommand): Promise<PutItemCommandOutput> {
-    return this.getDdbClient().send(command)
+    return this.getDdbClient().send(command);
   }
 
   query(command: QueryCommand): Promise<QueryCommandOutput> {

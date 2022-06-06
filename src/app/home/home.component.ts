@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {RecipeService} from '../recipe.service';
-import {Recipe} from '../types/recipe';
-import {Router} from "@angular/router";
+import { Component, OnInit } from '@angular/core';
+import { RecipeService } from '../recipe.service';
+import { Recipe } from '../types/recipe';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -9,10 +9,7 @@ import {Router} from "@angular/router";
   styleUrls: ['./home.component.sass'],
 })
 export class HomeComponent implements OnInit {
-  constructor(private readonly recipeService: RecipeService,
-              private readonly router: Router
-  ) {
-  }
+  constructor(private readonly recipeService: RecipeService, private readonly router: Router) {}
 
   public allRecipes: Recipe[] = [];
 

@@ -1,20 +1,20 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {RecipePickerComponent} from './recipe-picker.component';
-import {MatDialogModule, MatDialogRef} from '@angular/material/dialog';
-import {BrowserModule} from '@angular/platform-browser';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatToolbarModule} from '@angular/material/toolbar';
-import {MatListModule} from '@angular/material/list';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {MatSelectModule} from '@angular/material/select';
-import {ReactiveFormsModule} from '@angular/forms';
-import {Router, RouterModule} from '@angular/router';
-import {RecipeService} from "../recipe.service";
-import {BehaviorSubject} from "rxjs";
-import {Recipe} from "../types/recipe";
+import { RecipePickerComponent } from './recipe-picker.component';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatListModule } from '@angular/material/list';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { RecipeService } from '../recipe.service';
+import { BehaviorSubject } from 'rxjs';
+import { Recipe } from '../types/recipe';
 import createSpy = jasmine.createSpy;
 
 describe('RecipePickerComponent', () => {
@@ -31,15 +31,14 @@ describe('RecipePickerComponent', () => {
     };
     recipeServiceSpy.listRecipes.and.returnValue(Promise.resolve([]));
 
-    routerSpy = {navigate: jasmine.createSpy('navigate')};
+    routerSpy = { navigate: jasmine.createSpy('navigate') };
 
     await TestBed.configureTestingModule({
       providers: [
         {
           provide: MatDialogRef,
           useValue: {
-            close: () => {
-            }
+            close: () => {},
           },
         },
         {
@@ -90,7 +89,7 @@ describe('RecipePickerComponent', () => {
 
     const itemClass = component.itemClass(activeRecipe.id);
 
-    expect(itemClass.split(/ /)).toEqual(['recipe-picker-item', 'recipe-picker-active'])
+    expect(itemClass.split(/ /)).toEqual(['recipe-picker-item', 'recipe-picker-active']);
   });
 
   it('should select the desired recipe', () => {

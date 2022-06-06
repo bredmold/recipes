@@ -1,17 +1,17 @@
-<div class='recipe-viewer'>
-  <div class='recipe-view-header'>{{recipe?.title}}</div>
-  <div class='ingredients-view'>
+<div class="recipe-viewer">
+  <div class="recipe-view-header">{{ recipe?.title }}</div>
+  <div class="ingredients-view">
     Ingredients list
     <mat-list>
-      <mat-list-item *ngFor='let ingredient of ingredients()'>
-        <input type='checkbox'> {{ingredient.render()}}
+      <mat-list-item *ngFor="let ingredient of ingredients()">
+        <input type="checkbox" /> {{ ingredient.render() }}
       </mat-list-item>
     </mat-list>
   </div>
-  <div class='steps-view'>
+  <div class="steps-view">
     Steps list
     <mat-list>
-      <mat-list-item *ngFor='let step of steps()'>{{step.description}}</mat-list-item>
+      <mat-list-item *ngFor="let step of steps()">{{ step.description }}</mat-list-item>
     </mat-list>
   </div>
 </div>

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Recipe, RecipeIngredient, UsVolumeUnit, VolumeAmount } from '../types/recipe';
+import { QuantityUnitInformation, Recipe, RecipeAmount, RecipeIngredient, UnitsKind } from '../types/recipe';
 
 @Component({
   selector: 'app-ingredients',
@@ -9,14 +9,11 @@ import { Recipe, RecipeIngredient, UsVolumeUnit, VolumeAmount } from '../types/r
 export class IngredientsComponent {
   @Input() recipe?: Recipe;
 
-  readonly usVolumeMapping = [
-    { unit: UsVolumeUnit.Teaspoon, label: 'Teaspoon (tsp)' },
-    { unit: UsVolumeUnit.TableSpoon, label: 'Tablespoon (tbsp)' },
-    { unit: UsVolumeUnit.Ounce, label: 'Fluid Ounce (oz)' },
-    { unit: UsVolumeUnit.Cup, label: 'Cup' },
-    { unit: UsVolumeUnit.Pint, label: 'Pint (pt)' },
-    { unit: UsVolumeUnit.Quart, label: 'Quart (qt)' },
-  ];
+  private static readonly TSP_UNIT = QuantityUnitInformation.parse(UnitsKind.UsVolume, 'tsp');
+  readonly usVolumeMapping = QuantityUnitInformation.byKind(UnitsKind.UsVolume).map((unitsMeta) => ({
+    unit: unitsMeta,
+    label: `${unitsMeta.name} (${unitsMeta.abbreviation})`,
+  }));
 
   constructor() {}
 
@@ -58,7 +55,7 @@ export class IngredientsComponent {
   }
 
   private static newIngredient(): RecipeIngredient {
-    return new RecipeIngredient('', 'Description', new VolumeAmount(1, UsVolumeUnit.Teaspoon));
+    return new RecipeIngredient('', 'Description', new RecipeAmount(1, this.TSP_UNIT));
   }
 
   /**
@@ -80,7 +77,7 @@ export class IngredientsComponent {
 
       const ingredient = this.recipe.ingredients.find((i) => i.id === ingredientId);
       if (ingredient) {
-        ingredient.volumeAmount.quantity = value;
+        ingredient.recipeAmount.quantity = value;
       } else {
         console.error(`Unable to find ingredient by ID: ${ingredientId}`);
       }

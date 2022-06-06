@@ -1,12 +1,12 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject} from "rxjs";
-import {CognitoUser, CognitoUserSession} from "amazon-cognito-identity-js";
-import {Auth} from "aws-amplify";
-import {ICredentials} from "aws-amplify/lib/Common/types/types";
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { CognitoUser, CognitoUserSession } from 'amazon-cognito-identity-js';
+import { Auth } from 'aws-amplify';
+import { ICredentials } from 'aws-amplify/lib/Common/types/types';
 
 interface RecipeSession {
-  user: CognitoUser,
-  session: CognitoUserSession,
+  user: CognitoUser;
+  session: CognitoUserSession;
 }
 
 @Injectable({
@@ -16,11 +16,11 @@ export class SessionService {
   private readonly activeSession: BehaviorSubject<RecipeSession | undefined>;
 
   constructor() {
-    this.activeSession = new BehaviorSubject<RecipeSession | undefined>(undefined)
+    this.activeSession = new BehaviorSubject<RecipeSession | undefined>(undefined);
   }
 
   activateSession(cognitoUser: CognitoUser, session: CognitoUserSession) {
-    this.activeSession.next({user: cognitoUser, session: session});
+    this.activeSession.next({ user: cognitoUser, session: session });
   }
 
   async deactivateSession() {

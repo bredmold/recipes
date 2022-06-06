@@ -1,45 +1,51 @@
-<div class='steps'>
+<div class="steps">
   List of cooking steps
 
-  <div class='steps-list'>
+  <div class="steps-list">
     <mat-list>
-      <mat-list-item class='add-step' (click)='addStep(0)'>
-        <span matTooltip='Add Step'>+</span>
+      <mat-list-item class="add-step" (click)="addStep(0)">
+        <span matTooltip="Add Step">+</span>
       </mat-list-item>
-      <mat-list-item *ngFor='let step of steps()' class='single-step-edit'>
+      <mat-list-item *ngFor="let step of steps()" class="single-step-edit">
         <div mat-line>
-          <mat-form-field class='step-description'>
+          <mat-form-field class="step-description">
             <mat-label>Description</mat-label>
-            <textarea matInput placeholder='Description'
-                      [id]="'step-description-' + step.id"
-                      (input)='stepDescription(step.id, $event)'
-                      [value]='step.description'
-                      required='true'></textarea>
+            <textarea
+              matInput
+              placeholder="Description"
+              [id]="'step-description-' + step.id"
+              (input)="stepDescription(step.id, $event)"
+              [value]="step.description"
+              required="true"
+            ></textarea>
           </mat-form-field>
-          <span class='step-action' (click)='removeStep(step.id)'>
-          <span matTooltip='Remove Step'>-</span>
+          <span class="step-action" (click)="removeStep(step.id)">
+            <span matTooltip="Remove Step">-</span>
           </span>
-          <span class='step-action' (click)='moveStep(step.id, "up")'>
-            <span matTooltip='Push step up'>&uparrow;</span>
+          <span class="step-action" (click)="moveStep(step.id, 'up')">
+            <span matTooltip="Push step up">&uparrow;</span>
           </span>
-          <span class='step-action' (click)='moveStep(step.id, "down")'>
-            <span matTooltip='Pull step down'>&downarrow;</span>
+          <span class="step-action" (click)="moveStep(step.id, 'down')">
+            <span matTooltip="Pull step down">&downarrow;</span>
           </span>
         </div>
         <div mat-line>
           <mat-form-field>
             <mat-label>Ingredients</mat-label>
-            <mat-select multiple
-                        [value]='initialStepIngredients(step.id)'
-                        (selectionChange)='stepIngredients(step.id, $event)'>
-              <mat-option *ngFor='let ingredient of ingredients()'
-                          [value]='ingredient.id'>{{ingredient.name}}</mat-option>
+            <mat-select
+              multiple
+              [value]="initialStepIngredients(step.id)"
+              (selectionChange)="stepIngredients(step.id, $event)"
+            >
+              <mat-option *ngFor="let ingredient of ingredients()" [value]="ingredient.id">{{
+                ingredient.name
+              }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
       </mat-list-item>
-      <mat-list-item class='add-step' (click)='addStep(steps().length)'>
-        <span matTooltip='Add Step'>+</span>
+      <mat-list-item class="add-step" (click)="addStep(steps().length)">
+        <span matTooltip="Add Step">+</span>
       </mat-list-item>
     </mat-list>
   </div>

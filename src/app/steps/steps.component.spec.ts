@@ -1,22 +1,22 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {StepsComponent} from './steps.component';
-import {AppComponent} from '../app.component';
-import {IngredientsComponent} from '../ingredients/ingredients.component';
-import {RecipeEditorComponent} from '../recipe-editor/recipe-editor.component';
-import {BrowserModule} from '@angular/platform-browser';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatToolbarModule} from '@angular/material/toolbar';
-import {MatListModule} from '@angular/material/list';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {MatSelectModule} from '@angular/material/select';
-import {ReactiveFormsModule} from '@angular/forms';
-import {Recipe, RecipeIngredient, UsVolumeUnit, VolumeAmount} from "../types/recipe";
-import {MatSelectHarness} from "@angular/material/select/testing";
-import {HarnessLoader} from "@angular/cdk/testing";
-import {TestbedHarnessEnvironment} from "@angular/cdk/testing/testbed";
+import { StepsComponent } from './steps.component';
+import { AppComponent } from '../app.component';
+import { IngredientsComponent } from '../ingredients/ingredients.component';
+import { RecipeEditorComponent } from '../recipe-editor/recipe-editor.component';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatListModule } from '@angular/material/list';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
+import { ReactiveFormsModule } from '@angular/forms';
+import { QuantityUnitInformation, Recipe, RecipeAmount, RecipeIngredient, UnitsKind } from '../types/recipe';
+import { MatSelectHarness } from '@angular/material/select/testing';
+import { HarnessLoader } from '@angular/cdk/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 
 describe('StepsComponent', () => {
   let recipe: Recipe;
@@ -77,7 +77,7 @@ describe('StepsComponent', () => {
 
     expect(id2).not.toEqual(id1);
 
-    const stepIds = component.steps().map(s => s.id);
+    const stepIds = component.steps().map((s) => s.id);
     expect(stepIds).toEqual([id2, id1]);
   });
 
@@ -85,11 +85,11 @@ describe('StepsComponent', () => {
     component.addStep(0);
     component.addStep(0);
 
-    const stepIds = component.steps().map(s => s.id);
+    const stepIds = component.steps().map((s) => s.id);
 
     component.removeStep(stepIds[1]);
 
-    const afterStepIds = component.steps().map(s => s.id);
+    const afterStepIds = component.steps().map((s) => s.id);
     expect(afterStepIds).toEqual([stepIds[0]]);
   });
 
@@ -98,11 +98,11 @@ describe('StepsComponent', () => {
     component.addStep(0);
     component.addStep(0);
 
-    const stepIds = component.steps().map(s => s.id);
+    const stepIds = component.steps().map((s) => s.id);
 
     component.moveStep(stepIds[0], 'down');
 
-    const afterStepIds = component.steps().map(s => s.id);
+    const afterStepIds = component.steps().map((s) => s.id);
     expect(afterStepIds).toEqual([stepIds[1], stepIds[0], stepIds[2]]);
   });
 
@@ -111,11 +111,11 @@ describe('StepsComponent', () => {
     component.addStep(0);
     component.addStep(0);
 
-    const stepIds = component.steps().map(s => s.id);
+    const stepIds = component.steps().map((s) => s.id);
 
     component.moveStep(stepIds[2], 'up');
 
-    const afterStepIds = component.steps().map(s => s.id);
+    const afterStepIds = component.steps().map((s) => s.id);
     expect(afterStepIds).toEqual([stepIds[0], stepIds[2], stepIds[1]]);
   });
 
@@ -124,11 +124,11 @@ describe('StepsComponent', () => {
     component.addStep(0);
     component.addStep(0);
 
-    const stepIds = component.steps().map(s => s.id);
+    const stepIds = component.steps().map((s) => s.id);
 
     component.moveStep(stepIds[0], 'up');
 
-    const afterStepIds = component.steps().map(s => s.id);
+    const afterStepIds = component.steps().map((s) => s.id);
     expect(afterStepIds).toEqual(stepIds);
   });
 
@@ -137,11 +137,11 @@ describe('StepsComponent', () => {
     component.addStep(0);
     component.addStep(0);
 
-    const stepIds = component.steps().map(s => s.id);
+    const stepIds = component.steps().map((s) => s.id);
 
     component.moveStep(stepIds[2], 'down');
 
-    const afterStepIds = component.steps().map(s => s.id);
+    const afterStepIds = component.steps().map((s) => s.id);
     expect(afterStepIds).toEqual(stepIds);
   });
 
@@ -150,11 +150,11 @@ describe('StepsComponent', () => {
     component.addStep(0);
     component.addStep(0);
 
-    const stepIds = component.steps().map(s => s.id);
+    const stepIds = component.steps().map((s) => s.id);
 
     component.moveStep('nope', 'down');
 
-    const afterStepIds = component.steps().map(s => s.id);
+    const afterStepIds = component.steps().map((s) => s.id);
     expect(afterStepIds).toEqual(stepIds);
   });
 
@@ -183,8 +183,9 @@ describe('StepsComponent', () => {
   });
 
   it('should adjust the step ingredients', async () => {
+    const cupUnit = QuantityUnitInformation.parse(UnitsKind.UsVolume, 'cup');
     component.addStep(0);
-    recipe.ingredients = [new RecipeIngredient('ingredient', '', new VolumeAmount(1, UsVolumeUnit.Cup))];
+    recipe.ingredients = [new RecipeIngredient('ingredient', '', new RecipeAmount(1, cupUnit))];
     fixture.detectChanges();
 
     const stepId = component.steps()[0].id;
