@@ -70,7 +70,7 @@ describe('RecipeEditorComponent', () => {
   });
 
   it('Should activate recipe when found', async () => {
-    const recipe = new Recipe('title', 'desc', [], []);
+    const recipe = new Recipe('title', 'desc', [], [], []);
     recipeServiceSpy.getRecipeById.withArgs(recipe.id).and.returnValue(Promise.resolve(recipe));
 
     activeRoute.setParamMap({ id: recipe.id });

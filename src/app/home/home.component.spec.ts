@@ -62,7 +62,7 @@ describe('HomeComponent', () => {
   });
 
   it('should set the active recipe', async () => {
-    createComponent([new Recipe('title', 'desc', [], [])]);
+    createComponent([new Recipe('title', 'desc', [], [], [])]);
     await fixture.whenStable();
 
     expect(component.allRecipes).toHaveSize(1);

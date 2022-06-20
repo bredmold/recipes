@@ -9,7 +9,7 @@ import { RecipeService } from '../recipe.service';
   styleUrls: ['./recipe-viewer.component.sass'],
 })
 export class RecipeViewerComponent {
-  recipe?: Recipe;
+  recipe!: Recipe;
 
   constructor(private readonly route: ActivatedRoute, private readonly recipeService: RecipeService) {
     this.route.params.subscribe((params) => {

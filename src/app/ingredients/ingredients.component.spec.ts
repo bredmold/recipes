@@ -36,7 +36,7 @@ describe('IngredientsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(IngredientsComponent);
     component = fixture.componentInstance;
-    component.recipe = new Recipe('title', 'desc', [], []);
+    component.recipe = new Recipe('title', 'desc', [], [], []);
     fixture.detectChanges();
   });
 

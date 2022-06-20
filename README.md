@@ -45,10 +45,10 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
-* Logout button - closes out active Cognito session
 * Amounts
   * US weight measures
   * Quantities of "stuff" (e.g. clove of garlic)
+  * Custom units UI
 * Recipe viewer
   * Layout for phone
   * Portrait layout for iPad
@@ -56,6 +56,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 * Input validation
   * Prevent negative quantities
   * Prevent empty ingredient names
+* US/metric quantity conversions
 * Edit descriptions for ingredients
 * Show descriptions for ingredients in recipe viewer
 * Drag & drop list re-ordering

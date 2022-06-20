@@ -66,7 +66,7 @@ describe('RecipeService', () => {
     ddbService.query.and.returnValue(Promise.resolve(queryResponse));
 
     const recipes = await service.listRecipes();
-    expect(recipes).toEqual([new Recipe('title', 'desc', [], [], 'id', '1')]);
+    expect(recipes).toEqual([new Recipe('title', 'desc', [], [], [], 'id')]);
   });
 
   it('should resolve the promise when calling getRecipeById', async () => {
@@ -91,7 +91,7 @@ describe('RecipeService', () => {
 
     const recipeResponse = await service.getRecipeById('id');
 
-    expect(recipeResponse).toEqual(new Recipe('title', 'desc', [], [], 'id', '1'));
+    expect(recipeResponse).toEqual(new Recipe('title', 'desc', [], [], [], 'id'));
   });
 
   it('should throw when getRecipeById fails', async () => {
@@ -123,7 +123,7 @@ describe('RecipeService', () => {
       return Promise.resolve(putItemResponse);
     });
 
-    const recipeToSave = new Recipe('title', 'desc', [], [], 'id');
+    const recipeToSave = new Recipe('title', 'desc', [], [], [], 'id');
     const recipeResponse: Recipe = await service.saveRecipe(recipeToSave);
 
     expect(recipeResponse).toEqual(recipeToSave);
@@ -146,7 +146,7 @@ describe('RecipeService', () => {
     expect(service.viewRecipe.getValue()).toBeUndefined();
     expect(service.editRecipe.getValue()).toBeUndefined();
 
-    const recipe = new Recipe('view', 'desc', [], []);
+    const recipe = new Recipe('view', 'desc', [], [], []);
     service.setViewRecipe(recipe);
 
     expect(service.viewRecipe.getValue()).toEqual(recipe);
@@ -162,7 +162,7 @@ describe('RecipeService', () => {
     expect(service.viewRecipe.getValue()).toBeUndefined();
     expect(service.editRecipe.getValue()).toBeUndefined();
 
-    const recipe = new Recipe('edit', 'desc', [], []);
+    const recipe = new Recipe('edit', 'desc', [], [], []);
     service.setEditRecipe(recipe);
 
     expect(service.viewRecipe.getValue()).toBeUndefined();

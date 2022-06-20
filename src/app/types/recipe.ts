@@ -9,56 +9,58 @@ export enum UnitsKind {
 
 export class QuantityUnitInformation {
   constructor(
+    public readonly id: string,
     public readonly kind: UnitsKind,
     public readonly name: string,
     public readonly abbreviation: string,
     public readonly conversionFactor: number
   ) {}
 
-  /**
-   * Parse a units value based on what kind of unit it is - throws if the abbreviation is invalid
-   *
-   * @param kind What kind of unit is this
-   * @param abbreviation Stored abbreviation
-   */
-  static parse(kind: UnitsKind, abbreviation: string): QuantityUnitInformation {
-    switch (kind) {
-      case UnitsKind.UsVolume:
-      case UnitsKind.UsWeight:
-        const unitsInfo = unitsAndAbbreviations.find((i) => i.kind === kind && i.abbreviation === abbreviation);
-        if (unitsInfo) return unitsInfo;
-        else throw `Invalid units: kind=${kind} abbreviation=${abbreviation}`;
-
-      case UnitsKind.Arbitrary:
-        return {
-          kind: UnitsKind.Arbitrary,
-          name: abbreviation,
-          abbreviation: abbreviation,
-          conversionFactor: 1,
-        };
-    }
-  }
-
   static byKind(kind: UnitsKind): Array<QuantityUnitInformation> {
     return unitsAndAbbreviations.filter((u) => u.kind === kind);
+  }
+
+  static byId(unitsId: string): QuantityUnitInformation | undefined {
+    return unitsAndAbbreviations.find((u) => u.id === unitsId);
+  }
+
+  static fromObject(customUnitsObject: Record<string, any>): QuantityUnitInformation {
+    const unitsId = customUnitsObject['id'];
+    const standardUnits = QuantityUnitInformation.byId(unitsId);
+    if (standardUnits) throw `Found standard unit in custom units list: ${unitsId}`;
+
+    return new QuantityUnitInformation(
+      unitsId,
+      UnitsKind.Arbitrary,
+      customUnitsObject['name'],
+      customUnitsObject['abbreviation'],
+      1
+    );
+  }
+
+  static save(units: QuantityUnitInformation): object {
+    if (units.kind != UnitsKind.Arbitrary) throw `Only custom units can be saved in a recipe (${units.kind})`;
+
+    return {
+      id: units.id,
+      name: units.name,
+      abbreviation: units.abbreviation,
+    };
   }
 }
 
 const unitsAndAbbreviations: Array<QuantityUnitInformation> = [
   // US Volume units
-  { kind: UnitsKind.UsVolume, name: 'Teaspoon', abbreviation: 'tsp', conversionFactor: 1 },
-  { kind: UnitsKind.UsVolume, name: 'TableSpoon', abbreviation: 'tbsp', conversionFactor: 3 },
-  { kind: UnitsKind.UsVolume, name: 'Ounce', abbreviation: 'oz', conversionFactor: 6 },
-  { kind: UnitsKind.UsVolume, name: 'Cup', abbreviation: 'cup', conversionFactor: 48 },
-  { kind: UnitsKind.UsVolume, name: 'Pint', abbreviation: 'pint', conversionFactor: 96 },
-  { kind: UnitsKind.UsVolume, name: 'Quart', abbreviation: 'qt', conversionFactor: 192 },
+  { id: 'us-volume-tsp', kind: UnitsKind.UsVolume, name: 'Teaspoon', abbreviation: 'tsp', conversionFactor: 1 },
+  { id: 'us-volume-tbsp', kind: UnitsKind.UsVolume, name: 'Tablespoon', abbreviation: 'tbsp', conversionFactor: 3 },
+  { id: 'us-volume-oz', kind: UnitsKind.UsVolume, name: 'Ounce', abbreviation: 'oz', conversionFactor: 6 },
+  { id: 'us-volume-cup', kind: UnitsKind.UsVolume, name: 'Cup', abbreviation: 'cup', conversionFactor: 48 },
+  { id: 'us-volume-pint', kind: UnitsKind.UsVolume, name: 'Pint', abbreviation: 'pint', conversionFactor: 96 },
+  { id: 'us-volume-qt', kind: UnitsKind.UsVolume, name: 'Quart', abbreviation: 'qt', conversionFactor: 192 },
 
   // US Weight units
-  { kind: UnitsKind.UsWeight, name: 'Ounce', abbreviation: 'oz', conversionFactor: 1 },
-  { kind: UnitsKind.UsWeight, name: 'Pound', abbreviation: 'lbs', conversionFactor: 16 },
-
-  // Arbitrary units information
-  { kind: UnitsKind.Arbitrary, name: 'Arbitrary', abbreviation: 'arbitrary', conversionFactor: 1 },
+  { id: 'us-weight-oz', kind: UnitsKind.UsWeight, name: 'Ounce', abbreviation: 'oz', conversionFactor: 1 },
+  { id: 'us-weight-lbs', kind: UnitsKind.UsWeight, name: 'Pound', abbreviation: 'lbs', conversionFactor: 16 },
 ];
 
 /**
@@ -75,9 +77,9 @@ export class RecipeAmount {
   /**
    * Construct a volume amount
    * @param quantity Scalar quantity
-   * @param unitsMeta Type information about the unit of measurement
+   * @param units Units ID (either well-known or custom in the recipe)
    */
-  constructor(public quantity: number, public unitsMeta: QuantityUnitInformation) {}
+  constructor(public quantity: number, public units: string) {}
 
   private static readonly FRACTION_DELTA = 0.01;
   private static readonly ONE_QUARTER = '¼';
@@ -92,21 +94,19 @@ export class RecipeAmount {
    * @param targetMeta The target unit type for conversion
    */
   convertTo(targetMeta: QuantityUnitInformation): RecipeAmount {
-    if (this.unitsMeta.kind !== targetMeta.kind)
-      throw `Can't convert from ${this.unitsMeta.kind} to ${targetMeta.kind}`;
+    const unitsMeta = QuantityUnitInformation.byId(this.units);
+    if (!unitsMeta) throw `Can't convert from custom units: ${this.units}`;
 
-    if (this.unitsMeta.kind === UnitsKind.Arbitrary)
-      throw `Can't convert arbitrary units`;
+    if (unitsMeta.kind !== targetMeta.kind) throw `Can't convert from ${unitsMeta.kind} to ${targetMeta.kind}`;
 
-    const updatedQuantity = (this.quantity * this.unitsMeta.conversionFactor) / targetMeta.conversionFactor;
-    return new RecipeAmount(updatedQuantity, targetMeta);
+    const updatedQuantity = (this.quantity * unitsMeta.conversionFactor) / targetMeta.conversionFactor;
+    return new RecipeAmount(updatedQuantity, targetMeta.id);
   }
 
   toObject(): object {
     return {
       quantity: this.quantity,
-      kind: this.unitsMeta.kind,
-      units: this.unitsMeta.abbreviation,
+      units: this.units,
     };
   }
 
@@ -134,23 +134,24 @@ export class RecipeAmount {
     return this.quantity.toString();
   }
 
-  render(): string {
-    return `${this.renderQuantity()} ${this.unitsMeta.abbreviation}`;
+  render(recipe: Recipe): string {
+    const abbreviation = recipe.abbreviationFor(this.units);
+    return `${this.renderQuantity()} ${abbreviation}`;
   }
 
-  static fromObject(recipeAmountObject: Record<string, any>, version: string): RecipeAmount {
+  static fromObject(recipeAmountObject: Record<string, any>, version: string, recipe: Recipe): RecipeAmount {
     if (version === '1') {
-      const unitInfo = QuantityUnitInformation.parse(UnitsKind.UsVolume, recipeAmountObject['units']);
-      return new RecipeAmount(recipeAmountObject['quantity'], unitInfo);
-    } else {
-      const rawKind: string = recipeAmountObject['kind'];
-      const kind: UnitsKind = (<any>UnitsKind)[rawKind];
-      if (!kind) throw `Invalid units kind: ${rawKind}`;
+      const units = recipeAmountObject['units'];
+      const unitInfo = QuantityUnitInformation.byId(`us-volume-${units}`);
+      if (!unitInfo) throw `Invalid units abbreviation: ${units}`;
 
-      return new RecipeAmount(
-        recipeAmountObject['quantity'],
-        QuantityUnitInformation.parse(kind, recipeAmountObject['units'])
-      );
+      return new RecipeAmount(recipeAmountObject['quantity'], unitInfo.id);
+    } else {
+      const unitsId = recipeAmountObject['units'];
+      const units = recipe.unitsFor(unitsId);
+      if (!units) throw `Invalid units id: ${unitsId}`;
+
+      return new RecipeAmount(recipeAmountObject['quantity'], unitsId);
     }
   }
 }
@@ -179,17 +180,17 @@ export class RecipeIngredient {
     };
   }
 
-  render(): string {
-    return `${this.recipeAmount.render()} ${this.name}`;
+  render(recipe: Recipe): string {
+    return `${this.recipeAmount.render(recipe)} ${this.name}`;
   }
 
-  static fromObject(ingredientObject: Record<string, any>, version: string): RecipeIngredient {
+  static fromObject(ingredientObject: Record<string, any>, version: string, recipe: Recipe): RecipeIngredient {
     if (version === '1') {
       // Amounts are always volume amount
       return new RecipeIngredient(
         ingredientObject['name'],
         ingredientObject['description'],
-        RecipeAmount.fromObject(ingredientObject['volumeAmount'], '1'),
+        RecipeAmount.fromObject(ingredientObject['volumeAmount'], '1', recipe),
         ingredientObject['id']
       );
     } else {
@@ -197,7 +198,7 @@ export class RecipeIngredient {
       return new RecipeIngredient(
         ingredientObject['name'],
         ingredientObject['description'],
-        RecipeAmount.fromObject(ingredientObject['amount'], '2'),
+        RecipeAmount.fromObject(ingredientObject['amount'], '2', recipe),
         ingredientObject['id']
       );
     }
@@ -233,17 +234,36 @@ export class Recipe {
    * @param title Recipe title
    * @param description Recipe description text
    * @param steps A list of recipe steps
+   * @param customUnits Custom units for this recipe (if any)
    * @param ingredients A list of recipe ingredients
-   * @param version Recipe format version
    */
   constructor(
     public title: string,
     public description: string,
     public steps: RecipeStep[],
     public ingredients: RecipeIngredient[],
-    public readonly id: string = uuidv4(),
-    public readonly version: string = '2'
+    public customUnits: QuantityUnitInformation[],
+    public readonly id: string = uuidv4()
   ) {}
+
+  unitsFor(unitsId: string): QuantityUnitInformation | undefined {
+    const standardUnits = QuantityUnitInformation.byId(unitsId);
+    if (standardUnits) return standardUnits;
+
+    const customUnits = this.customUnits.find((u) => u.id === unitsId);
+    if (customUnits) return customUnits;
+
+    return undefined;
+  }
+
+  /**
+   * Render the units abbreviation, possibly for custom units for this recipe
+   * @param unitsId The units ID for the amount to be rendered
+   */
+  abbreviationFor(unitsId: string): string {
+    const units = this.unitsFor(unitsId);
+    return units ? units.abbreviation : unitsId;
+  }
 
   /**
    * Construct an object representation of this recipe, suitable for turning into JSON
@@ -255,7 +275,8 @@ export class Recipe {
       description: this.description,
       steps: this.steps.map((s) => s.toObject()),
       ingredients: this.ingredients.map((i) => i.toObject()),
-      version: this.version,
+      customUnits: this.customUnits.map((u) => QuantityUnitInformation.save(u)),
+      version: '2',
     };
   }
 
@@ -265,13 +286,22 @@ export class Recipe {
       throw `Invalid version string: ${recipeVersion}`;
     }
 
-    return new Recipe(
+    const customUnits =
+      recipeVersion == '1' ? [] : recipeObject['customUnits'].map((u: object) => QuantityUnitInformation.fromObject(u));
+
+    const recipe = new Recipe(
       recipeObject['title'],
       recipeObject['description'],
       recipeObject['steps'].map((s: object) => RecipeStep.fromObject(s)),
-      recipeObject['ingredients'].map((i: object) => RecipeIngredient.fromObject(i, recipeVersion)),
-      recipeObject['id'],
-      recipeVersion
+      [],
+      customUnits,
+      recipeObject['id']
     );
+
+    recipe.ingredients = recipeObject['ingredients'].map((i: object) =>
+      RecipeIngredient.fromObject(i, recipeVersion, recipe)
+    );
+
+    return recipe;
   }
 }

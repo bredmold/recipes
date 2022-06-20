@@ -9,11 +9,18 @@ import { QuantityUnitInformation, Recipe, RecipeAmount, RecipeIngredient, UnitsK
 export class IngredientsComponent {
   @Input() recipe?: Recipe;
 
-  private static readonly TSP_UNIT = QuantityUnitInformation.parse(UnitsKind.UsVolume, 'tsp');
+  private static readonly TSP_UNIT = QuantityUnitInformation.byId('us-volume-tsp') as QuantityUnitInformation;
   readonly usVolumeMapping = QuantityUnitInformation.byKind(UnitsKind.UsVolume).map((unitsMeta) => ({
     unit: unitsMeta,
     label: `${unitsMeta.name} (${unitsMeta.abbreviation})`,
   }));
+  readonly usWeightMapping = QuantityUnitInformation.byKind(UnitsKind.UsWeight).map((unitsMeta) => ({
+    unit: unitsMeta,
+    label: `${unitsMeta.name} (${unitsMeta.abbreviation})`,
+  }));
+  readonly otherMapping = {
+    unit: new QuantityUnitInformation('arbitrary-other', UnitsKind.Arbitrary, 'Other', 'other', 1),
+  };
 
   constructor() {}
 
@@ -55,7 +62,7 @@ export class IngredientsComponent {
   }
 
   private static newIngredient(): RecipeIngredient {
-    return new RecipeIngredient('', 'Description', new RecipeAmount(1, this.TSP_UNIT));
+    return new RecipeIngredient('', 'Description', new RecipeAmount(1, this.TSP_UNIT.id));
   }
 
   /**

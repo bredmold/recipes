@@ -4,7 +4,7 @@
     Ingredients list
     <mat-list>
       <mat-list-item *ngFor="let ingredient of ingredients()">
-        <input type="checkbox" /> {{ ingredient.render() }}
+        <input type="checkbox" /> {{ ingredient.render(recipe) }}
       </mat-list-item>
     </mat-list>
   </div>

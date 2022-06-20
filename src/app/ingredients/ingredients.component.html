@@ -19,10 +19,17 @@
         </mat-form-field>
         <mat-form-field>
           <mat-label>Volume Unit</mat-label>
-          <mat-select class="ingredient-volume-unit" [(value)]="ingredient.recipeAmount.unitsMeta">
-            <mat-option *ngFor="let mapping of usVolumeMapping" [value]="mapping.unit">
-              {{ mapping.label }}
-            </mat-option>
+          <mat-select class="ingredient-volume-unit" [(value)]="ingredient.recipeAmount.units">
+            <mat-optgroup label="Volume">
+              <mat-option *ngFor="let mapping of usVolumeMapping" [value]="mapping.unit.id">
+                {{ mapping.label }}
+              </mat-option>
+            </mat-optgroup>
+            <mat-optgroup label="Weight">
+              <mat-option *ngFor="let mapping of usWeightMapping" [value]="mapping.unit.id">
+                {{ mapping.label }}
+              </mat-option>
+            </mat-optgroup>
           </mat-select>
         </mat-form-field>
         <mat-form-field>

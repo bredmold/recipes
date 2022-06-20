@@ -79,7 +79,7 @@ describe('AppComponent', () => {
   it('should set the view recipe in response to an event', async () => {
     expect(app.viewRecipe).toBeUndefined();
 
-    const recipe = new Recipe('view', 'desc', [], []);
+    const recipe = new Recipe('view', 'desc', [], [], []);
     recipeServiceSpy.viewRecipe.next(recipe);
     await fixture.whenStable();
 
@@ -93,7 +93,7 @@ describe('AppComponent', () => {
   it('should set the edit recipe in response to an event', async () => {
     expect(app.editRecipe).toBeUndefined();
 
-    const recipe = new Recipe('edit', 'desc', [], []);
+    const recipe = new Recipe('edit', 'desc', [], [], []);
     recipeServiceSpy.editRecipe.next(recipe);
     await fixture.whenStable();
 
@@ -105,7 +105,7 @@ describe('AppComponent', () => {
   });
 
   it('should save the edit recipe', async () => {
-    const recipe = new Recipe('title', 'desc', [], []);
+    const recipe = new Recipe('title', 'desc', [], [], []);
     recipeServiceSpy.editRecipe.next(recipe);
     await fixture.whenStable();
 

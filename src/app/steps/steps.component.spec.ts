@@ -13,7 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
 import { ReactiveFormsModule } from '@angular/forms';
-import { QuantityUnitInformation, Recipe, RecipeAmount, RecipeIngredient, UnitsKind } from '../types/recipe';
+import { Recipe, RecipeAmount, RecipeIngredient } from '../types/recipe';
 import { MatSelectHarness } from '@angular/material/select/testing';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
@@ -45,7 +45,7 @@ describe('StepsComponent', () => {
     fixture = TestBed.createComponent(StepsComponent);
     loader = TestbedHarnessEnvironment.loader(fixture);
     component = fixture.componentInstance;
-    component.recipe = new Recipe('title', 'desc', [], []);
+    component.recipe = new Recipe('title', 'desc', [], [], []);
     recipe = component.recipe;
     fixture.detectChanges();
   });
@@ -183,9 +183,8 @@ describe('StepsComponent', () => {
   });
 
   it('should adjust the step ingredients', async () => {
-    const cupUnit = QuantityUnitInformation.parse(UnitsKind.UsVolume, 'cup');
     component.addStep(0);
-    recipe.ingredients = [new RecipeIngredient('ingredient', '', new RecipeAmount(1, cupUnit))];
+    recipe.ingredients = [new RecipeIngredient('ingredient', '', new RecipeAmount(1, 'us-volume-cup'))];
     fixture.detectChanges();
 
     const stepId = component.steps()[0].id;

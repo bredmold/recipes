@@ -83,7 +83,7 @@ describe('RecipePickerComponent', () => {
   });
 
   it('should select the item class for the active recipe', () => {
-    const activeRecipe = new Recipe('title', 'desc', [], []);
+    const activeRecipe = new Recipe('title', 'desc', [], [], []);
     recipeServiceSpy.viewRecipe.next(activeRecipe);
     recipeServiceSpy.listRecipes.and.returnValue(Promise.resolve([activeRecipe]));
 
@@ -93,7 +93,7 @@ describe('RecipePickerComponent', () => {
   });
 
   it('should select the desired recipe', () => {
-    const activeRecipe = new Recipe('title', 'desc', [], []);
+    const activeRecipe = new Recipe('title', 'desc', [], [], []);
     component.recipes = [activeRecipe];
 
     routerSpy.navigate.and.returnValue(Promise.resolve(true));

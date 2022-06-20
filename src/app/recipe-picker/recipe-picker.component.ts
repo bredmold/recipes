@@ -49,7 +49,7 @@ export class RecipePickerComponent implements OnInit {
   }
 
   newRecipe() {
-    const newRecipe = new Recipe('New Recipe', '', [], []);
+    const newRecipe = new Recipe('New Recipe', '', [], [], []);
     this.router.navigate([`/recipe/${newRecipe.id}/edit`]).then(
       () => {
         this.recipePickerDialog.close();

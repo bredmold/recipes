@@ -18,7 +18,7 @@ export class HomeComponent implements OnInit {
   }
 
   newRecipe(): void {
-    const newRecipe = new Recipe('New Recipe', '', [], []);
+    const newRecipe = new Recipe('New Recipe', '', [], [], []);
     this.router.navigate([`/recipe/${newRecipe.id}/edit`]).then(
       () => {
         console.log(`Routed to ${newRecipe.id}`);
