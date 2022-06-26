@@ -284,6 +284,82 @@ describe('Recipe', () => {
     ).toEqual(new Recipe('test title', 'test desc', [], [], [], 'test id'));
   });
 
+  it('should find custom units', () => {
+    const recipe = new Recipe(
+      'test',
+      'test',
+      [],
+      [],
+      [{ id: 'id', kind: UnitsKind.Arbitrary, name: 'name', abbreviation: 'abbr', conversionFactor: 1 }]
+    );
+
+    const custom = recipe.unitsFor('id');
+    expect(custom).toBeDefined();
+  });
+
+  it('should return unitsId for non-existent units', () => {
+    const recipe = new Recipe('test', 'test', [], [], []);
+    const abbr = recipe.abbreviationFor('nope');
+    expect(abbr).toBe('nope');
+  });
+
+  it('should save all the parts of a recipe', () => {
+    const recipe = new Recipe(
+      'test',
+      'test',
+      [new RecipeStep('step', [])],
+      [new RecipeIngredient('ingredient', 'desc', new RecipeAmount(1, 'us-volume-tsp'))],
+      [{ id: 'id', kind: UnitsKind.Arbitrary, name: 'name', abbreviation: 'abbr', conversionFactor: 1 }]
+    );
+
+    const saved: any = recipe.toObject();
+    expect(saved.steps).toHaveSize(1);
+    expect(saved.ingredients).toHaveSize(1);
+    expect(saved.customUnits).toHaveSize(1);
+  });
+
+  it('should restore custom units with version 2', () => {
+    const recipe = Recipe.fromObject({
+      title: 'title',
+      description: 'desc',
+      steps: [],
+      ingredients: [],
+      customUnits: [{ id: 'custom', name: 'name', abbreviation: 'abbr' }],
+      id: 'id',
+      version: '2',
+    });
+
+    expect(recipe.customUnits).toHaveSize(1);
+  });
+
+  it('should restore recipe steps', () => {
+    const recipe = Recipe.fromObject({
+      title: 'title',
+      description: 'desc',
+      steps: [{ description: 'desc', ingredients: [], id: 'step' }],
+      ingredients: [],
+      customUnits: [],
+      id: 'id',
+      version: '2',
+    });
+
+    expect(recipe.steps).toHaveSize(1);
+  });
+
+  it('should restore recipe ingredients', () => {
+    const recipe = Recipe.fromObject({
+      title: 'title',
+      description: 'desc',
+      steps: [],
+      ingredients: [{ name: 'name', description: 'desc', amount: { quantity: 1, units: 'us-volume-tsp' }, id: 'id' }],
+      customUnits: [],
+      id: 'id',
+      version: '2',
+    });
+
+    expect(recipe.ingredients).toHaveSize(1);
+  });
+
   it('should throw when encountering an invalid recipe version', () => {
     expect(() =>
       Recipe.fromObject({
