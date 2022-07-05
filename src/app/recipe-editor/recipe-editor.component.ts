@@ -24,7 +24,7 @@ export class RecipeEditorComponent {
           console.warn(err);
 
           // Implicitly create a new recipe to edit
-          const newRecipe = new Recipe('New Recipe', '', [], [], recipeId);
+          const newRecipe = new Recipe('New Recipe', '', [], [], [], recipeId);
           this.recipe = newRecipe;
           this.recipeService.setEditRecipe(newRecipe);
         }

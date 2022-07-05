@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { v4 as uuidv4 } from 'uuid';
 import { RecipeEditorComponent } from './recipe-editor.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -17,6 +18,7 @@ import { ActivatedRoute } from '@angular/router';
 import { RecipeService } from '../recipe.service';
 import { ActivatedRouteStub } from '../../testing/activated-route-stub';
 import { Recipe } from '../types/recipe';
+import { MatDialogModule } from '@angular/material/dialog';
 
 describe('RecipeEditorComponent', () => {
   let component: RecipeEditorComponent;
@@ -55,6 +57,7 @@ describe('RecipeEditorComponent', () => {
         MatTooltipModule,
         MatSelectModule,
         ReactiveFormsModule,
+        MatDialogModule,
       ],
     }).compileComponents();
   });
@@ -81,8 +84,14 @@ describe('RecipeEditorComponent', () => {
   });
 
   it('Should generate a new recipe when none is given', async () => {
+    const id = uuidv4();
+    recipeServiceSpy.getRecipeById.withArgs(id).and.rejectWith('unit test');
+
+    activeRoute.setParamMap({ id: id });
+
     await fixture.whenStable();
-    expect(component.recipe).toBeTruthy();
+
+    expect(component.recipe?.id).toBe(id);
   });
 
   it('should update the recipe title', async () => {

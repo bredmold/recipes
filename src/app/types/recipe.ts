@@ -1,4 +1,3 @@
-/** US system of volume units */
 import { v4 as uuidv4 } from 'uuid';
 
 export enum UnitsKind {

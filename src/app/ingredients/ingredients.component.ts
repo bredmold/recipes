@@ -1,5 +1,14 @@
-import { Component, Input } from '@angular/core';
+import { v4 as uuidv4 } from 'uuid';
+import { Component, ElementRef, Inject, Input, ViewChild } from '@angular/core';
 import { QuantityUnitInformation, Recipe, RecipeAmount, RecipeIngredient, UnitsKind } from '../types/recipe';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatOptionSelectionChange } from '@angular/material/core';
+
+interface CustomUnitsContext {
+  readonly component: IngredientsComponent;
+  readonly ingredientId: string;
+  readonly currentUnitId: string;
+}
 
 @Component({
   selector: 'app-ingredients',
@@ -18,11 +27,68 @@ export class IngredientsComponent {
     unit: unitsMeta,
     label: `${unitsMeta.name} (${unitsMeta.abbreviation})`,
   }));
-  readonly otherMapping = {
-    unit: new QuantityUnitInformation('arbitrary-other', UnitsKind.Arbitrary, 'Other', 'other', 1),
-  };
+  customMapping = this.buildCustomMapping();
 
-  constructor() {}
+  constructor(public dialog: MatDialog) {}
+
+  private buildCustomMapping() {
+    if (this.recipe) {
+      return this.recipe.customUnits.map((custom) => ({
+        unit: custom,
+        label: custom.name,
+      }));
+    } else {
+      return [];
+    }
+  }
+
+  openCustomUnits(event: MatOptionSelectionChange, ingredientId: string) {
+    if (event.isUserInput && this.recipe) {
+      const ingredient = this.recipe.ingredients.find((i) => i.id == ingredientId);
+      if (ingredient) {
+        console.log(`new custom unit for ${ingredientId}`);
+        this.dialog.open(CustomUnitsDialog, {
+          data: {
+            component: this,
+            ingredientId: ingredientId,
+            currentUnitId: ingredient.recipeAmount.units,
+          },
+        });
+      }
+    }
+  }
+
+  selectUnits(ingredientId: string, unitsId: string) {
+    if (this.recipe) {
+      const ingredient = this.recipe.ingredients.find((i) => i.id == ingredientId);
+      if (ingredient) {
+        ingredient.recipeAmount.units = unitsId;
+      }
+    }
+  }
+
+  saveCustomUnit(name: string, abbreviation: string): string {
+    if (this.recipe && name.length > 0) {
+      const existing = this.recipe.customUnits.find((u) => u.name === name);
+      if (existing) {
+        return existing.id;
+      } else {
+        const id = uuidv4();
+        console.log(`Save custom unit: id=${id} name=${name} abbr=${abbreviation}`);
+        this.recipe.customUnits.push({
+          id: id,
+          name: name,
+          abbreviation: abbreviation.length > 0 ? abbreviation : name,
+          kind: UnitsKind.Arbitrary,
+          conversionFactor: 1,
+        });
+        this.customMapping = this.buildCustomMapping();
+        return id;
+      }
+    }
+
+    return '';
+  }
 
   ingredients(): RecipeIngredient[] {
     return this.recipe ? this.recipe.ingredients : [];
@@ -102,5 +168,34 @@ export class IngredientsComponent {
         console.error(`Unable to find ingredient by ID: ${ingredientId}`);
       }
     }
+  }
+}
+
+@Component({
+  selector: 'custom-units-dialog',
+  templateUrl: 'custom-units-dialog.html',
+})
+export class CustomUnitsDialog {
+  @ViewChild('customUnitsName') customUnitsName!: ElementRef<HTMLInputElement>;
+  @ViewChild('customUnitsAbbreviation') customUnitsAbbreviation!: ElementRef<HTMLInputElement>;
+
+  constructor(
+    public selfRef: MatDialogRef<CustomUnitsDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: CustomUnitsContext
+  ) {
+    this.selfRef.afterClosed().subscribe((result) => {
+      if (result === 'ok') {
+        const name = this.customUnitsName.nativeElement.value;
+        const abbr = this.customUnitsAbbreviation.nativeElement.value;
+        const unitId = this.data.component.saveCustomUnit(name, abbr);
+        if (unitId) {
+          this.data.component.selectUnits(this.data.ingredientId, unitId);
+        } else {
+          this.data.component.selectUnits(this.data.ingredientId, this.data.currentUnitId);
+        }
+      } else {
+        this.data.component.selectUnits(this.data.ingredientId, this.data.currentUnitId);
+      }
+    });
   }
 }

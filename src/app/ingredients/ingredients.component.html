@@ -30,6 +30,14 @@
                 {{ mapping.label }}
               </mat-option>
             </mat-optgroup>
+            <mat-optgroup label="Custom">
+              <mat-option (onSelectionChange)="openCustomUnits($event, ingredient.id)" class="new-custom-unit">
+                New Custom Unit...
+              </mat-option>
+              <mat-option *ngFor="let mapping of customMapping" [value]="mapping.unit.id">
+                {{ mapping.label }}
+              </mat-option>
+            </mat-optgroup>
           </mat-select>
         </mat-form-field>
         <mat-form-field>

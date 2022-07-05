@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { IngredientsComponent } from './ingredients/ingredients.component';
+import { CustomUnitsDialog, IngredientsComponent } from './ingredients/ingredients.component';
 import { StepsComponent } from './steps/steps.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
@@ -34,6 +34,7 @@ import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
     RecipeViewerComponent,
     HomeComponent,
     SignInComponent,
+    CustomUnitsDialog,
   ],
   imports: [
     AmplifyAuthenticatorModule,
