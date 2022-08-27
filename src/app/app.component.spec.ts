@@ -13,7 +13,7 @@ import { IngredientsComponent } from './ingredients/ingredients.component';
 import { StepsComponent } from './steps/steps.component';
 import { RecipeEditorComponent } from './recipe-editor/recipe-editor.component';
 import { MatDialogModule } from '@angular/material/dialog';
-import { RecipeService } from './recipe.service';
+import { RecipeService } from './services/recipe.service';
 import { BehaviorSubject } from 'rxjs';
 import { Recipe } from './types/recipe';
 import { Router } from '@angular/router';

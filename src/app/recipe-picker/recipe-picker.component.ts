@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, OnInit } from '@angular/core';
-import { RecipeService } from '../recipe.service';
+import { RecipeService } from '../services/recipe.service';
 import { Recipe } from '../types/recipe';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Recipe, RecipeIngredient, RecipeStep } from '../types/recipe';
 import { ActivatedRoute } from '@angular/router';
-import { RecipeService } from '../recipe.service';
+import { RecipeService } from '../services/recipe.service';
 
 @Component({
   selector: 'app-recipe-viewer',

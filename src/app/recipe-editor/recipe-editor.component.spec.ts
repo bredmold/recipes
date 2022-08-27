@@ -15,7 +15,7 @@ import { StepsComponent } from '../steps/steps.component';
 import { AppComponent } from '../app.component';
 import { IngredientsComponent } from '../ingredients/ingredients.component';
 import { ActivatedRoute } from '@angular/router';
-import { RecipeService } from '../recipe.service';
+import { RecipeService } from '../services/recipe.service';
 import { ActivatedRouteStub } from '../../testing/activated-route-stub';
 import { Recipe } from '../types/recipe';
 import { MatDialogModule } from '@angular/material/dialog';

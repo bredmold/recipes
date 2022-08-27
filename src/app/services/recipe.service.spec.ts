@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { PutItemCommand, PutItemCommandOutput, QueryCommandOutput } from '@aws-sdk/client-dynamodb';
 import { DdbService } from './ddb.service';
 import { RecipeService } from './recipe.service';
-import { Recipe } from './types/recipe';
+import { Recipe } from '../types/recipe';
 import { SessionService } from './session.service';
 
 describe('RecipeService', () => {

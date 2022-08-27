@@ -4,7 +4,7 @@ import { RecipeViewerComponent } from './recipe-viewer.component';
 import { ActivatedRoute } from '@angular/router';
 import { ActivatedRouteStub } from '../../testing/activated-route-stub';
 import { Recipe } from '../types/recipe';
-import { RecipeService } from '../recipe.service';
+import { RecipeService } from '../services/recipe.service';
 
 describe('RecipeViewerComponent', () => {
   let component: RecipeViewerComponent;

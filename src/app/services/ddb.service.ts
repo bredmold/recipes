@@ -6,7 +6,7 @@ import {
   QueryCommand,
   QueryCommandOutput,
 } from '@aws-sdk/client-dynamodb';
-import { environment } from '../environments/environment';
+import { environment } from '../../environments/environment';
 import { SessionService } from './session.service';
 
 @Injectable({

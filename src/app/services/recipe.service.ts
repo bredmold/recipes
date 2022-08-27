@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { CacheService, TypedCache } from './cache.service';
 import { DdbService } from './ddb.service';
 import { SessionService } from './session.service';
-import { Recipe } from './types/recipe';
+import { Recipe } from '../types/recipe';
 
 @Injectable({
   providedIn: 'root',

@@ -6,7 +6,7 @@ import { RecipeViewerComponent } from './recipe-viewer/recipe-viewer.component';
 import { RecipeEditorComponent } from './recipe-editor/recipe-editor.component';
 import { AuthGuard } from './auth/auth.guard';
 import { SignInComponent } from './auth/sign-in/sign-in.component';
-import { SessionService } from './session.service';
+import { SessionService } from './services/session.service';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, canActivate: [AuthGuard] },

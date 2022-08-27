@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CognitoUser, CognitoUserSession } from 'amazon-cognito-identity-js';
-import { SessionService } from '../../session.service';
+import { SessionService } from '../../services/session.service';
 import { Auth } from 'aws-amplify';
 
 @Component({

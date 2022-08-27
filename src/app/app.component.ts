@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { RecipeService } from './recipe.service';
+import { RecipeService } from './services/recipe.service';
 import { MatDialog } from '@angular/material/dialog';
 import { RecipePickerComponent } from './recipe-picker/recipe-picker.component';
 import { Recipe } from './types/recipe';
 import packageJson from '../../package.json';
-import { SessionService } from './session.service';
+import { SessionService } from './services/session.service';
 import { Router } from '@angular/router';
 
 @Component({
