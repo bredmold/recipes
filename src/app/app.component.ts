@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
-import { RecipeService } from './services/recipe.service';
-import { MatDialog } from '@angular/material/dialog';
-import { RecipePickerComponent } from './recipe-picker/recipe-picker.component';
-import { Recipe } from './types/recipe';
-import packageJson from '../../package.json';
-import { SessionService } from './services/session.service';
-import { Router } from '@angular/router';
+import { Component } from "@angular/core";
+import { RecipeService } from "./services/recipe.service";
+import { MatDialog } from "@angular/material/dialog";
+import { RecipePickerComponent } from "./recipe-picker/recipe-picker.component";
+import { Recipe } from "./types/recipe";
+import packageJson from "../../package.json";
+import { SessionService } from "./services/session.service";
+import { Router } from "@angular/router";
+import { LayoutMode, ResponsiveLayoutService } from "./services/responsive-layout.service";
 
 @Component({
   selector: 'app-root',
@@ -23,7 +24,8 @@ export class AppComponent {
     private readonly recipeService: RecipeService,
     private readonly sessionService: SessionService,
     private readonly recipePicker: MatDialog,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly responsiveLayoutService: ResponsiveLayoutService
   ) {
     this.recipeService.viewRecipe.subscribe((viewRecipe) => {
       this.viewRecipe = viewRecipe;
@@ -58,6 +60,16 @@ export class AppComponent {
 
   isEditDisabled(): boolean {
     return !this.viewRecipe;
+  }
+
+  showFullHeader(): boolean {
+    switch (this.responsiveLayoutService.layoutMode.getValue()) {
+      case LayoutMode.HandsetPortrait:
+      case LayoutMode.HandsetLandscape:
+        return false;
+      default:
+        return true;
+    }
   }
 
   recipeTitle(): string {

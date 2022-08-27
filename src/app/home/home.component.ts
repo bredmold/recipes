@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RecipeService } from '../services/recipe.service';
 import { Recipe } from '../types/recipe';
 import { Router } from '@angular/router';
+import { LayoutMode, ResponsiveLayoutService } from "../services/responsive-layout.service";
 
 @Component({
   selector: 'app-home',
@@ -9,12 +10,27 @@ import { Router } from '@angular/router';
   styleUrls: ['./home.component.sass'],
 })
 export class HomeComponent implements OnInit {
-  constructor(private readonly recipeService: RecipeService, private readonly router: Router) {}
+  constructor(
+    private readonly recipeService: RecipeService,
+    private readonly router: Router,
+    private readonly responsiveLayoutService: ResponsiveLayoutService
+  ) {}
 
   public allRecipes: Recipe[] = [];
 
   recipeLink(recipeId: string): string {
     return `recipe/${recipeId}`;
+  }
+
+  showEditLinks(): boolean {
+    switch (this.responsiveLayoutService.layoutMode.getValue()) {
+      case LayoutMode.HandsetPortrait:
+      case LayoutMode.HandsetLandscape:
+        return false;
+
+      default:
+        return true;
+    }
   }
 
   newRecipe(): void {

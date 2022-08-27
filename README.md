@@ -45,9 +45,12 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
-* Recipe viewer
-  * Layout for phone
-  * Portrait layout for iPad
+* Responsive Layout
+  * Unit tests
+    * App component
+    * Home component
+    * Layout service
+  * Recipe view layout for handset portrait
 * Steps description should support Markdown
 * Input validation
   * Prevent negative quantities

@@ -9,7 +9,7 @@
     </mat-list>
     <div class="no-recipes" *ngIf="allRecipes.length == 0">No recipes in storage.</div>
   </div>
-  <div class="new-recipe">
+  <div class="new-recipe" *ngIf="showEditLinks()">
     <button mat-button (click)="newRecipe()">New Recipe</button>
   </div>
 </div>

@@ -2,10 +2,10 @@
   <div class="header">
     <mat-toolbar>
       <button routerLink="">Recipes</button>
-      <button (click)="openRecipePicker()">{{ recipeTitle() }}</button>
-      <span class="recipe-spacer"></span>
-      <button (click)="recipeSave()" [disabled]="isSaveDisabled()">Save</button>
-      <button [routerLink]="editLink()" [disabled]="isEditDisabled()">Edit</button>
+      <button (click)="openRecipePicker()" *ngIf="showFullHeader()">{{ recipeTitle() }}</button>
+      <span class="recipe-spacer" *ngIf="showFullHeader()"></span>
+      <button (click)="recipeSave()" [disabled]="isSaveDisabled()" *ngIf="showFullHeader()">Save</button>
+      <button [routerLink]="editLink()" [disabled]="isEditDisabled()" *ngIf="showFullHeader()">Edit</button>
     </mat-toolbar>
   </div>
   <div class="recipe">
