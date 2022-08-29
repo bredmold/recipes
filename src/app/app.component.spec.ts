@@ -17,12 +17,14 @@ import { RecipeService } from './services/recipe.service';
 import { BehaviorSubject } from 'rxjs';
 import { Recipe } from './types/recipe';
 import { Router } from '@angular/router';
+import { LayoutMode, ResponsiveLayoutService } from './services/responsive-layout.service';
 
 describe('AppComponent', () => {
   let app: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
   let recipeServiceSpy: any;
   let routerSpy: any;
+  let responsiveLayoutServiceSpy: any;
 
   beforeEach(async () => {
     recipeServiceSpy = {
@@ -30,6 +32,10 @@ describe('AppComponent', () => {
       editRecipe: new BehaviorSubject<Recipe | undefined>(undefined),
       saveRecipe: jasmine.createSpy('saveRecipe'),
       storageSetup: jasmine.createSpy('storageSetup'),
+    };
+
+    responsiveLayoutServiceSpy = {
+      layoutMode: new BehaviorSubject<LayoutMode>(LayoutMode.TableLandscape),
     };
 
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -43,6 +49,10 @@ describe('AppComponent', () => {
         {
           provide: Router,
           useValue: routerSpy,
+        },
+        {
+          provide: ResponsiveLayoutService,
+          useValue: responsiveLayoutServiceSpy,
         },
       ],
       declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeEditorComponent],
@@ -114,5 +124,14 @@ describe('AppComponent', () => {
 
     await fixture.whenStable();
     expect(recipeServiceSpy.saveRecipe.calls.count()).toEqual(1);
+  });
+
+  it('should disable edit features on a phone screen', () => {
+    responsiveLayoutServiceSpy.layoutMode.next(LayoutMode.HandsetPortrait);
+    expect(app.showFullHeader()).toBeFalse();
+  });
+
+  it('should show edit features on a tablet screen', () => {
+    expect(app.showFullHeader()).toBeTrue();
   });
 });

@@ -4,17 +4,24 @@ import { HomeComponent } from './home.component';
 import { RecipeService } from '../services/recipe.service';
 import { Recipe } from '../types/recipe';
 import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
+import { LayoutMode, ResponsiveLayoutService } from '../services/responsive-layout.service';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let recipeServiceSpy: any;
+  let responsiveLayoutServiceSpy: any;
   let routerSpy: any;
 
   beforeEach(async () => {
     recipeServiceSpy = {
       clearActiveRecipes: jasmine.createSpy('clearActiveRecipes'),
       listRecipes: jasmine.createSpy('listRecipes'),
+    };
+
+    responsiveLayoutServiceSpy = {
+      layoutMode: new BehaviorSubject<LayoutMode>(LayoutMode.TableLandscape),
     };
 
     routerSpy = { navigate: jasmine.createSpy('navigate') };
@@ -24,6 +31,10 @@ describe('HomeComponent', () => {
         {
           provide: RecipeService,
           useValue: recipeServiceSpy,
+        },
+        {
+          provide: ResponsiveLayoutService,
+          useValue: responsiveLayoutServiceSpy,
         },
         {
           provide: Router,
@@ -86,5 +97,16 @@ describe('HomeComponent', () => {
 
     const navUri = navArgs[0] as string;
     expect(navUri).toMatch(/^\/recipe\/[a-z0-9-]{36}\/edit$/);
+  });
+
+  it('should show edit links on a tablet', () => {
+    createComponent([new Recipe('title', 'desc', [], [], [])]);
+    expect(component.showEditLinks()).toBeTrue();
+  });
+
+  it('should hide edit links on a phone', () => {
+    createComponent([new Recipe('title', 'desc', [], [], [])]);
+    responsiveLayoutServiceSpy.layoutMode.next(LayoutMode.HandsetPortrait);
+    expect(component.showEditLinks()).toBeFalse();
   });
 });
