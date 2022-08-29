@@ -1,12 +1,12 @@
-import { Component } from "@angular/core";
-import { RecipeService } from "./services/recipe.service";
-import { MatDialog } from "@angular/material/dialog";
-import { RecipePickerComponent } from "./recipe-picker/recipe-picker.component";
-import { Recipe } from "./types/recipe";
-import packageJson from "../../package.json";
-import { SessionService } from "./services/session.service";
-import { Router } from "@angular/router";
-import { LayoutMode, ResponsiveLayoutService } from "./services/responsive-layout.service";
+import { Component } from '@angular/core';
+import { RecipeService } from './services/recipe.service';
+import { MatDialog } from '@angular/material/dialog';
+import { RecipePickerComponent } from './recipe-picker/recipe-picker.component';
+import { Recipe } from './types/recipe';
+import packageJson from '../../package.json';
+import { SessionService } from './services/session.service';
+import { Router } from '@angular/router';
+import { LayoutMode, ResponsiveLayoutService } from './services/responsive-layout.service';
 
 @Component({
   selector: 'app-root',

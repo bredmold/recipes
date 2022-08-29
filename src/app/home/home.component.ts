@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RecipeService } from '../services/recipe.service';
 import { Recipe } from '../types/recipe';
 import { Router } from '@angular/router';
-import { LayoutMode, ResponsiveLayoutService } from "../services/responsive-layout.service";
+import { LayoutMode, ResponsiveLayoutService } from '../services/responsive-layout.service';
 
 @Component({
   selector: 'app-home',
