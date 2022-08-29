@@ -45,7 +45,8 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
-* Steps description should support Markdown
+* Recipe viewer 
+  * Visual indicator for swiping on phones
 * Input validation
   * Prevent negative quantities
   * Prevent empty ingredient names
@@ -65,3 +66,4 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 * Factor out commonalities from recipe picker and home component
 * Cognito authentication
   * Testing
+* Steps description should support Markdown

@@ -3,7 +3,8 @@
     Ingredients list
     <mat-list>
       <mat-list-item *ngFor="let ingredient of ingredients()">
-        <input type="checkbox" /> {{ ingredient.render(recipe) }}
+        <input [id]="ingredient.id" type="checkbox" />
+        <label [for]="ingredient.id">{{ ingredient.render(recipe) }}</label>
       </mat-list-item>
     </mat-list>
   </div>
