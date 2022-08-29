@@ -75,7 +75,8 @@ export class AppComponent {
   recipeTitle(): string {
     if (this.viewRecipe) return this.viewRecipe.title;
     else if (this.editRecipe) return this.editRecipe.title;
-    else return 'Recipe Picker';
+    else if (this.showFullHeader()) return 'Recipe Picker';
+    else return '';
   }
 
   editLink(): string {

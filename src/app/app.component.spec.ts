@@ -114,6 +114,11 @@ describe('AppComponent', () => {
     expect(app.editLink()).toEqual('');
   });
 
+  it('should set a blank recipe title in phone mode', () => {
+    responsiveLayoutServiceSpy.layoutMode.next(LayoutMode.HandsetLandscape);
+    expect(app.recipeTitle()).toEqual('');
+  });
+
   it('should save the edit recipe', async () => {
     const recipe = new Recipe('title', 'desc', [], [], []);
     recipeServiceSpy.editRecipe.next(recipe);

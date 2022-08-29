@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Recipe, RecipeIngredient, RecipeStep } from '../types/recipe';
 import { ActivatedRoute } from '@angular/router';
 import { RecipeService } from '../services/recipe.service';
+import { LayoutMode, ResponsiveLayoutService } from '../services/responsive-layout.service';
 
 @Component({
   selector: 'app-recipe-viewer',
@@ -11,7 +12,11 @@ import { RecipeService } from '../services/recipe.service';
 export class RecipeViewerComponent {
   recipe!: Recipe;
 
-  constructor(private readonly route: ActivatedRoute, private readonly recipeService: RecipeService) {
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly recipeService: RecipeService,
+    private readonly responsiveLayoutService: ResponsiveLayoutService
+  ) {
     this.route.params.subscribe((params) => {
       const recipeId = params['id'];
       this.recipeService.getRecipeById(recipeId).then(
@@ -24,6 +29,16 @@ export class RecipeViewerComponent {
         }
       );
     });
+  }
+
+  recipeViewerClass(): string {
+    switch (this.responsiveLayoutService.layoutMode.getValue()) {
+      case LayoutMode.HandsetLandscape:
+      case LayoutMode.HandsetPortrait:
+        return 'recipe-viewer-phone';
+      default:
+        return 'recipe-viewer';
+    }
   }
 
   ingredients(): RecipeIngredient[] {

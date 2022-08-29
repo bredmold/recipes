@@ -1,21 +1,28 @@
 .recipe-viewer
   display: grid
-  grid-template-rows: 10% auto
+  grid-column: 1
+  grid-row: 2
+  grid-template-rows: 100%
   grid-template-columns: 40% 60%
   height: 100%
   padding: 10px
 
-  .recipe-view-header
-    margin: 0
-    grid-column-start: 1
-    grid-column-end: 3
-    grid-row: 1
+.recipe-viewer-phone
+  display: grid
+  grid-column: 1
+  grid-row: 2
+  grid-template-rows: 100%
+  grid-template-columns: 100% 100%
+  height: 100%
+  padding: 10px
+  overflow-x: auto
+  scroll-snap-type: x mandatory
 
-  .ingredients-view
-    grid-column: 1
-    grid-row: 2
-    margin-right: 10px
+.ingredients-view
+  grid-column: 1
+  grid-row: 1
+  margin-right: 10px
 
-  .steps-view
-    grid-column: 2
-    grid-row: 2
+.steps-view
+  grid-column: 2
+  grid-row: 1

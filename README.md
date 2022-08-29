@@ -45,8 +45,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
-* Responsive Layout
-  * Recipe view layout for handset portrait
 * Steps description should support Markdown
 * Input validation
   * Prevent negative quantities
@@ -64,7 +62,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 * Export recipes
 * Search by ingredients
 * Delete recipe button
-* Improve Home Component layout
 * Factor out commonalities from recipe picker and home component
 * Cognito authentication
   * Testing

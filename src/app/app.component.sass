@@ -6,17 +6,19 @@
   height: 100vh
   width: 100vw
 
-  .recipe-spacer
-    flex: 1 1 auto
-
   .header
     grid-column: 1
     grid-row: 1
     padding: 0
 
-    span
+    .recipe-title
+      font-family: serif
+      font-weight: bold
+
+    .recipe-spacer
       font-size: larger
       padding-right: 50px
+      flex: 1 1 auto
 
     mat-toolbar
       height: 100%

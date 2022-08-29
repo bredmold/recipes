@@ -2,6 +2,7 @@
   <div class="header">
     <mat-toolbar>
       <button routerLink="">Recipes</button>
+      <span class="recipe-title" *ngIf="!showFullHeader()">{{ recipeTitle() }}</span>
       <button (click)="openRecipePicker()" *ngIf="showFullHeader()">{{ recipeTitle() }}</button>
       <span class="recipe-spacer" *ngIf="showFullHeader()"></span>
       <button (click)="recipeSave()" [disabled]="isSaveDisabled()" *ngIf="showFullHeader()">Save</button>

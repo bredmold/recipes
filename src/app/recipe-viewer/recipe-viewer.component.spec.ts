@@ -5,12 +5,15 @@ import { ActivatedRoute } from '@angular/router';
 import { ActivatedRouteStub } from '../../testing/activated-route-stub';
 import { Recipe } from '../types/recipe';
 import { RecipeService } from '../services/recipe.service';
+import { BehaviorSubject } from 'rxjs';
+import { LayoutMode, ResponsiveLayoutService } from '../services/responsive-layout.service';
 
 describe('RecipeViewerComponent', () => {
   let component: RecipeViewerComponent;
   let fixture: ComponentFixture<RecipeViewerComponent>;
   let activeRoute: ActivatedRouteStub;
   let recipeServiceSpy: any;
+  let responsiveLayoutServiceSpy: any;
 
   beforeEach(async () => {
     activeRoute = new ActivatedRouteStub();
@@ -21,6 +24,10 @@ describe('RecipeViewerComponent', () => {
     };
     recipeServiceSpy.getRecipeById.and.returnValue(Promise.reject('nope'));
 
+    responsiveLayoutServiceSpy = {
+      layoutMode: new BehaviorSubject<LayoutMode>(LayoutMode.TableLandscape),
+    };
+
     await TestBed.configureTestingModule({
       providers: [
         {
@@ -30,6 +37,10 @@ describe('RecipeViewerComponent', () => {
         {
           provide: RecipeService,
           useValue: recipeServiceSpy,
+        },
+        {
+          provide: ResponsiveLayoutService,
+          useValue: responsiveLayoutServiceSpy,
         },
       ],
       declarations: [RecipeViewerComponent],
@@ -57,5 +68,15 @@ describe('RecipeViewerComponent', () => {
 
     expect(component.ingredients()).toEqual([]);
     expect(component.steps()).toEqual([]);
+  });
+
+  it('should return the table class on tables', () => {
+    responsiveLayoutServiceSpy.layoutMode.next(LayoutMode.TablePortrait);
+    expect(component.recipeViewerClass()).toEqual('recipe-viewer');
+  });
+
+  it('should return the phone class on phones', () => {
+    responsiveLayoutServiceSpy.layoutMode.next(LayoutMode.HandsetPortrait);
+    expect(component.recipeViewerClass()).toEqual('recipe-viewer-phone');
   });
 });
