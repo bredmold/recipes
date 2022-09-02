@@ -3,6 +3,7 @@ import { Component, ElementRef, Inject, Input, ViewChild } from '@angular/core';
 import { QuantityUnitInformation, Recipe, RecipeAmount, RecipeIngredient, UnitsKind } from '../types/recipe';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatOptionSelectionChange } from '@angular/material/core';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 interface CustomUnitsContext {
   readonly component: IngredientsComponent;
@@ -102,26 +103,9 @@ export class IngredientsComponent {
     }
   }
 
-  moveIngredient(ingredientId: string, direction: string) {
+  dropIngredient(event: CdkDragDrop<string>) {
     if (this.recipe) {
-      const startIdx = this.recipe.ingredients.findIndex((i) => i.id === ingredientId);
-      if (startIdx === 0 && direction === 'up') {
-        console.info('Cannot move first item "up"');
-      } else if (startIdx >= this.recipe.ingredients.length - 1 && direction === 'down') {
-        console.info('Cannot move last item "down"');
-      } else if (startIdx < 0) {
-        console.warn(`Unable to locate ingredient: ${ingredientId}`);
-      } else {
-        const ingredient = this.recipe.ingredients[startIdx];
-        const minusOne = this.recipe.ingredients.filter((i) => i.id != ingredientId);
-
-        const targetIdx = direction === 'up' ? startIdx - 1 : startIdx + 1;
-        const left = minusOne.slice(0, targetIdx);
-        const middle = [ingredient];
-        const right = minusOne.slice(targetIdx);
-
-        this.recipe.ingredients = left.concat(middle, right);
-      }
+      moveItemInArray(this.recipe.ingredients, event.previousIndex, event.currentIndex);
     } else {
       console.warn('No active recipe');
     }

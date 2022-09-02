@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Recipe, RecipeIngredient, RecipeStep } from '../types/recipe';
 import { MatSelectChange } from '@angular/material/select';
+import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 
 @Component({
   selector: 'app-steps',
@@ -82,26 +83,9 @@ export class StepsComponent {
     }
   }
 
-  moveStep(stepId: string, direction: string) {
+  dropStep(event: CdkDragDrop<string>) {
     if (this.recipe) {
-      const startIdx = this.recipe.steps.findIndex((s) => s.id === stepId);
-      if (startIdx === 0 && direction === 'up') {
-        console.info('Cannot move first item "up"');
-      } else if (startIdx >= this.recipe.steps.length - 1 && direction === 'down') {
-        console.info('Cannot move last item "down"');
-      } else if (startIdx < 0) {
-        console.warn(`Unable to locate step: ${stepId}`);
-      } else {
-        const step = this.recipe.steps[startIdx];
-        const minusOne = this.recipe.steps.filter((i) => i.id != stepId);
-
-        const targetIdx = direction === 'up' ? startIdx - 1 : startIdx + 1;
-        const left = minusOne.slice(0, targetIdx);
-        const middle = [step];
-        const right = minusOne.slice(targetIdx);
-
-        this.recipe.steps = left.concat(middle, right);
-      }
+      moveItemInArray(this.recipe.steps, event.previousIndex, event.currentIndex);
     } else {
       console.warn('No active recipe');
     }

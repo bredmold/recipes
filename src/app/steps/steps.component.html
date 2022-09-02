@@ -2,11 +2,11 @@
   List of cooking steps
 
   <div class="steps-list">
-    <mat-list>
+    <mat-list cdkDropList (cdkDropListDropped)="dropStep($event)">
       <mat-list-item class="add-step" (click)="addStep(0)">
         <span matTooltip="Add Step">+</span>
       </mat-list-item>
-      <mat-list-item *ngFor="let step of steps()" class="single-step-edit">
+      <mat-list-item *ngFor="let step of steps()" class="single-step-edit" cdkDrag>
         <div mat-line>
           <mat-form-field class="step-description">
             <mat-label>Description</mat-label>
@@ -19,15 +19,10 @@
               required="true"
             ></textarea>
           </mat-form-field>
-          <span class="step-action" (click)="removeStep(step.id)">
+          <span class="remove-button" (click)="removeStep(step.id)">
             <span matTooltip="Remove Step">-</span>
           </span>
-          <span class="step-action" (click)="moveStep(step.id, 'up')">
-            <span matTooltip="Push step up">&uparrow;</span>
-          </span>
-          <span class="step-action" (click)="moveStep(step.id, 'down')">
-            <span matTooltip="Pull step down">&downarrow;</span>
-          </span>
+          <span class="drag-handle" cdkDragHandle>&#10303;</span>
         </div>
         <div mat-line>
           <mat-form-field>

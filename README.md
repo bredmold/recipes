@@ -47,15 +47,15 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 * Recipe viewer 
   * Visual indicator for swiping on phones
+* Remove the recipe picker
+  * That button should exit the recipe editor
+  * Use the home screen for selecting recipes
 * Input validation
   * Prevent negative quantities
   * Prevent empty ingredient names
 * US/metric quantity conversions
 * Edit descriptions for ingredients
 * Show descriptions for ingredients in recipe viewer
-* Drag & drop list re-ordering
-  * steps
-  * ingredients
 * Recipe picker hover highlight color should use theme colors
 * Better step editor layout
 * Recipe editor should be able to select tabs via URL

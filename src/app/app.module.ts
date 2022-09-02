@@ -23,6 +23,7 @@ import { RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { SignInComponent } from './auth/sign-in/sign-in.component';
 import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -53,6 +54,7 @@ import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
     AppRoutingModule,
     RouterModule,
     FormsModule,
+    DragDropModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
