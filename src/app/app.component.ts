@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { RecipeService } from './services/recipe.service';
 import { MatDialog } from '@angular/material/dialog';
-import { RecipePickerComponent } from './recipe-picker/recipe-picker.component';
 import { Recipe } from './types/recipe';
 import packageJson from '../../package.json';
 import { SessionService } from './services/session.service';
@@ -35,10 +34,6 @@ export class AppComponent {
     });
   }
 
-  openRecipePicker() {
-    this.recipePicker.open(RecipePickerComponent);
-  }
-
   recipeSave() {
     if (this.editRecipe) {
       this.recipeService.saveRecipe(this.editRecipe).then(
@@ -54,7 +49,21 @@ export class AppComponent {
     }
   }
 
-  isSaveDisabled(): boolean {
+  async openRecipeViewer() {
+    if (this.editRecipe) {
+      const id = this.editRecipe.id;
+      const navResult = await this.router.navigate(['recipe', id])
+      if (navResult) {
+        console.info(`Recipe viewer for ${id}`);
+      } else {
+        console.error(`Failed to navigate to recipe ${id}`)
+      }
+    } else {
+      console.warn('No edit recipe to transition away from');
+    }
+  }
+
+  inRecipeEditor(): boolean {
     return !this.editRecipe;
   }
 
@@ -75,7 +84,7 @@ export class AppComponent {
   recipeTitle(): string {
     if (this.viewRecipe) return this.viewRecipe.title;
     else if (this.editRecipe) return this.editRecipe.title;
-    else if (this.showFullHeader()) return 'Recipe Picker';
+    else if (this.showFullHeader()) return 'No Recipe';
     else return '';
   }
 

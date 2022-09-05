@@ -82,7 +82,7 @@ describe('AppComponent', () => {
 
   it('should return the default recipe title', async () => {
     await fixture.whenStable();
-    expect(app.recipeTitle()).toEqual('Recipe Picker');
+    expect(app.recipeTitle()).toEqual('No Recipe');
     expect(app.editLink()).toEqual('');
   });
 
@@ -94,7 +94,7 @@ describe('AppComponent', () => {
     await fixture.whenStable();
 
     expect(app.viewRecipe).toBeTruthy();
-    expect(app.isSaveDisabled()).toBeTrue();
+    expect(app.inRecipeEditor()).toBeTrue();
     expect(app.isEditDisabled()).toBeFalse();
     expect(app.recipeTitle()).toEqual('view');
     expect(app.editLink()).toEqual(`recipe/${recipe.id}/edit`);
@@ -108,7 +108,7 @@ describe('AppComponent', () => {
     await fixture.whenStable();
 
     expect(app.editRecipe).toBeTruthy();
-    expect(app.isSaveDisabled()).toBeFalse();
+    expect(app.inRecipeEditor()).toBeFalse();
     expect(app.isEditDisabled()).toBeTrue();
     expect(app.recipeTitle()).toEqual('edit');
     expect(app.editLink()).toEqual('');
@@ -138,5 +138,17 @@ describe('AppComponent', () => {
 
   it('should show edit features on a tablet screen', () => {
     expect(app.showFullHeader()).toBeTrue();
+  });
+
+  it('should navigate from the recipe editor to the recipe viewer', async () => {
+    const recipe = new Recipe('edit', 'desc', [], [], []);
+    recipeServiceSpy.editRecipe.next(recipe);
+    await fixture.whenStable();
+
+    routerSpy.navigate.and.returnValue(Promise.resolve(true));
+
+    await app.openRecipeViewer();
+
+    expect(routerSpy.navigate.calls.count()).toEqual(1);
   });
 });
