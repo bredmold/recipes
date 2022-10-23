@@ -66,7 +66,7 @@ describe('RecipeService', () => {
     ddbService.query.and.returnValue(Promise.resolve(queryResponse));
 
     const recipes = await service.listRecipes();
-    expect(recipes).toEqual([new Recipe('title', 'desc', [], [], [], 'id')]);
+    expect(recipes).toEqual([new Recipe('title', 'desc', [], [], [], 'id', true)]);
   });
 
   it('should resolve the promise when calling getRecipeById', async () => {
@@ -91,7 +91,7 @@ describe('RecipeService', () => {
 
     const recipeResponse = await service.getRecipeById('id');
 
-    expect(recipeResponse).toEqual(new Recipe('title', 'desc', [], [], [], 'id'));
+    expect(recipeResponse).toEqual(new Recipe('title', 'desc', [], [], [], 'id', true));
   });
 
   it('should throw when getRecipeById fails', async () => {

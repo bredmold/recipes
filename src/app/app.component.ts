@@ -22,7 +22,6 @@ export class AppComponent {
   constructor(
     private readonly recipeService: RecipeService,
     private readonly sessionService: SessionService,
-    private readonly recipePicker: MatDialog,
     private readonly router: Router,
     private readonly responsiveLayoutService: ResponsiveLayoutService,
   ) {
@@ -63,7 +62,11 @@ export class AppComponent {
     }
   }
 
-  inRecipeEditor(): boolean {
+  isViewerLinkDisabled(): boolean {
+    return this.editRecipe ? !this.editRecipe.hasBeenSaved() : true;
+  }
+
+  isSaveDisabled(): boolean {
     return !this.editRecipe;
   }
 

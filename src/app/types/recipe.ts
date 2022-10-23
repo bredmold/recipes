@@ -242,6 +242,7 @@ export class Recipe {
    * @param steps A list of recipe steps
    * @param customUnits Custom units for this recipe (if any)
    * @param ingredients A list of recipe ingredients
+   * @param persisted If true, the recipe has been persisted at least once
    */
   constructor(
     public title: string,
@@ -250,7 +251,16 @@ export class Recipe {
     public ingredients: RecipeIngredient[],
     public customUnits: QuantityUnitInformation[],
     public readonly id: string = uuidv4(),
+    private persisted: boolean = false
   ) {}
+
+  saved() {
+    this.persisted = true;
+  }
+
+  hasBeenSaved(): boolean {
+    return this.persisted;
+  }
 
   unitsFor(unitsId: string): QuantityUnitInformation | undefined {
     const standardUnits = QuantityUnitInformation.byId(unitsId);
@@ -302,6 +312,7 @@ export class Recipe {
       [],
       customUnits,
       recipeObject['id'],
+      true
     );
 
     recipe.ingredients = recipeObject['ingredients'].map((i: object) =>
