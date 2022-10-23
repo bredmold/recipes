@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { RecipeService } from './services/recipe.service';
-import { MatDialog } from '@angular/material/dialog';
 import { Recipe } from './types/recipe';
 import packageJson from '../../package.json';
 import { SessionService } from './services/session.service';
@@ -22,7 +21,6 @@ export class AppComponent {
   constructor(
     private readonly recipeService: RecipeService,
     private readonly sessionService: SessionService,
-    private readonly recipePicker: MatDialog,
     private readonly router: Router,
     private readonly responsiveLayoutService: ResponsiveLayoutService
   ) {
@@ -52,18 +50,22 @@ export class AppComponent {
   async openRecipeViewer() {
     if (this.editRecipe) {
       const id = this.editRecipe.id;
-      const navResult = await this.router.navigate(['recipe', id])
+      const navResult = await this.router.navigate(['recipe', id]);
       if (navResult) {
         console.info(`Recipe viewer for ${id}`);
       } else {
-        console.error(`Failed to navigate to recipe ${id}`)
+        console.error(`Failed to navigate to recipe ${id}`);
       }
     } else {
       console.warn('No edit recipe to transition away from');
     }
   }
 
-  inRecipeEditor(): boolean {
+  isViewerLinkDisabled(): boolean {
+    return this.editRecipe ? !this.editRecipe.hasBeenSaved() : true;
+  }
+
+  isSaveDisabled(): boolean {
     return !this.editRecipe;
   }
 

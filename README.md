@@ -45,7 +45,8 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
-* Recipe Editor should not have a "back" button on a new recipe until it's been saved
+* Keyboard navigation in recipe editor
+* Track "dirty" status for recipes and use it to enable the save button
 * Ingredient should be able to have "null" units
 * Recipe viewer 
   * Visual indicator for swiping on phones

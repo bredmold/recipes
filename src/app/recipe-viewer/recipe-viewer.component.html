@@ -11,7 +11,7 @@
   <div class="steps-view">
     Steps list
     <mat-list>
-      <mat-list-item *ngFor="let step of steps()">{{ step.description }}</mat-list-item>
+      <mat-list-item class="recipe-step" role="listitem" *ngFor="let step of steps()">{{ step.description }}</mat-list-item>
     </mat-list>
   </div>
 </div>

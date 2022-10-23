@@ -281,7 +281,7 @@ describe('Recipe', () => {
         steps: [],
         ingredients: [],
       })
-    ).toEqual(new Recipe('test title', 'test desc', [], [], [], 'test id'));
+    ).toEqual(new Recipe('test title', 'test desc', [], [], [], 'test id', true));
   });
 
   it('should find custom units', () => {
@@ -371,5 +371,16 @@ describe('Recipe', () => {
         version: 'nope',
       })
     ).toThrow('Invalid version string: nope');
+  });
+
+  it('should create a new recipe in un-saved state', () => {
+    const recipe = new Recipe('test', 'test', [], [], []);
+    expect(recipe.hasBeenSaved()).toBeFalse();
+  });
+
+  it('should mark a saved recipe', () => {
+    const recipe = new Recipe('test', 'test', [], [], []);
+    recipe.saved();
+    expect(recipe.hasBeenSaved()).toBeTrue();
   });
 });

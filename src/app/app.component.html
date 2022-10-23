@@ -7,9 +7,9 @@
       <span class="recipe-title" *ngIf="!showFullHeader()">{{ recipeTitle() }}</span>
 
       <!-- Tablet/PC UI -->
-      <button (click)="openRecipeViewer()" [disabled]="inRecipeEditor()" *ngIf="showFullHeader()">{{ recipeTitle() }}</button>
+      <button (click)="openRecipeViewer()" [disabled]="isViewerLinkDisabled()" *ngIf="showFullHeader()">{{ recipeTitle() }}</button>
       <span class="recipe-spacer" *ngIf="showFullHeader()"></span>
-      <button (click)="recipeSave()" [disabled]="inRecipeEditor()" *ngIf="showFullHeader()">Save</button>
+      <button (click)="recipeSave()" [disabled]="isSaveDisabled()" *ngIf="showFullHeader()">Save</button>
       <button [routerLink]="editLink()" [disabled]="isEditDisabled()" *ngIf="showFullHeader()">Edit</button>
     </mat-toolbar>
   </div>

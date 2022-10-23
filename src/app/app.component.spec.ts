@@ -94,7 +94,7 @@ describe('AppComponent', () => {
     await fixture.whenStable();
 
     expect(app.viewRecipe).toBeTruthy();
-    expect(app.inRecipeEditor()).toBeTrue();
+    expect(app.isViewerLinkDisabled()).toBeTrue();
     expect(app.isEditDisabled()).toBeFalse();
     expect(app.recipeTitle()).toEqual('view');
     expect(app.editLink()).toEqual(`recipe/${recipe.id}/edit`);
@@ -108,7 +108,8 @@ describe('AppComponent', () => {
     await fixture.whenStable();
 
     expect(app.editRecipe).toBeTruthy();
-    expect(app.inRecipeEditor()).toBeFalse();
+    expect(app.isViewerLinkDisabled()).toBeTrue();
+    expect(app.isSaveDisabled()).toBeFalse();
     expect(app.isEditDisabled()).toBeTrue();
     expect(app.recipeTitle()).toEqual('edit');
     expect(app.editLink()).toEqual('');
