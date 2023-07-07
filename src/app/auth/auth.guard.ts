@@ -7,11 +7,14 @@ import { SessionService } from '../services/session.service';
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
-  constructor(private router: Router, private sessionService: SessionService) {}
+  constructor(
+    private router: Router,
+    private sessionService: SessionService,
+  ) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
+    state: RouterStateSnapshot,
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     const loggedIn = this.sessionService.isLoggedIn();
     if (!loggedIn) {
@@ -21,7 +24,7 @@ export class AuthGuard implements CanActivate {
         },
         (err) => {
           console.error(err);
-        }
+        },
       );
     }
     return loggedIn;

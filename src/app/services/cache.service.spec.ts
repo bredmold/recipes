@@ -29,7 +29,7 @@ describe('TypedCache', () => {
         trigger = true;
         return Promise.resolve('cache miss');
       },
-      { key: 'test', ttl: 1000 }
+      { key: 'test', ttl: 1000 },
     );
 
     expect(result).toBe('cache miss');
@@ -46,7 +46,7 @@ describe('TypedCache', () => {
         trigger = true;
         return Promise.resolve('cache miss');
       },
-      { key: 'test', ttl: 1000 }
+      { key: 'test', ttl: 1000 },
     );
 
     expect(hitResult).toBe('test');
@@ -68,7 +68,7 @@ describe('TypedCache', () => {
         trigger = true;
         return Promise.resolve('cache miss');
       },
-      { key: 'test', ttl: 1000 }
+      { key: 'test', ttl: 1000 },
     );
 
     expect(invalidateResult).toBe('cache miss');
@@ -91,7 +91,7 @@ describe('TypedCache', () => {
         trigger = true;
         return Promise.resolve('expired');
       },
-      { key: 'test', ttl: 10 }
+      { key: 'test', ttl: 10 },
     );
 
     expect(expiredResult).toBe('expired');

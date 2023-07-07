@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Recipe, RecipeIngredient, RecipeStep } from '../types/recipe';
 import { MatSelectChange } from '@angular/material/select';
-import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-steps',

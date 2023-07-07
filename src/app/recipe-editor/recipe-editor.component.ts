@@ -12,7 +12,10 @@ export class RecipeEditorComponent {
   @ViewChild('titleInput') titleInput!: ElementRef;
   recipe?: Recipe;
 
-  constructor(private readonly activeRoute: ActivatedRoute, private readonly recipeService: RecipeService) {
+  constructor(
+    private readonly activeRoute: ActivatedRoute,
+    private readonly recipeService: RecipeService,
+  ) {
     this.activeRoute.params.subscribe((params) => {
       const recipeId = params['id'];
       this.recipeService.getRecipeById(recipeId).then(
@@ -27,7 +30,7 @@ export class RecipeEditorComponent {
           const newRecipe = new Recipe('New Recipe', '', [], [], [], recipeId);
           this.recipe = newRecipe;
           this.recipeService.setEditRecipe(newRecipe);
-        }
+        },
       );
     });
   }

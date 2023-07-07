@@ -20,7 +20,10 @@ export class SignInComponent {
 
   private cognitoUser?: CognitoUser = undefined;
 
-  constructor(private router: Router, private sessionService: SessionService) {}
+  constructor(
+    private router: Router,
+    private sessionService: SessionService,
+  ) {}
 
   private valid(): boolean {
     return this.email_address.length > 0 && this.password.length > 0;

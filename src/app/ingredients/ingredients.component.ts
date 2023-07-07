@@ -165,7 +165,7 @@ export class CustomUnitsDialog {
 
   constructor(
     public selfRef: MatDialogRef<CustomUnitsDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: CustomUnitsContext
+    @Inject(MAT_DIALOG_DATA) public data: CustomUnitsContext,
   ) {
     this.selfRef.afterClosed().subscribe((result) => {
       if (result === 'ok') {

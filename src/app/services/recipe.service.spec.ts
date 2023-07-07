@@ -137,7 +137,7 @@ describe('RecipeService', () => {
           recipeTitle: { S: 'title' },
           json: { S: JSON.stringify(recipeToSave.toObject()) },
         },
-      }).input
+      }).input,
     );
   });
 

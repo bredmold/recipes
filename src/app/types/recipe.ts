@@ -12,7 +12,7 @@ export class QuantityUnitInformation {
     public readonly kind: UnitsKind,
     public readonly name: string,
     public readonly abbreviation: string,
-    public readonly conversionFactor: number
+    public readonly conversionFactor: number,
   ) {}
 
   static byKind(kind: UnitsKind): Array<QuantityUnitInformation> {
@@ -33,7 +33,7 @@ export class QuantityUnitInformation {
       UnitsKind.Arbitrary,
       customUnitsObject['name'],
       customUnitsObject['abbreviation'],
-      1
+      1,
     );
   }
 
@@ -78,7 +78,10 @@ export class RecipeAmount {
    * @param quantity Scalar quantity
    * @param units Units ID (either well-known or custom in the recipe)
    */
-  constructor(public quantity: number, public units: string) {}
+  constructor(
+    public quantity: number,
+    public units: string,
+  ) {}
 
   private static readonly FRACTION_DELTA = 0.01;
   private static readonly ONE_QUARTER = '¼';
@@ -167,7 +170,7 @@ export class RecipeIngredient {
     public name: string,
     public description: string,
     public recipeAmount: RecipeAmount,
-    public readonly id: string = uuidv4()
+    public readonly id: string = uuidv4(),
   ) {}
 
   toObject(): object {
@@ -190,7 +193,7 @@ export class RecipeIngredient {
         ingredientObject['name'],
         ingredientObject['description'],
         RecipeAmount.fromObject(ingredientObject['volumeAmount'], '1', recipe),
-        ingredientObject['id']
+        ingredientObject['id'],
       );
     } else {
       // Amounts contain full information to resolve units
@@ -198,7 +201,7 @@ export class RecipeIngredient {
         ingredientObject['name'],
         ingredientObject['description'],
         RecipeAmount.fromObject(ingredientObject['amount'], '2', recipe),
-        ingredientObject['id']
+        ingredientObject['id'],
       );
     }
   }
@@ -211,7 +214,11 @@ export class RecipeStep {
    * @param description Human-readable description
    * @param ingredients List of ingredient IDs
    */
-  constructor(public description: string, public ingredients: string[], public readonly id: string = uuidv4()) {}
+  constructor(
+    public description: string,
+    public ingredients: string[],
+    public readonly id: string = uuidv4(),
+  ) {}
 
   toObject(): object {
     return {
@@ -242,7 +249,7 @@ export class Recipe {
     public steps: RecipeStep[],
     public ingredients: RecipeIngredient[],
     public customUnits: QuantityUnitInformation[],
-    public readonly id: string = uuidv4()
+    public readonly id: string = uuidv4(),
   ) {}
 
   unitsFor(unitsId: string): QuantityUnitInformation | undefined {
@@ -294,11 +301,11 @@ export class Recipe {
       recipeObject['steps'].map((s: object) => RecipeStep.fromObject(s)),
       [],
       customUnits,
-      recipeObject['id']
+      recipeObject['id'],
     );
 
     recipe.ingredients = recipeObject['ingredients'].map((i: object) =>
-      RecipeIngredient.fromObject(i, recipeVersion, recipe)
+      RecipeIngredient.fromObject(i, recipeVersion, recipe),
     );
 
     return recipe;

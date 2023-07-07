@@ -21,7 +21,7 @@ export class RecipeService {
   constructor(
     private readonly sessionService: SessionService,
     cacheService: CacheService,
-    private readonly ddbService: DdbService
+    private readonly ddbService: DdbService,
   ) {
     this.viewRecipe = new BehaviorSubject<Recipe | undefined>(undefined);
     this.editRecipe = new BehaviorSubject<Recipe | undefined>(undefined);
@@ -86,7 +86,7 @@ export class RecipeService {
           throw `Unable to locate recipe: ${recipeId}`;
         }
       },
-      { key: recipeId, ttl: 300000 }
+      { key: recipeId, ttl: 300000 },
     );
   }
 

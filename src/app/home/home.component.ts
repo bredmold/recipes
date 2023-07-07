@@ -13,7 +13,7 @@ export class HomeComponent implements OnInit {
   constructor(
     private readonly recipeService: RecipeService,
     private readonly router: Router,
-    private readonly responsiveLayoutService: ResponsiveLayoutService
+    private readonly responsiveLayoutService: ResponsiveLayoutService,
   ) {}
 
   public allRecipes: Recipe[] = [];
@@ -39,7 +39,7 @@ export class HomeComponent implements OnInit {
       () => {
         console.log(`Routed to ${newRecipe.id}`);
       },
-      (err) => console.error(err)
+      (err) => console.error(err),
     );
   }
 
@@ -52,7 +52,7 @@ export class HomeComponent implements OnInit {
       (err) => {
         this.recipeService.clearActiveRecipes();
         console.error(err);
-      }
+      },
     );
   }
 }

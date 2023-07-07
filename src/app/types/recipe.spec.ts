@@ -36,7 +36,7 @@ describe('QuantityUnitInformation', () => {
         id: 'id',
         name: 'name',
         abbreviation: 'abbr',
-      })
+      }),
     ).toEqual(new QuantityUnitInformation('id', UnitsKind.Arbitrary, 'name', 'abbr', 1));
   });
 
@@ -56,7 +56,7 @@ describe('QuantityUnitInformation', () => {
         id: 'us-volume-tsp',
         name: 'name',
         abbreviation: 'abbr',
-      })
+      }),
     ).toThrow('Found standard unit in custom units list: us-volume-tsp');
   });
 });
@@ -104,8 +104,8 @@ describe('RecipeAmount', () => {
           units: 'tsp',
         },
         '1',
-        r
-      )
+        r,
+      ),
     ).toEqual(new RecipeAmount(2, 'us-volume-tsp'));
     expect(
       RecipeAmount.fromObject(
@@ -114,8 +114,8 @@ describe('RecipeAmount', () => {
           units: 'tbsp',
         },
         '1',
-        r
-      )
+        r,
+      ),
     ).toEqual(new RecipeAmount(1.5, 'us-volume-tbsp'));
     expect(RecipeAmount.fromObject({ quantity: 6, units: 'oz' }, '1', r)).toEqual(new RecipeAmount(6, 'us-volume-oz'));
     expect(
@@ -125,8 +125,8 @@ describe('RecipeAmount', () => {
           units: 'cup',
         },
         '1',
-        r
-      )
+        r,
+      ),
     ).toEqual(new RecipeAmount(12, 'us-volume-cup'));
     expect(
       RecipeAmount.fromObject(
@@ -135,8 +135,8 @@ describe('RecipeAmount', () => {
           units: 'pint',
         },
         '1',
-        r
-      )
+        r,
+      ),
     ).toEqual(new RecipeAmount(2, 'us-volume-pint'));
     expect(RecipeAmount.fromObject({ quantity: 1, units: 'qt' }, '1', r)).toEqual(new RecipeAmount(1, 'us-volume-qt'));
   });
@@ -176,8 +176,8 @@ describe('RecipeAmount', () => {
           units: 'nope',
         },
         '1',
-        recipe
-      )
+        recipe,
+      ),
     ).toThrow('Invalid units abbreviation: nope');
   });
 });
@@ -185,7 +185,7 @@ describe('RecipeAmount', () => {
 describe('RecipeIngredient', () => {
   it('should convert to persistence format', () => {
     expect(
-      new RecipeIngredient('test ingredient', 'test desc', new RecipeAmount(1, 'us-volume-qt'), 'test id').toObject()
+      new RecipeIngredient('test ingredient', 'test desc', new RecipeAmount(1, 'us-volume-qt'), 'test id').toObject(),
     ).toEqual({
       id: 'test id',
       name: 'test ingredient',
@@ -210,8 +210,8 @@ describe('RecipeIngredient', () => {
           },
         },
         '1',
-        recipe
-      )
+        recipe,
+      ),
     ).toEqual(new RecipeIngredient('test ingredient', 'test desc', new RecipeAmount(1, 'us-volume-qt'), 'test id'));
   });
 
@@ -228,8 +228,8 @@ describe('RecipeIngredient', () => {
           },
         },
         '2',
-        recipe
-      )
+        recipe,
+      ),
     ).toEqual(new RecipeIngredient('test ingredient', 'test desc', new RecipeAmount(1, 'us-volume-qt'), 'test id'));
   });
 
@@ -254,7 +254,7 @@ describe('RecipeStep', () => {
         id: 'test id',
         description: 'test desc',
         ingredients: ['ingredient id 1'],
-      })
+      }),
     ).toEqual(new RecipeStep('test desc', ['ingredient id 1'], 'test id'));
   });
 });
@@ -280,7 +280,7 @@ describe('Recipe', () => {
         description: 'test desc',
         steps: [],
         ingredients: [],
-      })
+      }),
     ).toEqual(new Recipe('test title', 'test desc', [], [], [], 'test id'));
   });
 
@@ -290,7 +290,7 @@ describe('Recipe', () => {
       'test',
       [],
       [],
-      [{ id: 'id', kind: UnitsKind.Arbitrary, name: 'name', abbreviation: 'abbr', conversionFactor: 1 }]
+      [{ id: 'id', kind: UnitsKind.Arbitrary, name: 'name', abbreviation: 'abbr', conversionFactor: 1 }],
     );
 
     const custom = recipe.unitsFor('id');
@@ -309,7 +309,7 @@ describe('Recipe', () => {
       'test',
       [new RecipeStep('step', [])],
       [new RecipeIngredient('ingredient', 'desc', new RecipeAmount(1, 'us-volume-tsp'))],
-      [{ id: 'id', kind: UnitsKind.Arbitrary, name: 'name', abbreviation: 'abbr', conversionFactor: 1 }]
+      [{ id: 'id', kind: UnitsKind.Arbitrary, name: 'name', abbreviation: 'abbr', conversionFactor: 1 }],
     );
 
     const saved: any = recipe.toObject();
@@ -369,7 +369,7 @@ describe('Recipe', () => {
         steps: [],
         ingredients: [],
         version: 'nope',
-      })
+      }),
     ).toThrow('Invalid version string: nope');
   });
 });

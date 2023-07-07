@@ -149,7 +149,7 @@ describe('IngredientsComponent', () => {
       'desc',
       [],
       [new RecipeIngredient('ingredient', 'desc', new RecipeAmount(1, 'us-volume-tsp'))],
-      []
+      [],
     );
 
     const select = await loader.getHarness(MatSelectHarness);
@@ -165,7 +165,7 @@ describe('IngredientsComponent', () => {
       'desc',
       [],
       [new RecipeIngredient('ingredient', 'desc', new RecipeAmount(1, 'us-volume-tsp'))],
-      []
+      [],
     );
 
     const select = await loader.getHarness(MatSelectHarness);
@@ -182,7 +182,7 @@ describe('IngredientsComponent', () => {
       'desc',
       [],
       [new RecipeIngredient('ingredient', 'desc', new RecipeAmount(1, 'us-volume-tsp'))],
-      []
+      [],
     );
 
     const select = await loader.getHarness(MatSelectHarness);
@@ -201,7 +201,7 @@ describe('IngredientsComponent', () => {
       'desc',
       [],
       [new RecipeIngredient('ingredient', 'desc', new RecipeAmount(1, 'us-volume-tsp'))],
-      []
+      [],
     );
 
     const select = await loader.getHarness(MatSelectHarness);

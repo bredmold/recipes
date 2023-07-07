@@ -15,7 +15,7 @@ export class RecipeViewerComponent {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly recipeService: RecipeService,
-    private readonly responsiveLayoutService: ResponsiveLayoutService
+    private readonly responsiveLayoutService: ResponsiveLayoutService,
   ) {
     this.route.params.subscribe((params) => {
       const recipeId = params['id'];
@@ -26,7 +26,7 @@ export class RecipeViewerComponent {
         },
         (err) => {
           console.error(err);
-        }
+        },
       );
     });
   }

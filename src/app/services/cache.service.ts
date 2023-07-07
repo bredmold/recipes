@@ -12,7 +12,10 @@ class CacheEntry<R> {
   private readonly expiration: number;
   public readonly key: string;
 
-  constructor(public readonly value: R, config: CacheConfig) {
+  constructor(
+    public readonly value: R,
+    config: CacheConfig,
+  ) {
     this.key = config.key;
 
     const now = new Date();

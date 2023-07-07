@@ -24,7 +24,7 @@ export class AppComponent {
     private readonly sessionService: SessionService,
     private readonly recipePicker: MatDialog,
     private readonly router: Router,
-    private readonly responsiveLayoutService: ResponsiveLayoutService
+    private readonly responsiveLayoutService: ResponsiveLayoutService,
   ) {
     this.recipeService.viewRecipe.subscribe((viewRecipe) => {
       this.viewRecipe = viewRecipe;
@@ -42,7 +42,7 @@ export class AppComponent {
         },
         (err) => {
           console.error(err);
-        }
+        },
       );
     } else {
       console.warn('No edit recipe to save');
@@ -52,11 +52,11 @@ export class AppComponent {
   async openRecipeViewer() {
     if (this.editRecipe) {
       const id = this.editRecipe.id;
-      const navResult = await this.router.navigate(['recipe', id])
+      const navResult = await this.router.navigate(['recipe', id]);
       if (navResult) {
         console.info(`Recipe viewer for ${id}`);
       } else {
-        console.error(`Failed to navigate to recipe ${id}`)
+        console.error(`Failed to navigate to recipe ${id}`);
       }
     } else {
       console.warn('No edit recipe to transition away from');
@@ -101,7 +101,7 @@ export class AppComponent {
       },
       (err) => {
         console.error(err);
-      }
+      },
     );
   }
 
