@@ -5,11 +5,11 @@ import { RecipeEditorComponent } from './recipe-editor.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatListModule } from '@angular/material/list';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSelectModule } from '@angular/material/select';
+import { MatLegacyListModule as MatListModule } from '@angular/material/legacy-list';
+import { MatLegacyFormFieldModule as MatFormFieldModule } from '@angular/material/legacy-form-field';
+import { MatLegacyInputModule as MatInputModule } from '@angular/material/legacy-input';
+import { MatLegacyTooltipModule as MatTooltipModule } from '@angular/material/legacy-tooltip';
+import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
 import { ReactiveFormsModule } from '@angular/forms';
 import { StepsComponent } from '../steps/steps.component';
 import { AppComponent } from '../app.component';
@@ -18,7 +18,7 @@ import { ActivatedRoute } from '@angular/router';
 import { RecipeService } from '../services/recipe.service';
 import { ActivatedRouteStub } from '../../testing/activated-route-stub';
 import { Recipe } from '../types/recipe';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatLegacyDialogModule as MatDialogModule } from '@angular/material/legacy-dialog';
 
 describe('RecipeEditorComponent', () => {
   let component: RecipeEditorComponent;

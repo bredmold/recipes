@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RecipeService } from './services/recipe.service';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { Recipe } from './types/recipe';
 import packageJson from '../../package.json';
 import { SessionService } from './services/session.service';

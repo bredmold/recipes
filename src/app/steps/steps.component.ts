@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Recipe, RecipeIngredient, RecipeStep } from '../types/recipe';
-import { MatSelectChange } from '@angular/material/select';
+import { MatLegacySelectChange as MatSelectChange } from '@angular/material/legacy-select';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
