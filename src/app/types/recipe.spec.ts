@@ -280,7 +280,7 @@ describe('Recipe', () => {
         description: 'test desc',
         steps: [],
         ingredients: [],
-      })
+      }),
     ).toEqual(new Recipe('test title', 'test desc', [], [], [], 'test id', true));
   });
 

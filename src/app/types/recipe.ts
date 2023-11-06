@@ -251,7 +251,7 @@ export class Recipe {
     public ingredients: RecipeIngredient[],
     public customUnits: QuantityUnitInformation[],
     public readonly id: string = uuidv4(),
-    private persisted: boolean = false
+    private persisted: boolean = false,
   ) {}
 
   saved() {
@@ -312,7 +312,7 @@ export class Recipe {
       [],
       customUnits,
       recipeObject['id'],
-      true
+      true,
     );
 
     recipe.ingredients = recipeObject['ingredients'].map((i: object) =>
