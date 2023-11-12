@@ -1,11 +1,11 @@
 <div class="home">
   <div class="recipe-list">
     <mat-list>
-      <mat-list *ngFor="let recipe of allRecipes">
+      <mat-list-item *ngFor="let recipe of allRecipes">
         <div class="home-recipe">
           <a [routerLink]="recipeLink(recipe.id)">{{ recipe.title }}</a>
         </div>
-      </mat-list>
+      </mat-list-item>
     </mat-list>
     <div class="no-recipes" *ngIf="allRecipes.length == 0">No recipes in storage.</div>
   </div>

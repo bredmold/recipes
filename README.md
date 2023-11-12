@@ -47,7 +47,8 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 * Keyboard navigation in recipe editor
 * Track "dirty" status for recipes and use it to enable the save button
-* Delete recipe fature
+* Delete recipe feature
+* Prevent saving two recipes with the same name
 * Recipe Editor should not have a "back" button on a new recipe until it's been saved
 * Ingredient should be able to have "null" units
 * Recipe viewer 

@@ -2,12 +2,12 @@
   List of cooking steps
 
   <div class="steps-list">
-    <mat-list cdkDropList (cdkDropListDropped)="dropStep($event)">
-      <mat-list-item class="add-step" (click)="addStep(0)">
-        <span matTooltip="Add Step">+</span>
-      </mat-list-item>
-      <mat-list-item *ngFor="let step of steps()" class="single-step-edit" cdkDrag>
-        <div mat-line>
+    <div cdkDropList (cdkDropListDropped)="dropStep($event)">
+      <div>
+        <button mat-flat-button color="primary" matTooltip="Add Step" class="add-step" (click)="addStep(0)">+</button>
+      </div>
+      <div *ngFor="let step of steps()" class="single-step-edit" cdkDrag>
+        <div>
           <mat-form-field class="step-description">
             <mat-label>Description</mat-label>
             <textarea
@@ -24,7 +24,7 @@
           </span>
           <span class="drag-handle" cdkDragHandle>&#10303;</span>
         </div>
-        <div mat-line>
+        <div>
           <mat-form-field>
             <mat-label>Ingredients</mat-label>
             <mat-select
@@ -34,14 +34,16 @@
             >
               <mat-option *ngFor="let ingredient of ingredients()" [value]="ingredient.id">{{
                 ingredient.name
-              }}</mat-option>
+                }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
-      </mat-list-item>
-      <mat-list-item class="add-step" (click)="addStep(steps().length)">
-        <span matTooltip="Add Step">+</span>
-      </mat-list-item>
-    </mat-list>
+      </div>
+      <div>
+        <button mat-flat-button color="primary" matTooltip="Add Step" class="add-step"
+                (click)="addStep(steps().length)">+
+        </button>
+      </div>
+    </div>
   </div>
 </div>

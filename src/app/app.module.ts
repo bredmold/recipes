@@ -6,23 +6,24 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CustomUnitsDialog, IngredientsComponent } from './ingredients/ingredients.component';
 import { StepsComponent } from './steps/steps.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatLegacyListModule as MatListModule } from '@angular/material/legacy-list';
-import { MatLegacyFormFieldModule as MatFormFieldModule } from '@angular/material/legacy-form-field';
-import { MatLegacyInputModule as MatInputModule } from '@angular/material/legacy-input';
-import { MatLegacyTooltipModule as MatTooltipModule } from '@angular/material/legacy-tooltip';
-import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
+import { MatListModule } from '@angular/material/list';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RecipeEditorComponent } from './recipe-editor/recipe-editor.component';
-import { MatLegacyDialogModule as MatDialogModule } from '@angular/material/legacy-dialog';
-import { MatLegacyButtonModule as MatButtonModule } from '@angular/material/legacy-button';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 import { RecipeViewerComponent } from './recipe-viewer/recipe-viewer.component';
-import { MatLegacyTabsModule as MatTabsModule } from '@angular/material/legacy-tabs';
+import { MatTabsModule } from '@angular/material/tabs';
 import { AppRoutingModule } from './app-routing.module';
 import { RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { SignInComponent } from './auth/sign-in/sign-in.component';
 import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatLineModule } from "@angular/material/core";
 
 @NgModule({
   declarations: [
@@ -53,6 +54,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     RouterModule,
     FormsModule,
     DragDropModule,
+    MatLineModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

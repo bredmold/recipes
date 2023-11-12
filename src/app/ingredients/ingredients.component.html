@@ -2,11 +2,11 @@
   List of ingredients
 
   <div class="ingredient-list">
-    <mat-list cdkDropList (cdkDropListDropped)="dropIngredient($event)">
-      <mat-list-item class="add-ingredient" (click)="addIngredient(0)">
-        <span matTooltip="Add Ingredient">+</span>
-      </mat-list-item>
-      <mat-list-item *ngFor="let ingredient of ingredients()" cdkDrag>
+    <div cdkDropList (cdkDropListDropped)="dropIngredient($event)">
+      <div>
+        <button mat-flat-button color="primary" matTooltip="Add Ingredient" class="add-ingredient" (click)="addIngredient(0)">+</button>
+      </div>
+      <div *ngFor="let ingredient of ingredients()" cdkDrag>
         <mat-form-field [style.width.em]="6">
           <mat-label>Volume Amount</mat-label>
           <input
@@ -55,10 +55,10 @@
           <span matTooltip="Remove Ingredient">-</span>
         </span>
         <span class="drag-handle" cdkDragHandle>&#10303;</span>
-      </mat-list-item>
-      <mat-list-item class="add-ingredient" (click)="addIngredient(ingredients().length)">
-        <span matTooltip="Add Ingredient">+</span>
-      </mat-list-item>
-    </mat-list>
+      </div>
+      <div>
+        <button mat-flat-button color="primary" matTooltip="Add Ingredient" class="add-ingredient" (click)="addIngredient(ingredients().length)">+</button>
+      </div>
+    </div>
   </div>
 </div>
