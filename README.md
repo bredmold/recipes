@@ -51,6 +51,8 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 * Prevent saving two recipes with the same name
 * Recipe Editor should not have a "back" button on a new recipe until it's been saved
 * Ingredient should be able to have "null" units
+* Home screen
+  * Case-insensitive sort for recipe list
 * Recipe viewer 
   * Visual indicator for swiping on phones
 * Input validation

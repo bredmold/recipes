@@ -1,23 +1,28 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatLegacyListModule as MatListModule } from '@angular/material/legacy-list';
-import { MatLegacyFormFieldModule as MatFormFieldModule } from '@angular/material/legacy-form-field';
-import { MatLegacyInputModule as MatInputModule } from '@angular/material/legacy-input';
-import { MatLegacyTooltipModule as MatTooltipModule } from '@angular/material/legacy-tooltip';
-import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
+import { MatListModule } from '@angular/material/list';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IngredientsComponent } from './ingredients/ingredients.component';
 import { StepsComponent } from './steps/steps.component';
 import { RecipeEditorComponent } from './recipe-editor/recipe-editor.component';
-import { MatLegacyDialogModule as MatDialogModule } from '@angular/material/legacy-dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { RecipeService } from './services/recipe.service';
 import { BehaviorSubject } from 'rxjs';
 import { Recipe } from './types/recipe';
 import { Router } from '@angular/router';
 import { LayoutMode, ResponsiveLayoutService } from './services/responsive-layout.service';
+import { HarnessLoader } from '@angular/cdk/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { MatDialogHarness } from '@angular/material/dialog/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { DeleteRecipeDialog } from './recipe-delete/delete-recipe-dialog';
 
 describe('AppComponent', () => {
   let app: AppComponent;
@@ -25,6 +30,7 @@ describe('AppComponent', () => {
   let recipeServiceSpy: any;
   let routerSpy: any;
   let responsiveLayoutServiceSpy: any;
+  let loader: HarnessLoader;
 
   beforeEach(async () => {
     recipeServiceSpy = {
@@ -55,17 +61,18 @@ describe('AppComponent', () => {
           useValue: responsiveLayoutServiceSpy,
         },
       ],
-      declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeEditorComponent],
+      declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeEditorComponent, DeleteRecipeDialog],
       imports: [
         BrowserModule,
-        BrowserAnimationsModule,
         MatDialogModule,
-        MatToolbarModule,
-        MatListModule,
         MatFormFieldModule,
         MatInputModule,
-        MatTooltipModule,
+        MatListModule,
         MatSelectModule,
+        MatSnackBarModule,
+        MatToolbarModule,
+        MatTooltipModule,
+        NoopAnimationsModule,
         ReactiveFormsModule,
       ],
     }).compileComponents();
@@ -73,7 +80,9 @@ describe('AppComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AppComponent);
+    loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
     app = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it('should create the app', () => {
@@ -94,8 +103,10 @@ describe('AppComponent', () => {
     await fixture.whenStable();
 
     expect(app.viewRecipe).toBeTruthy();
-    expect(app.isViewerLinkDisabled()).toBeTrue();
-    expect(app.isEditDisabled()).toBeFalse();
+    expect(app.isViewerLinkEnabled()).toBeFalse();
+    expect(app.isRecipeNameEnabled()).toBeTrue();
+    expect(app.isEditEnabled()).toBeTrue();
+    expect(app.isDeleteEnabled()).toBeFalse();
     expect(app.recipeTitle()).toEqual('view');
     expect(app.editLink()).toEqual(`recipe/${recipe.id}/edit`);
   });
@@ -108,9 +119,28 @@ describe('AppComponent', () => {
     await fixture.whenStable();
 
     expect(app.editRecipe).toBeTruthy();
-    expect(app.isViewerLinkDisabled()).toBeTrue();
-    expect(app.isSaveDisabled()).toBeFalse();
-    expect(app.isEditDisabled()).toBeTrue();
+    expect(app.isViewerLinkEnabled()).toBeFalse();
+    expect(app.isRecipeNameEnabled()).toBeTrue();
+    expect(app.isSaveEnabled()).toBeTrue();
+    expect(app.isEditEnabled()).toBeFalse();
+    expect(app.isDeleteEnabled()).toBeFalse();
+    expect(app.recipeTitle()).toEqual('edit');
+    expect(app.editLink()).toEqual('');
+  });
+
+  it('should set the UI state when loading a recipe', async () => {
+    expect(app.editRecipe).toBeUndefined();
+
+    const recipe = new Recipe('edit', 'desc', [], [], [], 'already-persisted', true);
+    recipeServiceSpy.editRecipe.next(recipe);
+    await fixture.whenStable();
+
+    expect(app.editRecipe).toBeTruthy();
+    expect(app.isViewerLinkEnabled()).toBeTrue();
+    expect(app.isRecipeNameEnabled()).toBeFalse();
+    expect(app.isSaveEnabled()).toBeTrue();
+    expect(app.isEditEnabled()).toBeFalse();
+    expect(app.isDeleteEnabled()).toBeTrue();
     expect(app.recipeTitle()).toEqual('edit');
     expect(app.editLink()).toEqual('');
   });
@@ -126,10 +156,23 @@ describe('AppComponent', () => {
     await fixture.whenStable();
 
     recipeServiceSpy.saveRecipe.and.returnValue(Promise.resolve(recipe));
-    app.recipeSave();
+    await app.recipeSave();
 
     await fixture.whenStable();
     expect(recipeServiceSpy.saveRecipe.calls.count()).toEqual(1);
+  });
+
+  it('should post a confirmation dialog on recipe delete', async () => {
+    const recipe = new Recipe('title', 'desc', [], [], []);
+    recipeServiceSpy.editRecipe.next(recipe);
+    await fixture.whenStable();
+
+    app.recipeDelete();
+    await fixture.whenStable();
+
+    const dialogHarness = await loader.getHarness(MatDialogHarness);
+    await expectAsync(dialogHarness.getTitleText()).toBeResolvedTo(recipe.title);
+    await dialogHarness.close();
   });
 
   it('should disable edit features on a phone screen', () => {

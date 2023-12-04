@@ -5,16 +5,16 @@ import { AppComponent } from '../app.component';
 import { IngredientsComponent } from '../ingredients/ingredients.component';
 import { RecipeEditorComponent } from '../recipe-editor/recipe-editor.component';
 import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatLegacyListModule as MatListModule } from '@angular/material/legacy-list';
-import { MatLegacyFormFieldModule as MatFormFieldModule } from '@angular/material/legacy-form-field';
-import { MatLegacyInputModule as MatInputModule } from '@angular/material/legacy-input';
-import { MatLegacyTooltipModule as MatTooltipModule } from '@angular/material/legacy-tooltip';
-import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
+import { MatListModule } from '@angular/material/list';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Recipe, RecipeAmount, RecipeIngredient } from '../types/recipe';
-import { MatLegacySelectHarness as MatSelectHarness } from '@angular/material/legacy-select/testing';
+import { MatSelectHarness } from '@angular/material/select/testing';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 
@@ -29,13 +29,13 @@ describe('StepsComponent', () => {
       declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeEditorComponent],
       imports: [
         BrowserModule,
-        BrowserAnimationsModule,
-        MatToolbarModule,
-        MatListModule,
         MatFormFieldModule,
         MatInputModule,
-        MatTooltipModule,
+        MatListModule,
         MatSelectModule,
+        MatToolbarModule,
+        MatTooltipModule,
+        NoopAnimationsModule,
         ReactiveFormsModule,
       ],
     }).compileComponents();
