@@ -11,7 +11,7 @@ describe('RecipeService', () => {
   let service: RecipeService;
 
   beforeEach(() => {
-    ddbService = jasmine.createSpyObj('DdbService', ['query', 'putItem']);
+    ddbService = jasmine.createSpyObj('DdbService', ['query', 'putItem', 'deleteItem']);
     sessionService = jasmine.createSpyObj('SessionService', ['loggedInEmail']);
 
     TestBed.configureTestingModule({
@@ -67,6 +67,23 @@ describe('RecipeService', () => {
 
     const recipes = await service.listRecipes();
     expect(recipes).toEqual([new Recipe('title', 'desc', [], [], [], 'id', true)]);
+  });
+
+  it('should delete a recipe', async () => {
+    sessionService.loggedInEmail.and.returnValue('user@example.com');
+
+    ddbService.deleteItem.and.returnValue(Promise.resolve({}));
+
+    await service.deleteRecipeById('id');
+
+    const deleteParams = ddbService.deleteItem.calls.first();
+    expect(deleteParams.args[0].input).toEqual({
+      TableName: 'recipes',
+      Key: {
+        ownerEmail: { S: 'user@example.com' },
+        recipeId: { S: 'id' },
+      },
+    });
   });
 
   it('should resolve the promise when calling getRecipeById', async () => {
