@@ -7,10 +7,12 @@
       <span class="recipe-title" *ngIf="!showFullHeader()">{{ recipeTitle() }}</span>
 
       <!-- Tablet/PC UI -->
-      <button (click)="openRecipeViewer()" [disabled]="isViewerLinkDisabled()" *ngIf="showFullHeader()">{{ recipeTitle() }}</button>
+      <button (click)="openRecipeViewer()" *ngIf="isViewerLinkEnabled()">{{ recipeTitle() }}</button>
+      <button [disabled]="true" *ngIf="isRecipeNameEnabled()">{{ recipeTitle() }}</button>
       <span class="recipe-spacer" *ngIf="showFullHeader()"></span>
-      <button (click)="recipeSave()" [disabled]="isSaveDisabled()" *ngIf="showFullHeader()">Save</button>
-      <button [routerLink]="editLink()" [disabled]="isEditDisabled()" *ngIf="showFullHeader()">Edit</button>
+      <button (click)="recipeDelete()" *ngIf="isDeleteEnabled()">Delete</button>
+      <button (click)="recipeSave()" *ngIf="isSaveEnabled()">Save</button>
+      <button [routerLink]="editLink()" *ngIf="isEditEnabled()">Edit</button>
     </mat-toolbar>
   </div>
   <div class="recipe">

@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { v4 as uuidv4 } from 'uuid';
 import { RecipeEditorComponent } from './recipe-editor.component';
 import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -49,15 +49,15 @@ describe('RecipeEditorComponent', () => {
       declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeEditorComponent],
       imports: [
         BrowserModule,
-        BrowserAnimationsModule,
-        MatToolbarModule,
-        MatListModule,
+        MatDialogModule,
         MatFormFieldModule,
         MatInputModule,
-        MatTooltipModule,
+        MatListModule,
         MatSelectModule,
+        MatToolbarModule,
+        MatTooltipModule,
+        NoopAnimationsModule,
         ReactiveFormsModule,
-        MatDialogModule,
       ],
     }).compileComponents();
   });

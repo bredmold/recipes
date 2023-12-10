@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PutItemCommand, QueryCommand, QueryCommandOutput } from '@aws-sdk/client-dynamodb';
+import { DeleteItemCommand, PutItemCommand, QueryCommand, QueryCommandOutput } from '@aws-sdk/client-dynamodb';
 import { BehaviorSubject } from 'rxjs';
 import { CacheService, TypedCache } from './cache.service';
 import { DdbService } from './ddb.service';
@@ -88,6 +88,22 @@ export class RecipeService {
       },
       { key: recipeId, ttl: 300000 },
     );
+  }
+
+  async deleteRecipeById(recipeId: string): Promise<any> {
+    const ownerEmail = this.sessionService.loggedInEmail();
+    if (!ownerEmail) throw 'No logged in email';
+
+    const deleteRecipeCommand = new DeleteItemCommand({
+      TableName: this.tableName,
+      Key: {
+        ownerEmail: { S: ownerEmail },
+        recipeId: { S: recipeId },
+      },
+    });
+    const deleteItemResponse = await this.ddbService.deleteItem(deleteRecipeCommand);
+    console.log(deleteItemResponse);
+    this.recipeCache.invalidate(recipeId);
   }
 
   private parseQueryResponse(queryResponse: QueryCommandOutput): Recipe[] {

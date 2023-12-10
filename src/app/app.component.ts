@@ -5,6 +5,8 @@ import packageJson from '../../package.json';
 import { SessionService } from './services/session.service';
 import { Router } from '@angular/router';
 import { LayoutMode, ResponsiveLayoutService } from './services/responsive-layout.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteRecipeDialog } from './recipe-delete/delete-recipe-dialog';
 
 @Component({
   selector: 'app-root',
@@ -23,6 +25,7 @@ export class AppComponent {
     private readonly sessionService: SessionService,
     private readonly router: Router,
     private readonly responsiveLayoutService: ResponsiveLayoutService,
+    private readonly deleteRecipeDialog: MatDialog,
   ) {
     this.recipeService.viewRecipe.subscribe((viewRecipe) => {
       this.viewRecipe = viewRecipe;
@@ -32,18 +35,28 @@ export class AppComponent {
     });
   }
 
-  recipeSave() {
+  async recipeSave() {
     if (this.editRecipe) {
-      this.recipeService.saveRecipe(this.editRecipe).then(
-        (recipe) => {
-          console.log(`Recipe saved: ${recipe.id}`);
-        },
-        (err) => {
-          console.error(err);
-        },
-      );
+      try {
+        const recipe = await this.recipeService.saveRecipe(this.editRecipe);
+        console.log(`Recipe saved: ${recipe.id}`);
+      } catch (err) {
+        console.error(err);
+      }
     } else {
       console.warn('No edit recipe to save');
+    }
+  }
+
+  recipeDelete() {
+    if (this.editRecipe) {
+      this.deleteRecipeDialog.open(DeleteRecipeDialog, {
+        data: this.editRecipe,
+        enterAnimationDuration: 0.25,
+        exitAnimationDuration: 0,
+      });
+    } else {
+      console.warn('No recipe to delete');
     }
   }
 
@@ -61,16 +74,25 @@ export class AppComponent {
     }
   }
 
-  isViewerLinkDisabled(): boolean {
-    return this.editRecipe ? !this.editRecipe.hasBeenSaved() : true;
+  isViewerLinkEnabled(): boolean {
+    return this.showFullHeader() && !!this.editRecipe && this.editRecipe.hasBeenSaved();
   }
 
-  isSaveDisabled(): boolean {
-    return !this.editRecipe;
+  isRecipeNameEnabled(): boolean {
+    const unsavedEdit = !!this.editRecipe && !this.editRecipe.hasBeenSaved();
+    return this.showFullHeader() && (!!this.viewRecipe || unsavedEdit);
   }
 
-  isEditDisabled(): boolean {
-    return !this.viewRecipe;
+  isSaveEnabled(): boolean {
+    return this.showFullHeader() && !!this.editRecipe;
+  }
+
+  isDeleteEnabled(): boolean {
+    return this.showFullHeader() && !!this.editRecipe && this.editRecipe.hasBeenSaved();
+  }
+
+  isEditEnabled(): boolean {
+    return this.showFullHeader() && !!this.viewRecipe;
   }
 
   showFullHeader(): boolean {

@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
+  DeleteItemCommand,
+  DeleteItemCommandOutput,
   DynamoDBClient,
   PutItemCommand,
   PutItemCommandOutput,
@@ -28,6 +30,10 @@ export class DdbService {
   }
 
   putItem(command: PutItemCommand): Promise<PutItemCommandOutput> {
+    return this.getDdbClient().send(command);
+  }
+
+  deleteItem(command: DeleteItemCommand): Promise<DeleteItemCommandOutput> {
     return this.getDdbClient().send(command);
   }
 

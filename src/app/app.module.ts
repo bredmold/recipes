@@ -23,38 +23,42 @@ import { HomeComponent } from './home/home.component';
 import { SignInComponent } from './auth/sign-in/sign-in.component';
 import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { MatLineModule } from "@angular/material/core";
+import { MatLineModule } from '@angular/material/core';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { DeleteRecipeDialog } from './recipe-delete/delete-recipe-dialog';
 
 @NgModule({
   declarations: [
     AppComponent,
+    CustomUnitsDialog,
+    DeleteRecipeDialog,
+    HomeComponent,
     IngredientsComponent,
-    StepsComponent,
     RecipeEditorComponent,
     RecipeViewerComponent,
-    HomeComponent,
     SignInComponent,
-    CustomUnitsDialog,
+    StepsComponent,
   ],
   imports: [
     AmplifyAuthenticatorModule,
+    AppRoutingModule,
     BrowserModule,
     BrowserAnimationsModule,
-    MatToolbarModule,
-    MatListModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatTooltipModule,
-    MatSelectModule,
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatTabsModule,
-    AppRoutingModule,
-    RouterModule,
-    FormsModule,
     DragDropModule,
+    FormsModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatFormFieldModule,
     MatLineModule,
+    MatListModule,
+    MatInputModule,
+    MatSelectModule,
+    MatSnackBarModule,
+    MatTabsModule,
+    MatToolbarModule,
+    MatTooltipModule,
+    ReactiveFormsModule,
+    RouterModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
