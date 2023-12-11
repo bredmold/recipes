@@ -1,6 +1,6 @@
 {
   "name": "recipe",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "scripts": {
     "format": "prettier --write '**/*.ts'",
     "ng": "ng",
@@ -16,28 +16,28 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^16.2.12",
-    "@angular/cdk": "^16.2.11",
-    "@angular/common": "^16.2.12",
-    "@angular/compiler": "^16.2.12",
-    "@angular/core": "^16.2.12",
-    "@angular/forms": "^16.2.12",
-    "@angular/material": "^16.2.11",
-    "@angular/platform-browser": "^16.2.12",
-    "@angular/platform-browser-dynamic": "^16.2.12",
-    "@angular/router": "^16.2.12",
+    "@angular/animations": "^17.0.6",
+    "@angular/cdk": "^17.0.3",
+    "@angular/common": "^17.0.6",
+    "@angular/compiler": "^17.0.6",
+    "@angular/core": "^17.0.6",
+    "@angular/forms": "^17.0.6",
+    "@angular/material": "^17.0.3",
+    "@angular/platform-browser": "^17.0.6",
+    "@angular/platform-browser-dynamic": "^17.0.6",
+    "@angular/router": "^17.0.6",
     "@aws-amplify/ui-angular": "^4.0.9",
     "@aws-sdk/client-dynamodb": "^3.441.0",
     "aws-amplify": "^5.3.11",
     "rxjs": "~7.4.0",
     "tslib": "^2.3.0",
     "uuid": "^9.0.0",
-    "zone.js": "~0.13.1"
+    "zone.js": "~0.14.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^16.2.9",
-    "@angular/cli": "^16.2.9",
-    "@angular/compiler-cli": "^16.2.12",
+    "@angular-devkit/build-angular": "^17.0.6",
+    "@angular/cli": "^17.0.6",
+    "@angular/compiler-cli": "^17.0.6",
     "@types/jasmine": "~3.10.0",
     "@types/node": "^20.8.10",
     "@types/uuid": "^9.0.6",
@@ -50,7 +50,7 @@
     "karma-firefox-launcher": "^2.1.2",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "prettier": "^3.0.3",
-    "typescript": "~5.1.6"
+    "prettier": "^3.1.1",
+    "typescript": "~5.2.2"
   }
 }
