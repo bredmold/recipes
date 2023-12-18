@@ -69,6 +69,24 @@ describe('RecipeService', () => {
     expect(recipes).toEqual([new Recipe('title', 'desc', [], [], [], 'id', true)]);
   });
 
+  it('should return true when recipe title matches', async () => {
+    sessionService.loggedInEmail.and.returnValue('user@example.com');
+    const queryResponse: QueryCommandOutput = {
+      Items: [
+        {
+          recipeTitle: { S: 'title' },
+        },
+      ],
+      Count: 1,
+      $metadata: {},
+    };
+
+    ddbService.query.and.returnValue(Promise.resolve(queryResponse));
+
+    const hasRecipe = await service.hasRecipeTitle('title');
+    expect(hasRecipe).toBeTrue();
+  });
+
   it('should delete a recipe', async () => {
     sessionService.loggedInEmail.and.returnValue('user@example.com');
 

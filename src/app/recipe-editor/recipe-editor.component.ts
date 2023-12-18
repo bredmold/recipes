@@ -2,6 +2,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Recipe } from '../types/recipe';
 import { ActivatedRoute } from '@angular/router';
 import { RecipeService } from '../services/recipe.service';
+import { AsyncValidatorFn, FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-recipe',
@@ -9,8 +10,12 @@ import { RecipeService } from '../services/recipe.service';
   styleUrls: ['./recipe-editor.component.sass'],
 })
 export class RecipeEditorComponent {
+  private static readonly TITLE_KEY = 'title';
+
   @ViewChild('titleInput') titleInput!: ElementRef;
   recipe?: Recipe;
+
+  titleControl = new FormControl('', [Validators.required], [this.validateTitle()]);
 
   constructor(
     private readonly activeRoute: ActivatedRoute,
@@ -41,5 +46,21 @@ export class RecipeEditorComponent {
     } else {
       console.warn('No active recipe');
     }
+  }
+
+  validateTitle(): AsyncValidatorFn {
+    return async (control) => {
+      const title = control.value as string;
+      if (title.trim().length <= 0) return null;
+      if (!this.recipe) return null;
+
+      this.recipe.clearError(RecipeEditorComponent.TITLE_KEY);
+      const hasTitle = await this.recipeService.hasRecipeTitle(title);
+      if (hasTitle) {
+        console.warn(`Found ${title}`);
+        this.recipe.registerError(RecipeEditorComponent.TITLE_KEY);
+        return { titleExists: true };
+      } else return null;
+    };
   }
 }

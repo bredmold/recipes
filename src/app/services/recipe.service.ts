@@ -64,6 +64,24 @@ export class RecipeService {
     return this.parseQueryResponse(listRecipesResult);
   }
 
+  async hasRecipeTitle(title: string): Promise<boolean> {
+    const ownerEmail = this.sessionService.loggedInEmail();
+    if (!ownerEmail) throw 'No logged in email';
+
+    const hasRecipeTitleCommand = new QueryCommand({
+      TableName: this.tableName,
+      IndexName: this.titleIndexName,
+      KeyConditionExpression: 'ownerEmail = :ownerEmail AND recipeTitle = :title',
+      ExpressionAttributeValues: {
+        ':ownerEmail': { S: ownerEmail },
+        ':title': { S: title },
+      },
+      ProjectionExpression: 'recipeTitle'
+    });
+    const hasRecipeTitleResults = await this.ddbService.query(hasRecipeTitleCommand);
+    return !!hasRecipeTitleResults.Count && hasRecipeTitleResults.Count > 0;
+  }
+
   getRecipeById(recipeId: string): Promise<Recipe> {
     return this.recipeCache.makeCachedCall(
       async () => {

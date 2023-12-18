@@ -121,7 +121,8 @@ describe('AppComponent', () => {
     expect(app.editRecipe).toBeTruthy();
     expect(app.isViewerLinkEnabled()).toBeFalse();
     expect(app.isRecipeNameEnabled()).toBeTrue();
-    expect(app.isSaveEnabled()).toBeTrue();
+    expect(app.isSaveVisible()).toBeTrue();
+    expect(app.isSaveDisabled()).toBeFalse();
     expect(app.isEditEnabled()).toBeFalse();
     expect(app.isDeleteEnabled()).toBeFalse();
     expect(app.recipeTitle()).toEqual('edit');
@@ -138,7 +139,8 @@ describe('AppComponent', () => {
     expect(app.editRecipe).toBeTruthy();
     expect(app.isViewerLinkEnabled()).toBeTrue();
     expect(app.isRecipeNameEnabled()).toBeFalse();
-    expect(app.isSaveEnabled()).toBeTrue();
+    expect(app.isSaveVisible()).toBeTrue();
+    expect(app.isSaveDisabled()).toBeFalse();
     expect(app.isEditEnabled()).toBeFalse();
     expect(app.isDeleteEnabled()).toBeTrue();
     expect(app.recipeTitle()).toEqual('edit');
@@ -160,6 +162,19 @@ describe('AppComponent', () => {
 
     await fixture.whenStable();
     expect(recipeServiceSpy.saveRecipe.calls.count()).toEqual(1);
+  });
+
+  it('should disable save for a recipe with errors', async () => {
+    const recipe = new Recipe('title', 'desc', [], [], []);
+    recipeServiceSpy.editRecipe.next(recipe);
+    await fixture.whenStable();
+
+    recipe.registerError('test');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(app.isSaveVisible()).toBeTrue();
+    expect(app.isSaveDisabled()).toBeTrue();
   });
 
   it('should post a confirmation dialog on recipe delete', async () => {

@@ -2,7 +2,13 @@
   <div class="recipe-header">
     <mat-form-field>
       <mat-label>Title</mat-label>
-      <input matInput #titleInput id="titleInput" [value]="recipe?.title" (input)="recipeTitle()" />
+      <input matInput #titleInput id="titleInput" [value]="recipe?.title" [formControl]="titleControl"
+             (input)="recipeTitle()" />
+      @if (titleControl.hasError('titleExists')) {
+        <mat-error>Title already exists</mat-error>
+      } @else if (titleControl.hasError('required')) {
+        <mat-error>Title is required</mat-error>
+      }
     </mat-form-field>
   </div>
   <div class="recipe-tabs">

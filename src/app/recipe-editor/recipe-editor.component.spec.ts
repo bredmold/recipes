@@ -19,12 +19,17 @@ import { RecipeService } from '../services/recipe.service';
 import { ActivatedRouteStub } from '../../testing/activated-route-stub';
 import { Recipe } from '../types/recipe';
 import { MatDialogModule } from '@angular/material/dialog';
+import { HarnessLoader } from '@angular/cdk/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { MatInputHarness } from '@angular/material/input/testing';
+import { MatErrorHarness } from '@angular/material/form-field/testing';
 
 describe('RecipeEditorComponent', () => {
   let component: RecipeEditorComponent;
   let fixture: ComponentFixture<RecipeEditorComponent>;
   let activeRoute: ActivatedRouteStub;
   let recipeServiceSpy: any;
+  let loader: HarnessLoader;
 
   beforeEach(async () => {
     activeRoute = new ActivatedRouteStub();
@@ -32,6 +37,7 @@ describe('RecipeEditorComponent', () => {
     recipeServiceSpy = {
       setEditRecipe: jasmine.createSpy('setEditRecipe'),
       getRecipeById: jasmine.createSpy('getRecipeById'),
+      hasRecipeTitle: jasmine.createSpy('hasRecipeTitle'),
     };
     recipeServiceSpy.getRecipeById.and.returnValue(Promise.reject('nope'));
 
@@ -60,12 +66,12 @@ describe('RecipeEditorComponent', () => {
         ReactiveFormsModule,
       ],
     }).compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(RecipeEditorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+
+    loader = TestbedHarnessEnvironment.loader(fixture);
   });
 
   it('should create', () => {
@@ -95,14 +101,50 @@ describe('RecipeEditorComponent', () => {
   });
 
   it('should update the recipe title', async () => {
-    await fixture.whenStable();
-    fixture.detectChanges();
+    recipeServiceSpy.hasRecipeTitle.and.returnValue(Promise.resolve(false));
 
-    const titleInput: HTMLInputElement = window.document.getElementById('titleInput') as HTMLInputElement;
-    titleInput.value = 'new title';
-    titleInput.dispatchEvent(new Event('input'));
-    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const titleInput = await loader.getHarness(MatInputHarness);
+    await titleInput.setValue('new title');
+    await fixture.whenStable();
 
     expect(component.recipe?.title).toBe('new title');
+  });
+
+  it('should show an error if the title is empty', async () => {
+    recipeServiceSpy.hasRecipeTitle.and.returnValue(Promise.resolve(false));
+
+    await fixture.whenStable();
+
+    const titleInput = await loader.getHarness(MatInputHarness);
+    const hasTitleError = await loader.hasHarness(MatErrorHarness);
+    expect(hasTitleError).toBeFalse();
+
+    await titleInput.setValue('');
+    await titleInput.blur();
+    await fixture.whenStable();
+
+    const titleError = await loader.getHarness(MatErrorHarness);
+    const errorText = await titleError.getText();
+    expect(errorText).toContain('required');
+  });
+
+  it('should show an error if the title is a duplicate', async () => {
+    recipeServiceSpy.hasRecipeTitle.and.returnValue(Promise.resolve(true));
+
+    await fixture.whenStable();
+
+    const titleInput = await loader.getHarness(MatInputHarness);
+    const hasTitleError = await loader.hasHarness(MatErrorHarness);
+    expect(hasTitleError).toBeFalse();
+
+    await titleInput.setValue('duplicate');
+    await titleInput.blur();
+    await fixture.whenStable();
+
+    const titleError = await loader.getHarness(MatErrorHarness);
+    const errorText = await titleError.getText();
+    expect(errorText).toContain('exists');
   });
 });

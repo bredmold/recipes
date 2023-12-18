@@ -83,8 +83,12 @@ export class AppComponent {
     return this.showFullHeader() && (!!this.viewRecipe || unsavedEdit);
   }
 
-  isSaveEnabled(): boolean {
+  isSaveVisible(): boolean {
     return this.showFullHeader() && !!this.editRecipe;
+  }
+
+  isSaveDisabled(): boolean {
+    return !!this.editRecipe && this.editRecipe.hasErrors();
   }
 
   isDeleteEnabled(): boolean {

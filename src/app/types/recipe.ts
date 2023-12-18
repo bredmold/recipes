@@ -234,6 +234,8 @@ export class RecipeStep {
 }
 
 export class Recipe {
+  private errors = new Set<string>();
+
   /**
    * Construct an entire recipe
    * @param id Recipe ID (defaults to a random UUID)
@@ -260,6 +262,18 @@ export class Recipe {
 
   hasBeenSaved(): boolean {
     return this.persisted;
+  }
+
+  hasErrors(): boolean {
+    return this.errors.size > 0;
+  }
+
+  clearError(key: string) {
+    this.errors.delete(key);
+  }
+
+  registerError(key: string) {
+    this.errors.add(key);
   }
 
   unitsFor(unitsId: string): QuantityUnitInformation | undefined {

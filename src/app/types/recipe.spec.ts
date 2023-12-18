@@ -383,4 +383,25 @@ describe('Recipe', () => {
     recipe.saved();
     expect(recipe.hasBeenSaved()).toBeTrue();
   });
+
+  it('should not have errors when newly created', () => {
+    const recipe = new Recipe('test', 'test', [], [], []);
+    expect(recipe.hasErrors()).toBeFalse();
+  });
+
+  it('should have errors when an error is registered', () => {
+    const recipe = new Recipe('test', 'test', [], [], []);
+    recipe.registerError('test');
+    expect(recipe.hasErrors()).toBeTrue();
+  });
+
+  it('should no longer have errors when an existing error is cleared', () => {
+    const recipe = new Recipe('test', 'test', [], [], []);
+
+    recipe.registerError('test');
+    expect(recipe.hasErrors()).toBeTrue();
+
+    recipe.clearError('test');
+    expect(recipe.hasErrors()).toBeFalse();
+  });
 });

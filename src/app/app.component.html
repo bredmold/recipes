@@ -7,12 +7,24 @@
       <span class="recipe-title" *ngIf="!showFullHeader()">{{ recipeTitle() }}</span>
 
       <!-- Tablet/PC UI -->
-      <button (click)="openRecipeViewer()" *ngIf="isViewerLinkEnabled()">{{ recipeTitle() }}</button>
-      <button [disabled]="true" *ngIf="isRecipeNameEnabled()">{{ recipeTitle() }}</button>
-      <span class="recipe-spacer" *ngIf="showFullHeader()"></span>
-      <button (click)="recipeDelete()" *ngIf="isDeleteEnabled()">Delete</button>
-      <button (click)="recipeSave()" *ngIf="isSaveEnabled()">Save</button>
-      <button [routerLink]="editLink()" *ngIf="isEditEnabled()">Edit</button>
+      @if (isViewerLinkEnabled()) {
+        <button (click)="openRecipeViewer()">{{ recipeTitle() }}</button>
+      }
+      @if (isRecipeNameEnabled()) {
+        <button [disabled]="true">{{ recipeTitle() }}</button>
+      }
+      @if (showFullHeader()) {
+        <span class="recipe-spacer"></span>
+      }
+      @if (isDeleteEnabled()) {
+        <button (click)="recipeDelete()">Delete</button>
+      }
+      @if (isSaveVisible()) {
+        <button (click)="recipeSave()" [disabled]="isSaveDisabled()">Save</button>
+      }
+      @if (isEditEnabled()) {
+        <button [routerLink]="editLink()">Edit</button>
+      }
     </mat-toolbar>
   </div>
   <div class="recipe">
