@@ -76,7 +76,7 @@ export class RecipeService {
         ':ownerEmail': { S: ownerEmail },
         ':title': { S: title },
       },
-      ProjectionExpression: 'recipeTitle'
+      ProjectionExpression: 'recipeTitle',
     });
     const hasRecipeTitleResults = await this.ddbService.query(hasRecipeTitleCommand);
     return !!hasRecipeTitleResults.Count && hasRecipeTitleResults.Count > 0;
