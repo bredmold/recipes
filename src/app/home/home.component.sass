@@ -5,20 +5,37 @@
   grid-template-rows: 1fr
   grid-template-columns: 1fr fit-content(40%)
   overflow: hidden
+  height: 100%
 
   .recipe-list
     grid-column: 1
     grid-row: 1
+    overflow: scroll
+    overflow-x: hidden
 
-  .new-recipe
+    .no-recipes
+      height: 100%
+      justify-content: center
+      display: flex
+
+      mat-spinner
+        margin: auto
+
+  .right-sidebar
     grid-column: 2
     grid-row: 1
     padding-top: 1em
+    padding-right: 1em
+    padding-left: 0.1em
+
+    .reload
+      margin-top: 1em
+      float: right
 
     button
       font-size: large
-      text-decoration: underline
 
 .home-recipe
   margin-bottom: .5em
   margin-top: .5em
+  cursor: pointer

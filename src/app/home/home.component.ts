@@ -33,6 +33,20 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  reload(): void {
+    this.allRecipes = [];
+    this.recipeService.listRecipes().then(
+      (recipes) => {
+        this.recipeService.clearActiveRecipes();
+        this.allRecipes = recipes;
+      },
+      (err) => {
+        this.recipeService.clearActiveRecipes();
+        console.error(err);
+      },
+    );
+  }
+
   newRecipe(): void {
     const newRecipe = new Recipe('New Recipe', '', [], [], []);
     this.router.navigate([`/recipe/${newRecipe.id}/edit`]).then(
@@ -44,15 +58,6 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.recipeService.listRecipes().then(
-      (recipes) => {
-        this.recipeService.clearActiveRecipes();
-        this.allRecipes = recipes;
-      },
-      (err) => {
-        this.recipeService.clearActiveRecipes();
-        console.error(err);
-      },
-    );
+    this.reload();
   }
 }

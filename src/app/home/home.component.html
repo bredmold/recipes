@@ -1,15 +1,27 @@
 <div class="home">
   <div class="recipe-list">
-    <mat-list>
-      <mat-list-item *ngFor="let recipe of allRecipes">
-        <div class="home-recipe">
-          <a [routerLink]="recipeLink(recipe.id)">{{ recipe.title }}</a>
-        </div>
-      </mat-list-item>
-    </mat-list>
-    <div class="no-recipes" *ngIf="allRecipes.length == 0">No recipes in storage.</div>
+    @if (allRecipes.length > 0) {
+      <mat-list>
+        @for (recipe of allRecipes; track recipe.id) {
+          <mat-list-item>
+            <div class="home-recipe">
+              <a [routerLink]="recipeLink(recipe.id)">{{ recipe.title }}</a>
+            </div>
+          </mat-list-item>
+        }
+      </mat-list>
+    } @else {
+      <div class="no-recipes"><mat-spinner></mat-spinner></div>
+    }
   </div>
-  <div class="new-recipe" *ngIf="showEditLinks()">
-    <button mat-button (click)="newRecipe()">New Recipe</button>
-  </div>
+  @if (showEditLinks()) {
+    <div class="right-sidebar">
+      <div class="new-recipe">
+        <button mat-raised-button color="primary" (click)="newRecipe()">New Recipe</button>
+      </div>
+      <div class="reload">
+        <button mat-button (click)="reload()">&#8635;</button>
+      </div>
+    </div>
+  }
 </div>
