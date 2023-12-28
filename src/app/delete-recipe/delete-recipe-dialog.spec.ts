@@ -54,7 +54,7 @@ describe('RecipeDeleteDialog', () => {
 
   it('should load harness for dialog', async () => {
     const recipe = new Recipe('title', 'desc', [], [], []);
-    fixture.componentInstance.open({ data: recipe });
+    fixture.componentInstance.open({ data: { recipe: recipe, duration: 100 } });
     const dialogs = await loader.getAllHarnesses(MatDialogHarness);
     expect(dialogs.length).toBe(1);
   });
@@ -62,7 +62,7 @@ describe('RecipeDeleteDialog', () => {
   it('should close the dialog when clicking cancel', async () => {
     let closed = false;
     const recipe = new Recipe('title', 'desc', [], [], []);
-    const dialogRef = fixture.componentInstance.open({ data: recipe });
+    const dialogRef = fixture.componentInstance.open({ data: { recipe: recipe, duration: 100 } });
     dialogRef.afterClosed().subscribe(() => {
       closed = true;
     });
@@ -81,7 +81,7 @@ describe('RecipeDeleteDialog', () => {
   it('should save the recipe when we click the OK button', async () => {
     let closed = false;
     const recipe = new Recipe('title', 'desc', [], [], []);
-    const dialogRef = fixture.componentInstance.open({ data: recipe });
+    const dialogRef = fixture.componentInstance.open({ data: { recipe: recipe, duration: 100 } });
     dialogRef.afterClosed().subscribe(() => {
       closed = true;
     });

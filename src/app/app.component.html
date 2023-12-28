@@ -4,7 +4,9 @@
       <button routerLink="">Recipes</button>
 
       <!-- Phone UI -->
-      <span class="recipe-title" *ngIf="!showFullHeader()">{{ recipeTitle() }}</span>
+      @if (!showFullHeader()) {
+        <span class="recipe-title">{{ recipeTitle() }}</span>
+      }
 
       <!-- Tablet/PC UI -->
       @if (isViewerLinkEnabled()) {
@@ -34,7 +36,9 @@
     <div class="footer-buttons">
       <a href="/index.html">reload</a>
       &nbsp;
-      <a *ngIf="loggedIn()" (click)="logout()" class="footer-logout">logout</a>
+      @if (loggedIn()) {
+        <a (click)="logout()" class="footer-logout">logout</a>
+      }
     </div>
     <div class="footer-copyright">
       Recipes v{{ version }} &copy;{{ year }} Aaron Gideon Goldstein (bredmold&#64;gmail.com)

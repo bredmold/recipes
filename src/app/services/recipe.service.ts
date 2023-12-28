@@ -45,6 +45,7 @@ export class RecipeService {
     });
     const putItemResult = await this.ddbService.putItem(putItemCommand);
     console.log(putItemResult);
+    recipe.saved();
     return recipe;
   }
 
@@ -64,7 +65,7 @@ export class RecipeService {
     return this.parseQueryResponse(listRecipesResult);
   }
 
-  async hasRecipeTitle(title: string): Promise<boolean> {
+  async isDuplicateTitle(recipeId: string, recipeTitle: string): Promise<boolean> {
     const ownerEmail = this.sessionService.loggedInEmail();
     if (!ownerEmail) throw 'No logged in email';
 
@@ -74,12 +75,17 @@ export class RecipeService {
       KeyConditionExpression: 'ownerEmail = :ownerEmail AND recipeTitle = :title',
       ExpressionAttributeValues: {
         ':ownerEmail': { S: ownerEmail },
-        ':title': { S: title },
+        ':title': { S: recipeTitle },
       },
-      ProjectionExpression: 'recipeTitle',
+      ProjectionExpression: 'recipeId',
     });
     const hasRecipeTitleResults = await this.ddbService.query(hasRecipeTitleCommand);
-    return !!hasRecipeTitleResults.Count && hasRecipeTitleResults.Count > 0;
+    if (hasRecipeTitleResults.Items && hasRecipeTitleResults.Items.length > 0) {
+      const resultId = hasRecipeTitleResults.Items[0]['recipeId'].S;
+      return !!resultId ? resultId !== recipeId : false;
+    } else {
+      return false;
+    }
   }
 
   getRecipeById(recipeId: string): Promise<Recipe> {
@@ -133,6 +139,13 @@ export class RecipeService {
       });
     } else {
       return [];
+    }
+  }
+
+  invalidateEditRecipe() {
+    const editRecipe = this.editRecipe.getValue();
+    if (editRecipe) {
+      this.recipeCache.invalidate(editRecipe.id);
     }
   }
 

@@ -1,0 +1,8 @@
+<h1 mat-dialog-title>{{recipe.title}}</h1>
+<div mat-dialog-content>
+  {{recipe.title}} has been modified. Discard changes?
+</div>
+<div mat-dialog-actions>
+  <button mat-stroked-button mat-dialog-close>Cancel</button>
+  <button mat-stroked-button mat-dialog-close color="warn" (click)="confirm()">Ok</button>
+</div>

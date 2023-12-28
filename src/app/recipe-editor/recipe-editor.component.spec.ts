@@ -37,7 +37,7 @@ describe('RecipeEditorComponent', () => {
     recipeServiceSpy = {
       setEditRecipe: jasmine.createSpy('setEditRecipe'),
       getRecipeById: jasmine.createSpy('getRecipeById'),
-      hasRecipeTitle: jasmine.createSpy('hasRecipeTitle'),
+      isDuplicateTitle: jasmine.createSpy('isDuplicateTitle'),
     };
     recipeServiceSpy.getRecipeById.and.returnValue(Promise.reject('nope'));
 
@@ -101,7 +101,7 @@ describe('RecipeEditorComponent', () => {
   });
 
   it('should update the recipe title', async () => {
-    recipeServiceSpy.hasRecipeTitle.and.returnValue(Promise.resolve(false));
+    recipeServiceSpy.isDuplicateTitle.and.returnValue(Promise.resolve(false));
 
     await fixture.whenStable();
 
@@ -113,7 +113,7 @@ describe('RecipeEditorComponent', () => {
   });
 
   it('should show an error if the title is empty', async () => {
-    recipeServiceSpy.hasRecipeTitle.and.returnValue(Promise.resolve(false));
+    recipeServiceSpy.isDuplicateTitle.and.returnValue(Promise.resolve(false));
 
     await fixture.whenStable();
 
@@ -121,6 +121,7 @@ describe('RecipeEditorComponent', () => {
     const hasTitleError = await loader.hasHarness(MatErrorHarness);
     expect(hasTitleError).toBeFalse();
 
+    component.titleControl.setValue('');
     await titleInput.setValue('');
     await titleInput.blur();
     await fixture.whenStable();
@@ -131,7 +132,7 @@ describe('RecipeEditorComponent', () => {
   });
 
   it('should show an error if the title is a duplicate', async () => {
-    recipeServiceSpy.hasRecipeTitle.and.returnValue(Promise.resolve(true));
+    recipeServiceSpy.isDuplicateTitle.and.returnValue(Promise.resolve(true));
 
     await fixture.whenStable();
 

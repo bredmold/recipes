@@ -22,7 +22,7 @@ import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatDialogHarness } from '@angular/material/dialog/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { DeleteRecipeDialog } from './recipe-delete/delete-recipe-dialog';
+import { DeleteRecipeDialog } from './delete-recipe/delete-recipe-dialog';
 
 describe('AppComponent', () => {
   let app: AppComponent;
@@ -175,6 +175,30 @@ describe('AppComponent', () => {
 
     expect(app.isSaveVisible()).toBeTrue();
     expect(app.isSaveDisabled()).toBeTrue();
+  });
+
+  it('should disable save for an un-modified recipe', async () => {
+    const recipe = new Recipe('title', 'desc', [], [], []);
+    recipe.checkpoint();
+
+    recipeServiceSpy.editRecipe.next(recipe);
+    await fixture.whenStable();
+
+    expect(app.isSaveVisible()).toBeTrue();
+    expect(app.isSaveDisabled()).toBeTrue();
+  });
+
+  it('should enable save for a modified recipe', async () => {
+    const recipe = new Recipe('title', 'desc', [], [], []);
+    recipe.checkpoint();
+
+    recipe.title = 'other title';
+
+    recipeServiceSpy.editRecipe.next(recipe);
+    await fixture.whenStable();
+
+    expect(app.isSaveVisible()).toBeTrue();
+    expect(app.isSaveDisabled()).toBeFalse();
   });
 
   it('should post a confirmation dialog on recipe delete', async () => {

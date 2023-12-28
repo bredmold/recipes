@@ -1,15 +1,23 @@
 <div [class]="recipeViewerClass()">
-  <div class="ingredients-view">
-    Ingredients list
-    <mat-list>
-      <mat-list-item *ngFor="let ingredient of ingredients()">
-        <input [id]="ingredient.id" type="checkbox" />
-        <label [for]="ingredient.id">{{ ingredient.render(recipe) }}</label>
-      </mat-list-item>
-    </mat-list>
-  </div>
-  <div class="steps-view">
-    Steps list
-    <p class="recipe-step" *ngFor="let step of steps()">{{ step.description }}</p>
-  </div>
+  @if (recipe) {
+    <div class="ingredients-view">
+      Ingredients list
+      <mat-list>
+        <mat-list-item *ngFor="let ingredient of ingredients()">
+          <input [id]="ingredient.id" type="checkbox" />
+          <label [for]="ingredient.id">{{ ingredient.render(recipe) }}</label>
+        </mat-list-item>
+      </mat-list>
+    </div>
+    <div class="steps-view">
+      Steps list
+      @for (step of steps(); track step.id) {
+        <p class="recipe-step">{{ step.description }}</p>
+      } @empty {
+        <p>Use the recipe editor to add some instructions to this recipe</p>
+      }
+    </div>
+  } @else {
+    <div class="loading-recipe"><mat-spinner></mat-spinner></div>
+  }
 </div>

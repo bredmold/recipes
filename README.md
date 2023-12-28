@@ -46,7 +46,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 ## TODO List
 
 * Keyboard navigation in recipe editor
-* Recipe Editor should confirm navigating away from a "dirty" recipe
 * Ingredient should be able to have "null" units
 * Home screen
   * Case-insensitive sort for recipe list
@@ -58,6 +57,8 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 * US/metric quantity conversions
 * Edit descriptions for ingredients
 * Show descriptions for ingredients in recipe viewer
+* Edit description for recipe
+* Show recipe description on the home screen
 * Recipe picker hover highlight color should use theme colors
 * Better step editor layout
 * Recipe editor should be able to select tabs via URL

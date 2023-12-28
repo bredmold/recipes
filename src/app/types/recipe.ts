@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { parse, v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 
 export enum UnitsKind {
   UsVolume = 'UsVolume',
@@ -66,11 +66,11 @@ const unitsAndAbbreviations: Array<QuantityUnitInformation> = [
  * Valid recipe versions
  *
  * <ol>
- *   <li>1: Initial recipe specification
+ *   <li>1: Initial recipe specification (deprecated)
  *   <li>2: Recipe amounts allow for US weight measures, arbitrary units
  * </ol>
  */
-const recipeVersions = ['1', '2'];
+const recipeVersions = ['2'];
 
 export class RecipeAmount {
   /**
@@ -234,7 +234,9 @@ export class RecipeStep {
 }
 
 export class Recipe {
+  private static namespace = parse('89dac2ec-2d5d-4e93-9c24-4ccf7fbcf50f');
   private errors = new Set<string>();
+  private signature: string;
 
   /**
    * Construct an entire recipe
@@ -254,14 +256,34 @@ export class Recipe {
     public customUnits: QuantityUnitInformation[],
     public readonly id: string = uuidv4(),
     private persisted: boolean = false,
-  ) {}
+  ) {
+    this.signature = '';
+  }
+
+  checkpoint(): void {
+    this.signature = this.makeSignature();
+  }
+
+  makeSignature(): string {
+    const json = JSON.stringify(this.toObject());
+    return uuidv5(json, Recipe.namespace);
+  }
+
+  getSignature(): string {
+    return this.signature;
+  }
 
   saved() {
     this.persisted = true;
+    this.checkpoint();
   }
 
   hasBeenSaved(): boolean {
     return this.persisted;
+  }
+
+  isModified(): boolean {
+    return this.signature !== this.makeSignature();
   }
 
   hasErrors(): boolean {
@@ -311,20 +333,17 @@ export class Recipe {
   }
 
   static fromObject(recipeObject: Record<string, any>): Recipe {
-    const recipeVersion = recipeObject.hasOwnProperty('version') ? recipeObject['version'] : '1';
+    const recipeVersion = recipeObject['version'];
     if (!recipeVersions.find((v) => v === recipeVersion)) {
       throw `Invalid version string: ${recipeVersion}`;
     }
-
-    const customUnits =
-      recipeVersion == '1' ? [] : recipeObject['customUnits'].map((u: object) => QuantityUnitInformation.fromObject(u));
 
     const recipe = new Recipe(
       recipeObject['title'],
       recipeObject['description'],
       recipeObject['steps'].map((s: object) => RecipeStep.fromObject(s)),
       [],
-      customUnits,
+      recipeObject['customUnits'].map((u: object) => QuantityUnitInformation.fromObject(u)),
       recipeObject['id'],
       true,
     );

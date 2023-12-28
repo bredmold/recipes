@@ -95,52 +95,6 @@ describe('RecipeAmount', () => {
     expect(new RecipeAmount(1, 'us-volume-qt').toObject()).toEqual({ quantity: 1, units: 'us-volume-qt' });
   });
 
-  it('should restore correctly from persistence format v1', () => {
-    const r = new Recipe('test', 'test', [], [], []);
-    expect(
-      RecipeAmount.fromObject(
-        {
-          quantity: 2,
-          units: 'tsp',
-        },
-        '1',
-        r,
-      ),
-    ).toEqual(new RecipeAmount(2, 'us-volume-tsp'));
-    expect(
-      RecipeAmount.fromObject(
-        {
-          quantity: 1.5,
-          units: 'tbsp',
-        },
-        '1',
-        r,
-      ),
-    ).toEqual(new RecipeAmount(1.5, 'us-volume-tbsp'));
-    expect(RecipeAmount.fromObject({ quantity: 6, units: 'oz' }, '1', r)).toEqual(new RecipeAmount(6, 'us-volume-oz'));
-    expect(
-      RecipeAmount.fromObject(
-        {
-          quantity: 12,
-          units: 'cup',
-        },
-        '1',
-        r,
-      ),
-    ).toEqual(new RecipeAmount(12, 'us-volume-cup'));
-    expect(
-      RecipeAmount.fromObject(
-        {
-          quantity: 2,
-          units: 'pint',
-        },
-        '1',
-        r,
-      ),
-    ).toEqual(new RecipeAmount(2, 'us-volume-pint'));
-    expect(RecipeAmount.fromObject({ quantity: 1, units: 'qt' }, '1', r)).toEqual(new RecipeAmount(1, 'us-volume-qt'));
-  });
-
   it('should restore correctly from persistence format v2', () => {
     expect(amount(2, 'us-volume-tsp')).toEqual(new RecipeAmount(2, 'us-volume-tsp'));
     expect(amount(1.5, 'us-volume-tbsp')).toEqual(new RecipeAmount(1.5, 'us-volume-tbsp'));
@@ -254,6 +208,9 @@ describe('RecipeStep', () => {
         id: 'test id',
         description: 'test desc',
         ingredients: ['ingredient id 1'],
+        steps: [],
+        customUnits: [],
+        version: '2',
       }),
     ).toEqual(new RecipeStep('test desc', ['ingredient id 1'], 'test id'));
   });
@@ -280,6 +237,8 @@ describe('Recipe', () => {
         description: 'test desc',
         steps: [],
         ingredients: [],
+        customUnits: [],
+        version: '2',
       }),
     ).toEqual(new Recipe('test title', 'test desc', [], [], [], 'test id', true));
   });

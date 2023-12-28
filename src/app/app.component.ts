@@ -6,7 +6,8 @@ import { SessionService } from './services/session.service';
 import { Router } from '@angular/router';
 import { LayoutMode, ResponsiveLayoutService } from './services/responsive-layout.service';
 import { MatDialog } from '@angular/material/dialog';
-import { DeleteRecipeDialog } from './recipe-delete/delete-recipe-dialog';
+import { DeleteRecipeDialog } from './delete-recipe/delete-recipe-dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +26,8 @@ export class AppComponent {
     private readonly sessionService: SessionService,
     private readonly router: Router,
     private readonly responsiveLayoutService: ResponsiveLayoutService,
-    private readonly deleteRecipeDialog: MatDialog,
+    private readonly dialog: MatDialog,
+    private readonly snackBar: MatSnackBar,
   ) {
     this.recipeService.viewRecipe.subscribe((viewRecipe) => {
       this.viewRecipe = viewRecipe;
@@ -39,6 +41,9 @@ export class AppComponent {
     if (this.editRecipe) {
       try {
         const recipe = await this.recipeService.saveRecipe(this.editRecipe);
+        this.snackBar.open(`Saved recipe ${recipe.title}`, 'Saved', {
+          duration: 3500,
+        });
         console.log(`Recipe saved: ${recipe.id}`);
       } catch (err) {
         console.error(err);
@@ -50,8 +55,8 @@ export class AppComponent {
 
   recipeDelete() {
     if (this.editRecipe) {
-      this.deleteRecipeDialog.open(DeleteRecipeDialog, {
-        data: this.editRecipe,
+      this.dialog.open(DeleteRecipeDialog, {
+        data: { recipe: this.editRecipe, duration: 3500 },
         enterAnimationDuration: 0.25,
         exitAnimationDuration: 0,
       });
@@ -88,7 +93,9 @@ export class AppComponent {
   }
 
   isSaveDisabled(): boolean {
-    return !!this.editRecipe && this.editRecipe.hasErrors();
+    const hasErrors = !!this.editRecipe && this.editRecipe.hasErrors();
+    const isModified = !!this.editRecipe && this.editRecipe.isModified();
+    return hasErrors || !isModified;
   }
 
   isDeleteEnabled(): boolean {

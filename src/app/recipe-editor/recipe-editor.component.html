@@ -2,8 +2,8 @@
   <div class="recipe-header">
     <mat-form-field>
       <mat-label>Title</mat-label>
-      <input matInput #titleInput id="titleInput" [value]="recipe?.title" [formControl]="titleControl"
-             (input)="recipeTitle()" />
+      <input matInput id="titleInput" [value]="recipe?.title" [formControl]="titleControl"
+             (input)="recipeTitle($event)" />
       @if (titleControl.hasError('titleExists')) {
         <mat-error>Title already exists</mat-error>
       } @else if (titleControl.hasError('required')) {

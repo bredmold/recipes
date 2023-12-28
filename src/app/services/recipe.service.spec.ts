@@ -1,18 +1,26 @@
 import { TestBed } from '@angular/core/testing';
-import { PutItemCommand, PutItemCommandOutput, QueryCommandOutput } from '@aws-sdk/client-dynamodb';
+import {
+  DeleteItemCommandOutput,
+  PutItemCommand,
+  PutItemCommandOutput,
+  QueryCommandOutput,
+} from '@aws-sdk/client-dynamodb';
 import { DdbService } from './ddb.service';
 import { RecipeService } from './recipe.service';
 import { Recipe } from '../types/recipe';
 import { SessionService } from './session.service';
+import { CacheService, TypedCache } from './cache.service';
 
 describe('RecipeService', () => {
-  let ddbService: any;
-  let sessionService: any;
+  let ddbService: jasmine.SpyObj<DdbService>;
+  let sessionService: jasmine.SpyObj<SessionService>;
   let service: RecipeService;
+  let recipeCache: jasmine.SpyObj<TypedCache<Recipe>>;
 
   beforeEach(() => {
-    ddbService = jasmine.createSpyObj('DdbService', ['query', 'putItem', 'deleteItem']);
-    sessionService = jasmine.createSpyObj('SessionService', ['loggedInEmail']);
+    ddbService = jasmine.createSpyObj<DdbService>('DdbService', ['query', 'putItem', 'deleteItem']);
+    sessionService = jasmine.createSpyObj<SessionService>('SessionService', ['loggedInEmail']);
+    recipeCache = jasmine.createSpyObj<TypedCache<Recipe>>('TypedCache', ['makeCachedCall', 'invalidate']);
 
     TestBed.configureTestingModule({
       providers: [
@@ -23,6 +31,12 @@ describe('RecipeService', () => {
         {
           provide: SessionService,
           useValue: sessionService,
+        },
+        {
+          provide: CacheService,
+          useValue: {
+            createTypedCache: () => recipeCache,
+          },
         },
       ],
     });
@@ -52,7 +66,9 @@ describe('RecipeService', () => {
       description: 'desc',
       steps: [],
       ingredients: [],
+      customUnits: [],
       id: 'id',
+      version: '2',
     };
     const queryResponse: QueryCommandOutput = {
       Items: [
@@ -69,28 +85,62 @@ describe('RecipeService', () => {
     expect(recipes).toEqual([new Recipe('title', 'desc', [], [], [], 'id', true)]);
   });
 
-  it('should return true when recipe title matches', async () => {
-    sessionService.loggedInEmail.and.returnValue('user@example.com');
-    const queryResponse: QueryCommandOutput = {
-      Items: [
-        {
-          recipeTitle: { S: 'title' },
-        },
-      ],
-      Count: 1,
-      $metadata: {},
-    };
+  describe('isDuplicateTitle', () => {
+    it('title matches, id matches', async () => {
+      sessionService.loggedInEmail.and.returnValue('user@example.com');
+      const queryResponse: QueryCommandOutput = {
+        Items: [
+          {
+            recipeId: { S: 'recipe-id' },
+          },
+        ],
+        Count: 1,
+        $metadata: {},
+      };
 
-    ddbService.query.and.returnValue(Promise.resolve(queryResponse));
+      ddbService.query.and.returnValue(Promise.resolve(queryResponse));
 
-    const hasRecipe = await service.hasRecipeTitle('title');
-    expect(hasRecipe).toBeTrue();
+      const isDuplicate = await service.isDuplicateTitle('recipe-id', 'title');
+      expect(isDuplicate).toBeFalse();
+    });
+
+    it('title matches, id mismatch', async () => {
+      sessionService.loggedInEmail.and.returnValue('user@example.com');
+      const queryResponse: QueryCommandOutput = {
+        Items: [
+          {
+            recipeId: { S: 'other-recipe-id' },
+          },
+        ],
+        Count: 1,
+        $metadata: {},
+      };
+
+      ddbService.query.and.returnValue(Promise.resolve(queryResponse));
+
+      const isDuplicate = await service.isDuplicateTitle('recipe-id', 'title');
+      expect(isDuplicate).toBeTrue();
+    });
+
+    it('title mismatch', async () => {
+      sessionService.loggedInEmail.and.returnValue('user@example.com');
+      const queryResponse: QueryCommandOutput = {
+        Items: [],
+        Count: 0,
+        $metadata: {},
+      };
+
+      ddbService.query.and.returnValue(Promise.resolve(queryResponse));
+
+      const hasRecipe = await service.isDuplicateTitle('recipe-id', 'title');
+      expect(hasRecipe).toBeFalse();
+    });
   });
 
   it('should delete a recipe', async () => {
     sessionService.loggedInEmail.and.returnValue('user@example.com');
 
-    ddbService.deleteItem.and.returnValue(Promise.resolve({}));
+    ddbService.deleteItem.and.returnValue(Promise.resolve({} as DeleteItemCommandOutput));
 
     await service.deleteRecipeById('id');
 
@@ -104,46 +154,67 @@ describe('RecipeService', () => {
     });
   });
 
-  it('should resolve the promise when calling getRecipeById', async () => {
-    sessionService.loggedInEmail.and.returnValue('user@example.com');
-    const recipe = {
-      title: 'title',
-      description: 'desc',
-      steps: [],
-      ingredients: [],
-      id: 'id',
-    };
-    const queryResponse: QueryCommandOutput = {
-      Items: [
-        {
-          json: { S: JSON.stringify(recipe) },
-        },
-      ],
-      $metadata: {},
-    };
+  describe('getRecipeById', () => {
+    it('should resolve the promise', async () => {
+      sessionService.loggedInEmail.and.returnValue('user@example.com');
+      recipeCache.makeCachedCall.and.callFake((fn) => fn());
+      const recipe = {
+        title: 'title',
+        description: 'desc',
+        steps: [],
+        ingredients: [],
+        customUnits: [],
+        id: 'id',
+        version: '2',
+      };
+      const queryResponse: QueryCommandOutput = {
+        Items: [
+          {
+            json: { S: JSON.stringify(recipe) },
+          },
+        ],
+        $metadata: {},
+      };
 
-    ddbService.query.and.returnValue(Promise.resolve(queryResponse));
+      ddbService.query.and.returnValue(Promise.resolve(queryResponse));
 
-    const recipeResponse = await service.getRecipeById('id');
+      const recipeResponse = await service.getRecipeById('id');
 
-    expect(recipeResponse).toEqual(new Recipe('title', 'desc', [], [], [], 'id', true));
+      expect(recipeResponse).toEqual(new Recipe('title', 'desc', [], [], [], 'id', true));
+    });
+
+    it('should throw on failure', async () => {
+      sessionService.loggedInEmail.and.returnValue('user@example.com');
+      recipeCache.makeCachedCall.and.callFake((fn) => fn());
+      const queryResponse: QueryCommandOutput = {
+        Items: [],
+        $metadata: {},
+      };
+
+      ddbService.query.and.returnValue(Promise.resolve(queryResponse));
+
+      try {
+        await service.getRecipeById('id');
+        fail('expected exception');
+      } catch (e) {
+        expect(e).toEqual('Unable to locate recipe: id');
+      }
+    });
   });
 
-  it('should throw when getRecipeById fails', async () => {
-    sessionService.loggedInEmail.and.returnValue('user@example.com');
-    const queryResponse: QueryCommandOutput = {
-      Items: [],
-      $metadata: {},
-    };
+  describe('invalidateEditRecipe', () => {
+    it('should invalidate the edit recipe', async () => {
+      const recipe = new Recipe('test', 'test', [], [], []);
+      service.editRecipe.next(recipe);
 
-    ddbService.query.and.returnValue(Promise.resolve(queryResponse));
+      service.invalidateEditRecipe();
+      expect(recipeCache.invalidate).toHaveBeenCalledOnceWith(recipe.id);
+    });
 
-    try {
-      await service.getRecipeById('id');
-      fail('expected exception');
-    } catch (e) {
-      expect(e).toEqual('Unable to locate recipe: id');
-    }
+    it('should do nothing if no edit recipe', () => {
+      service.invalidateEditRecipe();
+      expect(recipeCache.invalidate).toHaveBeenCalledTimes(0);
+    });
   });
 
   it('saveRecipe should call putItem', async () => {

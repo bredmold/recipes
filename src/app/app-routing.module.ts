@@ -4,20 +4,21 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { RecipeViewerComponent } from './recipe-viewer/recipe-viewer.component';
 import { RecipeEditorComponent } from './recipe-editor/recipe-editor.component';
-import { AuthGuard } from './auth/auth.guard';
 import { SignInComponent } from './auth/sign-in/sign-in.component';
 import { SessionService } from './services/session.service';
+import { authGuard } from './auth/auth.guard';
+import { dirtyRecipeGuard } from './dirty-recipe/dirty-recipe.guard';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent, canActivate: [AuthGuard] },
-  { path: 'recipe/:id', component: RecipeViewerComponent, canActivate: [AuthGuard] },
-  { path: 'recipe/:id/edit', component: RecipeEditorComponent, canActivate: [AuthGuard] },
+  { path: '', component: HomeComponent, canActivate: [authGuard, dirtyRecipeGuard] },
+  { path: 'recipe/:id', component: RecipeViewerComponent, canActivate: [authGuard, dirtyRecipeGuard] },
+  { path: 'recipe/:id/edit', component: RecipeEditorComponent, canActivate: [authGuard] },
   { path: 'login', component: SignInComponent },
 ];
 
 @NgModule({
   declarations: [],
   imports: [CommonModule, RouterModule.forRoot(routes)],
-  providers: [AuthGuard, SessionService],
+  providers: [SessionService],
 })
 export class AppRoutingModule {}

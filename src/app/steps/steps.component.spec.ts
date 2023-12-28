@@ -17,6 +17,7 @@ import { Recipe, RecipeAmount, RecipeIngredient } from '../types/recipe';
 import { MatSelectHarness } from '@angular/material/select/testing';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 
 describe('StepsComponent', () => {
   let recipe: Recipe;
@@ -39,9 +40,7 @@ describe('StepsComponent', () => {
         ReactiveFormsModule,
       ],
     }).compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(StepsComponent);
     loader = TestbedHarnessEnvironment.loader(fixture);
     component = fixture.componentInstance;
@@ -130,5 +129,22 @@ describe('StepsComponent', () => {
 
     const stepIngredientIds = component.initialStepIngredients(stepId);
     expect(stepIngredientIds).toEqual([ingredientId]);
+  });
+
+  it('should re-order steps on a drop event', async () => {
+    component.addStep(0);
+    component.addStep(0);
+
+    const startingStepIds = component.recipe?.steps.map((s) => s.id) as string[];
+
+    component.dropStep({
+      previousIndex: 0,
+      currentIndex: 1,
+    } as CdkDragDrop<string>);
+
+    await fixture.whenStable();
+
+    const endingStepIds = component.recipe?.steps.map((s) => s.id) as string[];
+    expect(endingStepIds).toEqual([startingStepIds[1], startingStepIds[0]]);
   });
 });

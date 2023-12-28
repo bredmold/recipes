@@ -25,14 +25,16 @@ import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatLineModule } from '@angular/material/core';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { DeleteRecipeDialog } from './recipe-delete/delete-recipe-dialog';
+import { DeleteRecipeDialog } from './delete-recipe/delete-recipe-dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { DirtyRecipeDialog } from './dirty-recipe/dirty-recipe-dialog';
 
 @NgModule({
   declarations: [
     AppComponent,
     CustomUnitsDialog,
     DeleteRecipeDialog,
+    DirtyRecipeDialog,
     HomeComponent,
     IngredientsComponent,
     RecipeEditorComponent,

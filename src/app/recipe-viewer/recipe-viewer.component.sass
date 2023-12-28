@@ -15,8 +15,19 @@
   grid-template-columns: 100% 100%
   height: 100%
   padding: 10px
+  overflow-y: scroll
   overflow-x: auto
   scroll-snap-type: x mandatory
+
+.loading-recipe
+  grid-column-start: 1
+  grid-column-end: 3
+  height: 100%
+  justify-content: center
+  display: flex
+
+  mat-spinner
+    margin: auto
 
 .ingredients-view
   grid-column: 1

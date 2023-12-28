@@ -1,32 +1,15 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { Observable } from 'rxjs';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
 import { SessionService } from '../services/session.service';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class AuthGuard {
-  constructor(
-    private router: Router,
-    private sessionService: SessionService,
-  ) {}
-
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot,
-  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    const loggedIn = this.sessionService.isLoggedIn();
-    if (!loggedIn) {
-      this.router.navigate(['login']).then(
-        () => {
-          console.log('Navigated to login screen because not authorized');
-        },
-        (err) => {
-          console.error(err);
-        },
-      );
-    }
-    return loggedIn;
+export const authGuard: CanActivateFn = (route, state) => {
+  const sessionService = inject(SessionService);
+  const loggedIn = sessionService.isLoggedIn();
+  if (!loggedIn) {
+    console.warn('No logged in user, routing to login screen');
+    const router = inject(Router);
+    return router.parseUrl('/login');
+  } else {
+    return true;
   }
-}
+};

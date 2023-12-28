@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { Recipe } from '../types/recipe';
 import { ActivatedRoute } from '@angular/router';
 import { RecipeService } from '../services/recipe.service';
@@ -12,7 +12,6 @@ import { AsyncValidatorFn, FormControl, Validators } from '@angular/forms';
 export class RecipeEditorComponent {
   private static readonly TITLE_KEY = 'title';
 
-  @ViewChild('titleInput') titleInput!: ElementRef;
   recipe?: Recipe;
 
   titleControl = new FormControl('', [Validators.required], [this.validateTitle()]);
@@ -26,6 +25,10 @@ export class RecipeEditorComponent {
       this.recipeService.getRecipeById(recipeId).then(
         (recipe) => {
           this.recipe = recipe;
+          this.recipe.checkpoint();
+          console.log(`id=${this.recipe.id} signature=${this.recipe.getSignature()}`)
+          this.titleControl.setErrors(null);
+          this.titleControl.setValue(recipe.title);
           this.recipeService.setEditRecipe(recipe);
         },
         (err) => {
@@ -40,9 +43,11 @@ export class RecipeEditorComponent {
     });
   }
 
-  recipeTitle() {
+  recipeTitle(event: Event) {
     if (this.recipe) {
-      this.recipe.title = this.titleInput.nativeElement.value;
+      const target = event.target as HTMLInputElement;
+      this.recipe.title = target.value;
+      this.titleControl.setValue(target.value);
     } else {
       console.warn('No active recipe');
     }
@@ -55,7 +60,7 @@ export class RecipeEditorComponent {
       if (!this.recipe) return null;
 
       this.recipe.clearError(RecipeEditorComponent.TITLE_KEY);
-      const hasTitle = await this.recipeService.hasRecipeTitle(title);
+      const hasTitle = await this.recipeService.isDuplicateTitle(this.recipe.id, title);
       if (hasTitle) {
         console.warn(`Found ${title}`);
         this.recipe.registerError(RecipeEditorComponent.TITLE_KEY);
