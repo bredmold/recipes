@@ -1,31 +1,34 @@
 <div class="recipe-app">
   <div class="header">
     <mat-toolbar>
-      <button routerLink="">Recipes</button>
-
-      <!-- Phone UI -->
-      @if (!showFullHeader()) {
-        <span class="recipe-title">{{ recipeTitle() }}</span>
-      }
-
-      <!-- Tablet/PC UI -->
-      @if (isViewerLinkEnabled()) {
-        <button (click)="openRecipeViewer()">{{ recipeTitle() }}</button>
-      }
-      @if (isRecipeNameEnabled()) {
-        <button [disabled]="true">{{ recipeTitle() }}</button>
-      }
       @if (showFullHeader()) {
+        <!-- Tablet/PC UI -->
+        <button routerLink="">Recipes</button>
+
+        @if (isViewerLinkEnabled()) {
+          <button (click)="openRecipeViewer()">{{ recipeTitle() }}</button>
+        }
+        @if (isRecipeNameEnabled()) {
+          <button [disabled]="true">{{ recipeTitle() }}</button>
+        }
         <span class="recipe-spacer"></span>
-      }
-      @if (isDeleteEnabled()) {
-        <button (click)="recipeDelete()">Delete</button>
-      }
-      @if (isSaveVisible()) {
-        <button (click)="recipeSave()" [disabled]="isSaveDisabled()">Save</button>
-      }
-      @if (isEditEnabled()) {
-        <button [routerLink]="editLink()">Edit</button>
+        @if (isDeleteEnabled()) {
+          <button (click)="recipeDelete()">Delete</button>
+        }
+        @if (isSaveVisible()) {
+          <button (click)="recipeSave()" [disabled]="isSaveDisabled()">Save</button>
+        }
+        @if (isEditEnabled()) {
+          <button [routerLink]="editLink()">Edit</button>
+        }
+      } @else {
+        <!-- Phone UI -->
+        @if (isRecipeNameEnabled()) {
+          <button class="back-button" routerLink="">&#10096;</button>
+        } @else {
+          <button>Recipes</button>
+        }
+        <span class="recipe-title">{{ recipeTitle() }}</span>
       }
     </mat-toolbar>
   </div>

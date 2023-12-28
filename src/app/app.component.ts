@@ -85,7 +85,7 @@ export class AppComponent {
 
   isRecipeNameEnabled(): boolean {
     const unsavedEdit = !!this.editRecipe && !this.editRecipe.hasBeenSaved();
-    return this.showFullHeader() && (!!this.viewRecipe || unsavedEdit);
+    return !!this.viewRecipe || unsavedEdit;
   }
 
   isSaveVisible(): boolean {
