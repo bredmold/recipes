@@ -1,6 +1,6 @@
 {
   "name": "recipe",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "scripts": {
     "format": "prettier --write '**/*.ts'",
     "ng": "ng",
