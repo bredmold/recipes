@@ -1,49 +1,62 @@
-<div class="steps">
-  List of cooking steps
-
-  <div class="steps-list">
-    <div cdkDropList (cdkDropListDropped)="dropStep($event)">
-      <div>
-        <button mat-flat-button color="primary" matTooltip="Add Step" class="add-step" (click)="addStep(0)">+</button>
+<div class="steps" cdkDropList (cdkDropListDropped)="dropStep($event)">
+  <div>
+    <button mat-flat-button color="primary" matTooltip="Add Step" class="add-step" (click)="addStep(0)">+</button>
+  </div>
+  @for (step of steps(); track step.id) {
+    <div class="single-step-edit" cdkDrag>
+      <div class="step-description-field">
+        <mat-form-field class="step-description">
+          <mat-label>Description</mat-label>
+          <textarea
+            matInput
+            placeholder="Description"
+            [id]="'step-description-' + step.id"
+            (input)="stepDescription(step.id, $event)"
+            [value]="step.description"
+            required="true"
+          ></textarea>
+        </mat-form-field>
       </div>
-      <div *ngFor="let step of steps()" class="single-step-edit" cdkDrag>
-        <div>
-          <mat-form-field class="step-description">
-            <mat-label>Description</mat-label>
-            <textarea
-              matInput
-              placeholder="Description"
-              [id]="'step-description-' + step.id"
-              (input)="stepDescription(step.id, $event)"
-              [value]="step.description"
-              required="true"
-            ></textarea>
-          </mat-form-field>
-          <span class="remove-button" (click)="removeStep(step.id)">
-            <span matTooltip="Remove Step">-</span>
-          </span>
-          <span class="drag-handle" cdkDragHandle>&#10303;</span>
-        </div>
-        <div>
-          <mat-form-field>
-            <mat-label>Ingredients</mat-label>
-            <mat-select
-              multiple
-              [value]="initialStepIngredients(step.id)"
-              (selectionChange)="stepIngredients(step.id, $event)"
-            >
-              <mat-option *ngFor="let ingredient of ingredients()" [value]="ingredient.id">{{
-                ingredient.name
-                }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
+      <div class="step-decorations">
+            <span class="remove-button" (click)="removeStep(step.id)">
+              <span matTooltip="Remove Step">-</span>
+            </span>
+        <span class="drag-handle" cdkDragHandle>&#10303;</span>
       </div>
-      <div>
-        <button mat-flat-button color="primary" matTooltip="Add Step" class="add-step"
-                (click)="addStep(steps().length)">+
+      <div class="step-ingredients">
+        <mat-form-field>
+          <mat-label>Ingredients</mat-label>
+          <mat-select
+            multiple
+            [value]="initialStepIngredients(step.id)"
+            (selectionChange)="stepIngredients(step.id, $event)"
+          >
+            @for (ingredient of ingredients(); track ingredient.id) {
+              <mat-option [value]="ingredient.id">{{
+                  ingredient.name
+                }}
+              </mat-option>
+            } @empty {
+              <mat-option disabled="true">No ingredients</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="preview-button">
+        <button mat-raised-button [color]="previewButtonColor(step.id)" (click)="togglePreview(step.id)">
+          Preview
         </button>
       </div>
+      @if (shouldPreview(step.id)) {
+        <div class="preview" [innerHTML]="markdownService.renderAsHtml(step.description)"></div>
+      }
     </div>
+  } @empty {
+    <div class="empty-steps">Click the <code>+</code> button to add a step</div>
+  }
+  <div>
+    <button mat-flat-button color="primary" matTooltip="Add Step" class="add-step"
+            (click)="addStep(steps().length)">+
+    </button>
   </div>
 </div>

@@ -45,28 +45,18 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## TODO List
 
-* Keyboard navigation in recipe editor
+See the issues tab in GitHub for more information, as well.
+
 * Ingredient should be able to have "null" units
 * Home screen
   * Case-insensitive sort for recipe list
-* Recipe viewer 
-  * Visual indicator for swiping on phones
-* Input validation
-  * Prevent negative quantities
-  * Prevent empty ingredient names
 * US/metric quantity conversions
 * Edit descriptions for ingredients
 * Show descriptions for ingredients in recipe viewer
-* Edit description for recipe
-* Show recipe description on the home screen
-* Recipe picker hover highlight color should use theme colors
-* Better step editor layout
 * Recipe editor should be able to select tabs via URL
 * Recipe doubling
 * Export recipes
 * Search by ingredients
-* Delete recipe button
-* Factor out commonalities from recipe picker and home component
+* Home screen filter recipes by title
 * Cognito authentication
   * Testing
-* Steps description should support Markdown

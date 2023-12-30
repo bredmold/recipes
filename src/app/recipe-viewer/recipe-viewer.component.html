@@ -1,7 +1,7 @@
 <div [class]="recipeViewerClass()">
   @if (recipe) {
     <div class="ingredients-view">
-      Ingredients list
+      <div>Ingredients list</div>
       <mat-list>
         <mat-list-item *ngFor="let ingredient of ingredients()">
           <input [id]="ingredient.id" type="checkbox" />
@@ -10,9 +10,9 @@
       </mat-list>
     </div>
     <div class="steps-view">
-      Steps list
+      <div>Steps list</div>
       @for (step of steps(); track step.id) {
-        <p class="recipe-step">{{ step.description }}</p>
+        <div class="recipe-step" [innerHTML]="markdownService.renderAsHtml(step.description)"></div>
       } @empty {
         <p>Use the recipe editor to add some instructions to this recipe</p>
       }

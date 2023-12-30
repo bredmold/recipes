@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Recipe, RecipeIngredient, RecipeStep } from '../types/recipe';
 import { MatSelectChange } from '@angular/material/select';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { MarkdownService } from '../services/markdown.service';
 
 @Component({
   selector: 'app-steps',
@@ -10,8 +11,9 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 })
 export class StepsComponent {
   @Input() recipe?: Recipe;
+  private stepToPreview?: string;
 
-  constructor() {}
+  constructor(readonly markdownService: MarkdownService) {}
 
   steps(): RecipeStep[] {
     return this.recipe ? this.recipe.steps : [];
@@ -89,5 +91,21 @@ export class StepsComponent {
     } else {
       console.warn('No active recipe');
     }
+  }
+
+  shouldPreview(stepId: string): boolean {
+    return stepId === this.stepToPreview;
+  }
+
+  togglePreview(stepId: string): void {
+    if (this.stepToPreview === stepId) {
+      this.stepToPreview = undefined;
+    } else {
+      this.stepToPreview = stepId;
+    }
+  }
+
+  previewButtonColor(stepId: string): string {
+    return stepId === this.stepToPreview ? 'accent' : 'primary';
   }
 }

@@ -1,64 +1,66 @@
-<div class="ingredients">
-  List of ingredients
-
-  <div class="ingredient-list">
-    <div cdkDropList (cdkDropListDropped)="dropIngredient($event)">
-      <div>
-        <button mat-flat-button color="primary" matTooltip="Add Ingredient" class="add-ingredient" (click)="addIngredient(0)">+</button>
-      </div>
-      <div *ngFor="let ingredient of ingredients()" cdkDrag>
-        <mat-form-field [style.width.em]="6">
-          <mat-label>Volume Amount</mat-label>
-          <input
-            matInput
-            type="number"
-            [id]="'volume-amount-' + ingredient.id"
-            [value]="ingredient.recipeAmount.quantity"
-            (input)="volumeAmount(ingredient.id, $event)"
-          />
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Volume Unit</mat-label>
-          <mat-select class="ingredient-volume-unit" [(value)]="ingredient.recipeAmount.units">
-            <mat-optgroup label="Volume">
-              <mat-option *ngFor="let mapping of usVolumeMapping" [value]="mapping.unit.id">
-                {{ mapping.label }}
-              </mat-option>
-            </mat-optgroup>
-            <mat-optgroup label="Weight">
-              <mat-option *ngFor="let mapping of usWeightMapping" [value]="mapping.unit.id">
-                {{ mapping.label }}
-              </mat-option>
-            </mat-optgroup>
-            <mat-optgroup label="Custom">
-              <mat-option (onSelectionChange)="openCustomUnits($event, ingredient.id)" class="new-custom-unit">
-                New Custom Unit...
-              </mat-option>
-              <mat-option *ngFor="let mapping of customMapping" [value]="mapping.unit.id">
-                {{ mapping.label }}
-              </mat-option>
-            </mat-optgroup>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Name</mat-label>
-          <input
-            matInput
-            class="ingredient-name"
-            [id]="'ingredient-name-' + ingredient.id"
-            (input)="ingredientName(ingredient.id, $event)"
-            [value]="ingredient.name"
-            required
-          />
-        </mat-form-field>
-        <span class="remove-button" (click)="removeIngredient(ingredient.id)">
+<div class="ingredient-list" cdkDropList (cdkDropListDropped)="dropIngredient($event)">
+  <div>
+    <button mat-flat-button color="primary" matTooltip="Add Ingredient" class="add-ingredient"
+            (click)="addIngredient(0)">+
+    </button>
+  </div>
+  @for (ingredient of ingredients(); track ingredient.id) {
+    <div cdkDrag>
+      <mat-form-field [style.width.em]="6">
+        <mat-label>Volume Amount</mat-label>
+        <input
+          matInput
+          type="number"
+          [id]="'volume-amount-' + ingredient.id"
+          [value]="ingredient.recipeAmount.quantity"
+          (input)="volumeAmount(ingredient.id, $event)"
+        />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Volume Unit</mat-label>
+        <mat-select class="ingredient-volume-unit" [(value)]="ingredient.recipeAmount.units">
+          <mat-optgroup label="Volume">
+            <mat-option *ngFor="let mapping of usVolumeMapping" [value]="mapping.unit.id">
+              {{ mapping.label }}
+            </mat-option>
+          </mat-optgroup>
+          <mat-optgroup label="Weight">
+            <mat-option *ngFor="let mapping of usWeightMapping" [value]="mapping.unit.id">
+              {{ mapping.label }}
+            </mat-option>
+          </mat-optgroup>
+          <mat-optgroup label="Custom">
+            <mat-option (onSelectionChange)="openCustomUnits($event, ingredient.id)" class="new-custom-unit">
+              New Custom Unit...
+            </mat-option>
+            <mat-option *ngFor="let mapping of customMapping" [value]="mapping.unit.id">
+              {{ mapping.label }}
+            </mat-option>
+          </mat-optgroup>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input
+          matInput
+          class="ingredient-name"
+          [id]="'ingredient-name-' + ingredient.id"
+          (input)="ingredientName(ingredient.id, $event)"
+          [value]="ingredient.name"
+          required
+        />
+      </mat-form-field>
+      <span class="remove-button" (click)="removeIngredient(ingredient.id)">
           <span matTooltip="Remove Ingredient">-</span>
         </span>
-        <span class="drag-handle" cdkDragHandle>&#10303;</span>
-      </div>
-      <div>
-        <button mat-flat-button color="primary" matTooltip="Add Ingredient" class="add-ingredient" (click)="addIngredient(ingredients().length)">+</button>
-      </div>
+      <span class="drag-handle" cdkDragHandle>&#10303;</span>
     </div>
+  } @empty {
+    <div class="empty-ingredients">Click the <code>+</code> button to add an ingredient</div>
+  }
+  <div>
+    <button mat-flat-button color="primary" matTooltip="Add Ingredient" class="add-ingredient"
+            (click)="addIngredient(ingredients().length)">+
+    </button>
   </div>
 </div>

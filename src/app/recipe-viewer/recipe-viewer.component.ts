@@ -3,6 +3,7 @@ import { Recipe, RecipeIngredient, RecipeStep } from '../types/recipe';
 import { ActivatedRoute } from '@angular/router';
 import { RecipeService } from '../services/recipe.service';
 import { LayoutMode, ResponsiveLayoutService } from '../services/responsive-layout.service';
+import { MarkdownService } from '../services/markdown.service';
 
 @Component({
   selector: 'app-recipe-viewer',
@@ -16,6 +17,7 @@ export class RecipeViewerComponent {
     private readonly route: ActivatedRoute,
     private readonly recipeService: RecipeService,
     private readonly responsiveLayoutService: ResponsiveLayoutService,
+    readonly markdownService: MarkdownService,
   ) {
     this.route.params.subscribe((params) => {
       const recipeId = params['id'];
