@@ -29,11 +29,7 @@ export class StepsComponent {
       if (step) {
         const input = event.target as HTMLInputElement;
         step.description = input.value;
-      } else {
-        console.warn(`Unable to locate step ${stepId}`);
       }
-    } else {
-      console.warn('No active recipe');
     }
   }
 
@@ -42,11 +38,7 @@ export class StepsComponent {
       const step = this.recipe.steps.find((s) => s.id === stepId);
       if (step) {
         return step.ingredients;
-      } else {
-        console.warn(`Unable to find step: ${stepId}`);
       }
-    } else {
-      console.warn('No active recipe');
     }
 
     return [];
@@ -57,11 +49,7 @@ export class StepsComponent {
       const step = this.recipe.steps.find((s) => s.id === stepId);
       if (step) {
         step.ingredients = event.value;
-      } else {
-        console.warn(`Unable to locate step ${stepId}`);
       }
-    } else {
-      console.warn('No active recipe');
     }
   }
 
@@ -72,24 +60,18 @@ export class StepsComponent {
   addStep(idx: number) {
     if (this.recipe) {
       this.recipe.steps.splice(idx, 0, StepsComponent.newStep());
-    } else {
-      console.warn('No active recipe');
     }
   }
 
   removeStep(stepId: string) {
     if (this.recipe) {
       this.recipe.steps = this.recipe.steps.filter((s) => s.id != stepId);
-    } else {
-      console.warn('No active recipe');
     }
   }
 
   dropStep(event: CdkDragDrop<string>) {
     if (this.recipe) {
       moveItemInArray(this.recipe.steps, event.previousIndex, event.currentIndex);
-    } else {
-      console.warn('No active recipe');
     }
   }
 

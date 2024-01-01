@@ -114,7 +114,7 @@ export class RecipeService {
     );
   }
 
-  async deleteRecipeById(recipeId: string): Promise<any> {
+  async deleteRecipeById(recipeId: string): Promise<void> {
     const ownerEmail = this.sessionService.loggedInEmail();
     if (!ownerEmail) throw 'No logged in email';
 
@@ -132,7 +132,7 @@ export class RecipeService {
 
   private parseQueryResponse(queryResponse: QueryCommandOutput): Recipe[] {
     if (queryResponse.Items) {
-      return queryResponse.Items?.map((item) => {
+      return queryResponse.Items.map((item) => {
         const json = item['json'].S;
         const parsed = JSON.parse(json as string);
         return Recipe.fromObject(parsed);

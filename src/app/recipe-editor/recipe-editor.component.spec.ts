@@ -23,6 +23,8 @@ import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatInputHarness } from '@angular/material/input/testing';
 import { MatErrorHarness } from '@angular/material/form-field/testing';
+import { MatTabGroupHarness } from '@angular/material/tabs/testing';
+import { MatTabsModule } from '@angular/material/tabs';
 
 describe('RecipeEditorComponent', () => {
   let component: RecipeEditorComponent;
@@ -62,6 +64,7 @@ describe('RecipeEditorComponent', () => {
         MatSelectModule,
         MatToolbarModule,
         MatTooltipModule,
+        MatTabsModule,
         NoopAnimationsModule,
         ReactiveFormsModule,
       ],
@@ -147,5 +150,42 @@ describe('RecipeEditorComponent', () => {
     const titleError = await loader.getHarness(MatErrorHarness);
     const errorText = await titleError.getText();
     expect(errorText).toContain('exists');
+  });
+
+  it('should return the description', () => {
+    component.recipe = new Recipe('test', 'test', [], [], []);
+    expect(component.description()).toEqual('test');
+  });
+
+  it('should return an empty string for description if no recipe is defined', () => {
+    component.recipe = undefined;
+    expect(component.description()).toEqual('');
+  });
+
+  it('should indicate no description on missing recipe', () => {
+    component.recipe = undefined;
+    expect(component.hasDescription()).toBeFalse();
+  });
+
+  it('should indicate no description on empty recipe description', () => {
+    component.recipe = new Recipe('test', '', [], [], []);
+    expect(component.hasDescription()).toBeFalse();
+  });
+
+  it('should indicate presence of a description if one is present and non-empty', () => {
+    component.recipe = new Recipe('test', 'test', [], [], []);
+    expect(component.hasDescription()).toBeTrue();
+  });
+
+  it('should update the recipe description', async () => {
+    await fixture.whenStable();
+
+    const tabGroupHarness = await loader.getHarness(MatTabGroupHarness);
+    await tabGroupHarness.selectTab({ label: 'Description' });
+
+    const textAreaHarness = await loader.getHarness(MatInputHarness.with({ selector: 'textarea' }));
+    await textAreaHarness.setValue('description');
+
+    expect(component.recipe?.description).toEqual('description');
   });
 });

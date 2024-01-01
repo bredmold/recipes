@@ -18,6 +18,9 @@ import { MatSelectHarness } from '@angular/material/select/testing';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { MatButtonModule } from '@angular/material/button';
+import { MatButtonHarness } from '@angular/material/button/testing';
+import { MatInputHarness } from '@angular/material/input/testing';
 
 describe('StepsComponent', () => {
   let recipe: Recipe;
@@ -30,6 +33,7 @@ describe('StepsComponent', () => {
       declarations: [AppComponent, IngredientsComponent, StepsComponent, RecipeEditorComponent],
       imports: [
         BrowserModule,
+        MatButtonModule,
         MatFormFieldModule,
         MatInputModule,
         MatListModule,
@@ -146,5 +150,41 @@ describe('StepsComponent', () => {
 
     const endingStepIds = component.recipe?.steps.map((s) => s.id) as string[];
     expect(endingStepIds).toEqual([startingStepIds[1], startingStepIds[0]]);
+  });
+
+  it('should show preview when requested', async () => {
+    component.addStep(0);
+
+    await fixture.whenStable();
+
+    const textAreaHarness = await loader.getHarness(MatInputHarness.with({ selector: 'textarea' }));
+    await textAreaHarness.setValue('description');
+
+    const previewButtonHarness = await loader.getHarness(MatButtonHarness.with({ text: 'Preview' }));
+    await previewButtonHarness.click();
+    await fixture.whenStable();
+
+    const previewElement = (fixture.componentRef.location.nativeElement as HTMLElement).querySelector('.preview');
+    expect(previewElement).toBeTruthy();
+
+    expect(previewElement?.innerHTML).toContain('description');
+  });
+
+  it('should dismiss preview when requested', async () => {
+    component.addStep(0);
+    (component.recipe as Recipe).steps[0].description = 'description';
+
+    await fixture.whenStable();
+
+    const previewButtonHarness = await loader.getHarness(MatButtonHarness.with({ text: 'Preview' }));
+    await previewButtonHarness.click();
+    await fixture.whenStable();
+
+    const nativeElement = fixture.componentRef.location.nativeElement as HTMLElement;
+    expect(nativeElement.querySelector('.preview')).toBeTruthy();
+
+    await previewButtonHarness.click();
+
+    expect(nativeElement.querySelector('.preview')).toBeFalsy();
   });
 });

@@ -11,7 +11,7 @@ import { MarkdownService } from '../services/markdown.service';
   styleUrls: ['./recipe-viewer.component.sass'],
 })
 export class RecipeViewerComponent {
-  recipe!: Recipe;
+  recipe?: Recipe;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -44,18 +44,10 @@ export class RecipeViewerComponent {
   }
 
   ingredients(): RecipeIngredient[] {
-    if (this.recipe) {
-      return this.recipe.ingredients;
-    } else {
-      return [];
-    }
+    return this.recipe?.ingredients || [];
   }
 
   steps(): RecipeStep[] {
-    if (this.recipe) {
-      return this.recipe.steps;
-    } else {
-      return [];
-    }
+    return this.recipe?.steps || [];
   }
 }

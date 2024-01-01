@@ -13,6 +13,18 @@
   </div>
   <div class="recipe-tabs">
     <mat-tab-group>
+      <mat-tab label="Description">
+        <div class="recipe-description">
+          <textarea matInput id="descriptionInput"
+                    placeholder="Recipe description..."
+                    [value]="recipe?.description"
+                    (input)="recipeDescription($event)"></textarea>
+          <p>Supports Markdown via <a href="https://marked.js.org/">marked</a></p>
+          @if (hasDescription()) {
+            <div class="preview" [innerHTML]="markdownService.renderAsHtml(description())"></div>
+          }
+        </div>
+      </mat-tab>
       <mat-tab label="Ingredients">
         <app-ingredients [recipe]="recipe"></app-ingredients>
       </mat-tab>

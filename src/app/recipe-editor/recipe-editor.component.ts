@@ -3,6 +3,7 @@ import { Recipe } from '../types/recipe';
 import { ActivatedRoute } from '@angular/router';
 import { RecipeService } from '../services/recipe.service';
 import { AsyncValidatorFn, FormControl, Validators } from '@angular/forms';
+import { MarkdownService } from '../services/markdown.service';
 
 @Component({
   selector: 'app-recipe',
@@ -19,6 +20,7 @@ export class RecipeEditorComponent {
   constructor(
     private readonly activeRoute: ActivatedRoute,
     private readonly recipeService: RecipeService,
+    readonly markdownService: MarkdownService,
   ) {
     this.activeRoute.params.subscribe((params) => {
       const recipeId = params['id'];
@@ -26,7 +28,7 @@ export class RecipeEditorComponent {
         (recipe) => {
           this.recipe = recipe;
           this.recipe.checkpoint();
-          console.log(`id=${this.recipe.id} signature=${this.recipe.getSignature()}`)
+          console.log(`id=${this.recipe.id} signature=${this.recipe.getSignature()}`);
           this.titleControl.setErrors(null);
           this.titleControl.setValue(recipe.title);
           this.recipeService.setEditRecipe(recipe);
@@ -43,13 +45,26 @@ export class RecipeEditorComponent {
     });
   }
 
+  recipeDescription(event: Event) {
+    if (this.recipe) {
+      const target = event.target as HTMLTextAreaElement;
+      this.recipe.description = target.value;
+    }
+  }
+
+  description(): string {
+    return this.recipe?.description || '';
+  }
+
+  hasDescription(): boolean {
+    return !!this.recipe && this.recipe.description.trim().length > 0;
+  }
+
   recipeTitle(event: Event) {
     if (this.recipe) {
       const target = event.target as HTMLInputElement;
       this.recipe.title = target.value;
       this.titleControl.setValue(target.value);
-    } else {
-      console.warn('No active recipe');
     }
   }
 

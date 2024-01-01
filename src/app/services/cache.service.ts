@@ -29,23 +29,19 @@ class CacheEntry<R> {
 }
 
 export class TypedCache<R> {
-  private readonly cache: { [key: string]: CacheEntry<R> } = {};
+  private readonly cache: Record<string, CacheEntry<R>> = {};
 
   invalidate(key: string) {
     const entry = this.cache[key];
-    if (entry) {
-      delete this.cache[key];
-    }
+    if (entry) delete this.cache[key];
   }
 
   async makeCachedCall(impl: () => Promise<R>, conf: CacheConfig): Promise<R> {
     const entry = this.cache[conf.key];
     const expired = entry && entry.expired();
-    if (entry && !expired) {
-      return entry.value;
-    } else if (entry && expired) {
-      delete this.cache[conf.key];
-    }
+
+    if (entry && !expired) return entry.value;
+    else if (entry && expired) delete this.cache[conf.key];
 
     const value = await impl();
     const newEntry = new CacheEntry<R>(value, conf);
