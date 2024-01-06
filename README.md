@@ -50,13 +50,11 @@ See the issues tab in GitHub for more information, as well.
 * Ingredient should be able to have "null" units
 * Home screen
   * Case-insensitive sort for recipe list
+  * Filter recipes by title
 * US/metric quantity conversions
-* Edit descriptions for ingredients
-* Show descriptions for ingredients in recipe viewer
 * Recipe editor should be able to select tabs via URL
 * Recipe doubling
 * Export recipes
 * Search by ingredients
-* Home screen filter recipes by title
 * Cognito authentication
   * Testing
