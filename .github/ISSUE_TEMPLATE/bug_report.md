@@ -24,6 +24,6 @@ A clear and concise description of what you expected to happen.
 A description of what actually happens, including screenshots, if appropriate.
 
 # Browser environment
-* Platform
+* Client platform (e.g. Windows, Android)
 * Browser
-* Version
+* Application version
