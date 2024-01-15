@@ -17,8 +17,8 @@ import { SessionService } from './session.service';
 export class DdbService {
   constructor(private readonly sessionService: SessionService) {}
 
-  private getDdbClient(): DynamoDBClient {
-    const credentials = this.sessionService.sessionCredentials();
+  private async getDdbClient(): Promise<DynamoDBClient> {
+    const credentials = await this.sessionService.sessionCredentials();
     if (credentials) {
       return new DynamoDBClient({
         region: environment.region,
@@ -29,15 +29,18 @@ export class DdbService {
     }
   }
 
-  putItem(command: PutItemCommand): Promise<PutItemCommandOutput> {
-    return this.getDdbClient().send(command);
+  async putItem(command: PutItemCommand): Promise<PutItemCommandOutput> {
+    const client = await this.getDdbClient();
+    return client.send(command);
   }
 
-  deleteItem(command: DeleteItemCommand): Promise<DeleteItemCommandOutput> {
-    return this.getDdbClient().send(command);
+  async deleteItem(command: DeleteItemCommand): Promise<DeleteItemCommandOutput> {
+    const client = await this.getDdbClient();
+    return client.send(command);
   }
 
-  query(command: QueryCommand): Promise<QueryCommandOutput> {
-    return this.getDdbClient().send(command);
+  async query(command: QueryCommand): Promise<QueryCommandOutput> {
+    const client = await this.getDdbClient();
+    return client.send(command);
   }
 }

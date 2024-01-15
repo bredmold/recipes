@@ -21,7 +21,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { SignInComponent } from './auth/sign-in/sign-in.component';
-import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatLineModule } from '@angular/material/core';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -43,7 +42,6 @@ import { DirtyRecipeDialog } from './dirty-recipe/dirty-recipe-dialog';
     StepsComponent,
   ],
   imports: [
-    AmplifyAuthenticatorModule,
     AppRoutingModule,
     BrowserModule,
     BrowserAnimationsModule,

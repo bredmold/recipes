@@ -32,23 +32,25 @@
       </mat-form-field>
     </div>
 
-    <div class="newPassword" *ngIf="passwordChallenge">
-      <mat-form-field>
-        <mat-label>New Password</mat-label>
-        <input
-          matInput
-          [(ngModel)]="new_password"
-          ngModel
-          type="password"
-          minlength="8"
-          required
-          name="new_password"
-          placeholder="New Password"
-        />
-      </mat-form-field>
-    </div>
-
-    <button mat-button type="submit" *ngIf="!passwordChallenge">Login</button>
-    <button mat-button type="submit" *ngIf="passwordChallenge">Forced Password Change</button>
+    @if (passwordChallenge) {
+      <div class="newPassword">
+        <mat-form-field>
+          <mat-label>New Password</mat-label>
+          <input
+            matInput
+            [(ngModel)]="new_password"
+            ngModel
+            type="password"
+            minlength="8"
+            required
+            name="new_password"
+            placeholder="New Password"
+          />
+        </mat-form-field>
+      </div>
+      <button mat-button type="submit">Forced Password Change</button>
+    } @else {
+      <button mat-button type="submit">Login</button>
+    }
   </form>
 </div>

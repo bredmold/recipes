@@ -4,7 +4,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.9.0"
+      version = "~> 5.0"
     }
   }
 }
@@ -23,7 +23,7 @@ provider "aws" {
   skip_requesting_account_id  = var.local_testing
 }
 
-data aws_region region {}
+data "aws_region" "region" {}
 
 resource "aws_dynamodb_table" "recipe_table" {
   name = "recipes"
@@ -80,10 +80,10 @@ resource "aws_cognito_identity_pool" "recipe_identities" {
 }
 
 resource "aws_iam_role_policy" "recipe_user_policy" {
-  name   = "recipe-app-user-policy"
-  role   = aws_iam_role.recipe_user_role.id
+  name = "recipe-app-user-policy"
+  role = aws_iam_role.recipe_user_role.id
   policy = jsonencode({
-    Version   = "2012-10-17"
+    Version = "2012-10-17"
     Statement = [
       {
         Effect = "Allow"
@@ -109,11 +109,11 @@ resource "aws_iam_role" "recipe_user_role" {
   name = "recipe-app-user-role"
 
   assume_role_policy = jsonencode({
-    Version   = "2012-10-17"
+    Version = "2012-10-17"
     Statement = [
       {
-        Action    = "sts:AssumeRoleWithWebIdentity"
-        Effect    = "Allow"
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Effect = "Allow"
         Principal = {
           Federated = "cognito-identity.amazonaws.com"
         }
@@ -128,10 +128,10 @@ resource "aws_iam_role" "recipe_user_role" {
 }
 
 resource "aws_iam_role_policy" "recipe_unauth_policy" {
-  name   = "recipe-unauth-policy"
-  role   = aws_iam_role.recipe_unauth_role.id
+  name = "recipe-unauth-policy"
+  role = aws_iam_role.recipe_unauth_role.id
   policy = jsonencode({
-    Version   = "2012-10-17"
+    Version = "2012-10-17"
     Statement = [
       {
         Action   = "*"
@@ -146,11 +146,11 @@ resource "aws_iam_role" "recipe_unauth_role" {
   name = "recipe-app-unauth-role"
 
   assume_role_policy = jsonencode({
-    Version   = "2012-10-17"
+    Version = "2012-10-17"
     Statement = [
       {
-        Action    = "sts:AssumeRoleWithWebIdentity"
-        Effect    = "Allow"
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Effect = "Allow"
         Principal = {
           Federated = "cognito-identity.amazonaws.com"
         }
@@ -197,4 +197,27 @@ resource "aws_s3_bucket_versioning" "recipe_versioning" {
 resource "aws_s3_bucket_acl" "recipe_acl" {
   bucket = aws_s3_bucket.recipe_hosting.id
   acl    = "public-read"
+}
+
+locals {
+  ext_map = {
+    ".txt"  = "text/plain"
+    ".cjs"  = "application/javascript"
+    ".js"   = "application/javascript"
+    ".html" = "text/html"
+    ".css"  = "text/css"
+    ".ico"  = "image/png"
+  }
+
+  dist_folder = "../dist/recipe"
+}
+
+resource "aws_s3_object" "application" {
+  for_each = fileset(local.dist_folder, "*")
+
+  bucket       = aws_s3_bucket.recipe_hosting.bucket
+  key          = each.value
+  source       = "../dist/recipe/${each.value}"
+  etag         = filemd5("${local.dist_folder}/${each.value}")
+  content_type = lookup(local.ext_map, regex(".*(\\.[a-zA-Z0-9]+)$", each.value)[0], "text/plain")
 }

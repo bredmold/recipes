@@ -1,8 +1,12 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { CognitoUser, CognitoUserSession } from 'amazon-cognito-identity-js';
+import { AuthenticationDetails, CognitoUser, CognitoUserSession } from 'amazon-cognito-identity-js';
 import { SessionService } from '../../services/session.service';
-import { Auth } from 'aws-amplify';
+
+interface NewPasswordChallenge {
+  userAttributes: any;
+  requiredAttributes: any;
+}
 
 @Component({
   selector: 'app-sign-in',
@@ -18,8 +22,6 @@ export class SignInComponent {
   sessionUserAttributes: any;
   passwordChallenge: boolean = false;
 
-  private cognitoUser?: CognitoUser = undefined;
-
   constructor(
     private router: Router,
     private sessionService: SessionService,
@@ -29,33 +31,56 @@ export class SignInComponent {
     return this.email_address.length > 0 && this.password.length > 0;
   }
 
-  private async signIn() {
+  private authenticateUser(cognitoUser: CognitoUser): Promise<CognitoUserSession | NewPasswordChallenge> {
+    return new Promise((resolve, reject) => {
+      const authDetails = new AuthenticationDetails({
+        Username: this.email_address,
+        Password: this.password,
+      });
+      cognitoUser.authenticateUser(authDetails, {
+        onSuccess: (cognitoSession) => resolve(cognitoSession),
+        newPasswordRequired: (userAttributes, requiredAttributes) => {
+          if (userAttributes.email_verified) delete userAttributes.email_verified;
+          resolve({ userAttributes: userAttributes, requiredAttributes: requiredAttributes });
+        },
+        onFailure: (err) => reject(err),
+      });
+    });
+  }
+
+  private completeNewPasswordChallenge(cognitoUser: CognitoUser): Promise<CognitoUserSession> {
+    return new Promise((resolve, reject) => {
+      cognitoUser.completeNewPasswordChallenge(this.new_password, this.sessionUserAttributes, {
+        onSuccess: (cognitoSession) => resolve(cognitoSession),
+        onFailure: (err) => reject(err),
+      });
+    });
+  }
+
+  private async cognitoSignIn() {
     this.passwordChallenge = false;
-
+    const cognitoUser = this.sessionService.getCognitoUser(this.email_address);
     try {
-      const user = await Auth.signIn(this.email_address, this.password);
-      if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
-        this.cognitoUser = user;
-        this.sessionUserAttributes = user.challengeParam;
-        this.passwordChallenge = true;
-      } else {
-        const session: CognitoUserSession = await Auth.currentSession();
-        this.sessionService.activateSession(user, session);
-
+      const authResult = await this.authenticateUser(cognitoUser);
+      if (authResult instanceof CognitoUserSession) {
+        this.sessionService.activateSession(cognitoUser, authResult);
+        console.log('Logged In');
         await this.router.navigate(['']);
-        console.log('Logged in');
+      } else {
+        this.sessionUserAttributes = authResult.userAttributes;
+        this.passwordChallenge = true;
       }
-    } catch (err) {
-      console.error(err);
+    } catch (e) {
+      console.error(e);
       this.isLoading = false;
     }
   }
 
   private async completePasswordChallenge() {
     try {
-      const user = await Auth.completeNewPassword(this.cognitoUser, this.new_password);
-      const session: CognitoUserSession = await Auth.currentSession();
-      this.sessionService.activateSession(user, session);
+      const cognitoUser = this.sessionService.getCognitoUser(this.email_address);
+      const session = await this.completeNewPasswordChallenge(cognitoUser);
+      this.sessionService.activateSession(cognitoUser, session);
 
       await this.router.navigate(['']);
       console.log('Logged in');
@@ -72,7 +97,7 @@ export class SignInComponent {
       if (this.passwordChallenge) {
         this.completePasswordChallenge().then(() => {});
       } else {
-        this.signIn().then(() => {});
+        this.cognitoSignIn().then(() => {});
       }
     }
   }

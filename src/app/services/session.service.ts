@@ -1,12 +1,19 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { CognitoUser, CognitoUserSession } from 'amazon-cognito-identity-js';
-import { Auth } from 'aws-amplify';
-import { ICredentials } from 'aws-amplify/lib/Common/types/types';
+import { CognitoUser, CognitoUserPool, CognitoUserSession } from 'amazon-cognito-identity-js';
+import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
+import { CognitoIdentityCredentials, fromCognitoIdentityPool } from '@aws-sdk/credential-provider-cognito-identity';
+import { environment } from '../../environments/environment';
+
+export const COGNITO_IDENTITY_CLIENT = new InjectionToken<CognitoIdentityClient>('Cognito Identity Client', {
+  providedIn: 'root',
+  factory: () => new CognitoIdentityClient({ region: environment.region }),
+});
 
 interface RecipeSession {
   user: CognitoUser;
   session: CognitoUserSession;
+  credentials?: CognitoIdentityCredentials;
 }
 
 @Injectable({
@@ -14,18 +21,39 @@ interface RecipeSession {
 })
 export class SessionService {
   private readonly activeSession: BehaviorSubject<RecipeSession | undefined>;
+  private readonly userPool: CognitoUserPool;
 
-  constructor() {
+  constructor(@Inject(COGNITO_IDENTITY_CLIENT) private readonly cognitoIdentityClient: CognitoIdentityClient) {
     this.activeSession = new BehaviorSubject<RecipeSession | undefined>(undefined);
+    this.userPool = new CognitoUserPool({
+      UserPoolId: environment.cognito.userPoolId,
+      ClientId: environment.cognito.clientId,
+    });
   }
 
   activateSession(cognitoUser: CognitoUser, session: CognitoUserSession) {
     this.activeSession.next({ user: cognitoUser, session: session });
   }
 
+  private signOut(cognitoUser: CognitoUser): Promise<void> {
+    return new Promise((resolve) => {
+      cognitoUser.signOut(() => resolve());
+    });
+  }
+
   async deactivateSession() {
-    await Auth.signOut();
-    this.activeSession.next(undefined);
+    const session = this.activeSession.getValue();
+    if (session) {
+      await this.signOut(session.user);
+      this.activeSession.next(undefined);
+    }
+  }
+
+  getCognitoUser(email: string): CognitoUser {
+    return new CognitoUser({
+      Username: email,
+      Pool: this.userPool,
+    });
   }
 
   isLoggedIn(): boolean {
@@ -38,7 +66,23 @@ export class SessionService {
     return session ? session.user.getUsername() : undefined;
   }
 
-  sessionCredentials(): ICredentials {
-    return Auth.Credentials.get();
+  async sessionCredentials(): Promise<CognitoIdentityCredentials | undefined> {
+    const session = this.activeSession.getValue();
+    if (session) {
+      if (!session.credentials) {
+        const userPoolUrl = `cognito-idp.${environment.region}.amazonaws.com/${environment.cognito.userPoolId}`;
+        const credentialsProvider = fromCognitoIdentityPool({
+          client: this.cognitoIdentityClient,
+          identityPoolId: environment.cognito.identityPoolId,
+          logins: {
+            [userPoolUrl]: session.session.getIdToken().getJwtToken(),
+          },
+        });
+        session.credentials = await credentialsProvider();
+      }
+      return session.credentials;
+    } else {
+      return Promise.resolve(undefined);
+    }
   }
 }

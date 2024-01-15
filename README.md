@@ -37,7 +37,6 @@ See the issues tab in GitHub for more information, as well.
 * OAuth integration
   * Log in with your Google account
   * Automate the new user process
-  * Ditch amplify
   * Account tracking
 * Recipe service
   * API GW + Lambda function

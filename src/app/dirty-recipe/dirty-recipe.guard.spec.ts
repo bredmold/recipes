@@ -87,7 +87,7 @@ describe('dirtyRecipeGuard', () => {
 
     await fixture.whenStable();
     const dialog = await loader.getHarness(MatDialogHarness);
-    const okButtonHarness = await dialog.getHarness(MatButtonHarness.with({text: 'Ok'}));
+    const okButtonHarness = await dialog.getHarness(MatButtonHarness.with({ text: 'Ok' }));
     await okButtonHarness.click();
     await fixture.whenStable();
 

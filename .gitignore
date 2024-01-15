@@ -56,7 +56,7 @@ Thumbs.db
 .terraform.lock.hcl
 terraform.tfstate
 terraform.tfstate.backup
-recipe.plan
+*.plan
 
 #amplify-do-not-edit-begin
 amplify/\#current-cloud-backend

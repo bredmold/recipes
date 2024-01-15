@@ -19,7 +19,7 @@ export const dirtyRecipeGuard: CanActivateFn = async () => {
       const dialogRef = dialog.open(DirtyRecipeDialog, {
         data: editRecipe,
         enterAnimationDuration: 0.25,
-        exitAnimationDuration: 0
+        exitAnimationDuration: 0,
       });
 
       const closedPromise = new Promise<boolean>((resolve) => {
