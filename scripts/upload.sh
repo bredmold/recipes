@@ -16,8 +16,7 @@ prepare() {
   npm version "$VERSION" &&
     npm run build:prod &&
     cd terraform &&
-    terraform plan -var "local_testing=false" -out tf.plan &&
-    terraform apply tf.plan
+    terraform plan -var "local_testing=false" -out tf.plan
 }
 
 apply() {
