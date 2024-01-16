@@ -1,17 +1,20 @@
 <div class="home">
   <div class="recipe-list">
     @if (allRecipes.length > 0) {
-      <mat-list>
+      <mat-nav-list>
         @for (recipe of allRecipes; track recipe.id) {
-          <mat-list-item>
-            <div class="home-recipe">
-              <a [routerLink]="recipeLink(recipe.id)">{{ recipe.title }}</a>
-            </div>
+          <mat-list-item [routerLink]="recipeLink(recipe.id)">
+            <a matListItemTitle>{{ recipe.title }}</a>
+            @if (recipe.description.trim().length > 0) {
+              <span matListItemLine [innerHTML]="markdownService.renderAsHtml(recipe.description)"></span>
+            }
           </mat-list-item>
         }
-      </mat-list>
+      </mat-nav-list>
     } @else {
-      <div class="no-recipes"><mat-spinner></mat-spinner></div>
+      <div class="no-recipes">
+        <mat-spinner></mat-spinner>
+      </div>
     }
   </div>
   @if (showEditLinks()) {

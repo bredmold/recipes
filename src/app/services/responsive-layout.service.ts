@@ -3,8 +3,8 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { BehaviorSubject } from 'rxjs';
 
 export enum LayoutMode {
-  TableLandscape,
-  TablePortrait,
+  TabletPortrait,
+  TabletLandscape,
   HandsetLandscape,
   HandsetPortrait,
 }
@@ -13,19 +13,19 @@ export enum LayoutMode {
   providedIn: 'root',
 })
 export class ResponsiveLayoutService {
-  public readonly layoutMode: BehaviorSubject<LayoutMode> = new BehaviorSubject<LayoutMode>(LayoutMode.TableLandscape);
+  public readonly layoutMode: BehaviorSubject<LayoutMode> = new BehaviorSubject<LayoutMode>(LayoutMode.TabletPortrait);
 
   constructor(breakpointObserver: BreakpointObserver) {
     breakpointObserver.observe(Breakpoints.TabletLandscape).subscribe((result) => {
       if (result.matches) {
         console.log('TableLandscape');
-        this.layoutMode.next(LayoutMode.TableLandscape);
+        this.layoutMode.next(LayoutMode.TabletPortrait);
       }
     });
     breakpointObserver.observe(Breakpoints.TabletPortrait).subscribe((result) => {
       if (result.matches) {
         console.log('TablePortrait');
-        this.layoutMode.next(LayoutMode.TablePortrait);
+        this.layoutMode.next(LayoutMode.TabletLandscape);
       }
     });
     breakpointObserver.observe(Breakpoints.HandsetLandscape).subscribe((result) => {

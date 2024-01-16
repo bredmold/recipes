@@ -5,27 +5,24 @@ import { ActivatedRoute } from '@angular/router';
 import { ActivatedRouteStub } from '../../testing/activated-route-stub';
 import { Recipe } from '../types/recipe';
 import { RecipeService } from '../services/recipe.service';
-import { BehaviorSubject } from 'rxjs';
 import { LayoutMode, ResponsiveLayoutService } from '../services/responsive-layout.service';
+import { BehaviorSubject } from 'rxjs';
 
 describe('RecipeViewerComponent', () => {
   let component: RecipeViewerComponent;
   let fixture: ComponentFixture<RecipeViewerComponent>;
   let activeRoute: ActivatedRouteStub;
-  let recipeServiceSpy: any;
-  let responsiveLayoutServiceSpy: any;
+  let recipeServiceSpy: jasmine.SpyObj<RecipeService>;
+  let responsiveLayoutServiceSpy: ResponsiveLayoutService;
 
   beforeEach(async () => {
     activeRoute = new ActivatedRouteStub();
 
-    recipeServiceSpy = {
-      setViewRecipe: jasmine.createSpy('setViewRecipe'),
-      getRecipeById: jasmine.createSpy('getRecipeById'),
-    };
+    recipeServiceSpy = jasmine.createSpyObj('RecipeService', ['setViewRecipe', 'getRecipeById']);
     recipeServiceSpy.getRecipeById.and.returnValue(Promise.reject('nope'));
 
     responsiveLayoutServiceSpy = {
-      layoutMode: new BehaviorSubject<LayoutMode>(LayoutMode.TableLandscape),
+      layoutMode: new BehaviorSubject<LayoutMode>(LayoutMode.TabletPortrait),
     };
 
     await TestBed.configureTestingModule({
@@ -70,13 +67,25 @@ describe('RecipeViewerComponent', () => {
     expect(component.steps()).toEqual([]);
   });
 
-  it('should return the table class on tables', () => {
-    responsiveLayoutServiceSpy.layoutMode.next(LayoutMode.TablePortrait);
-    expect(component.recipeViewerClass()).toEqual('recipe-viewer');
+  describe('recipeViewerClass', () => {
+    function doTest(mode: LayoutMode, readableMode: string, expected: string) {
+      it(`Should return ${expected} for layout mode ${readableMode}`, () => {
+        responsiveLayoutServiceSpy.layoutMode.next(mode);
+        expect(component.recipeViewerClass()).toEqual(expected);
+      });
+    }
+
+    doTest(LayoutMode.TabletLandscape, 'TableLandscape', 'recipe-viewer');
+    doTest(LayoutMode.TabletPortrait, 'TablePortrait', 'recipe-viewer');
+    doTest(LayoutMode.HandsetLandscape, 'HandsetLandscape', 'recipe-viewer-phone');
+    doTest(LayoutMode.HandsetPortrait, 'HandsetPortrait', 'recipe-viewer-phone');
   });
 
-  it('should return the phone class on phones', () => {
-    responsiveLayoutServiceSpy.layoutMode.next(LayoutMode.HandsetPortrait);
-    expect(component.recipeViewerClass()).toEqual('recipe-viewer-phone');
+  it('should return an empty list of steps when no recipe', () => {
+    expect(component.steps()).toHaveSize(0);
+  });
+
+  it('should return an empty list of ingredients when no recipe', () => {
+    expect(component.ingredients()).toHaveSize(0);
   });
 });

@@ -1,5 +1,8 @@
 <div [class]="recipeViewerClass()">
   @if (recipe) {
+    @if (recipe.description.trim().length > 0) {
+      <div class="description-view" [innerHTML]="markdownService.renderAsHtml(recipe.description)"></div>
+    }
     <div class="ingredients-view">
       <div>Ingredients list</div>
       <mat-list>
@@ -18,6 +21,8 @@
       }
     </div>
   } @else {
-    <div class="loading-recipe"><mat-spinner></mat-spinner></div>
+    <div class="loading-recipe">
+      <mat-spinner></mat-spinner>
+    </div>
   }
 </div>
