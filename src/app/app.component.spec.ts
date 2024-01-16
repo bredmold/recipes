@@ -41,7 +41,7 @@ describe('AppComponent', () => {
     };
 
     responsiveLayoutServiceSpy = {
-      layoutMode: new BehaviorSubject<LayoutMode>(LayoutMode.TableLandscape),
+      layoutMode: new BehaviorSubject<LayoutMode>(LayoutMode.TabletPortrait),
     };
 
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);

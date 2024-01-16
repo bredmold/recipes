@@ -17,7 +17,7 @@ export class MarkdownService {
    * @throws RejectedMarkdownException if the sanitizer rejects the generated HTML
    */
   renderAsHtml(markdown: string): string {
-    const html = marked.parse(markdown) as string;
+    const html = marked.parseInline(markdown) as string;
     const sanitizedHtml = this.sanitizer.sanitize(SecurityContext.HTML, html);
     if (sanitizedHtml) return sanitizedHtml;
     else throw new RejectedMarkdownException();

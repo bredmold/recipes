@@ -61,9 +61,10 @@ export class SessionService {
     return !!session;
   }
 
-  loggedInEmail(): string | undefined {
+  loggedInEmail(): string {
     const session = this.activeSession.getValue();
-    return session ? session.user.getUsername() : undefined;
+    if (session) return session.user.getUsername();
+    else throw 'No active session';
   }
 
   async sessionCredentials(): Promise<CognitoIdentityCredentials | undefined> {

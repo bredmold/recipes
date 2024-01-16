@@ -31,8 +31,6 @@ export class RecipeService {
 
   async saveRecipe(recipe: Recipe): Promise<Recipe> {
     const ownerEmail = this.sessionService.loggedInEmail();
-    if (!ownerEmail) throw 'No active session';
-
     this.recipeCache.invalidate(recipe.id);
     const putItemCommand = new PutItemCommand({
       TableName: this.tableName,
@@ -51,8 +49,6 @@ export class RecipeService {
 
   async listRecipes(): Promise<Recipe[]> {
     const ownerEmail = this.sessionService.loggedInEmail();
-    if (!ownerEmail) throw 'No logged in email';
-
     const listRecipesCommand = new QueryCommand({
       TableName: this.tableName,
       IndexName: this.titleIndexName,
@@ -67,8 +63,6 @@ export class RecipeService {
 
   async isDuplicateTitle(recipeId: string, recipeTitle: string): Promise<boolean> {
     const ownerEmail = this.sessionService.loggedInEmail();
-    if (!ownerEmail) throw 'No logged in email';
-
     const hasRecipeTitleCommand = new QueryCommand({
       TableName: this.tableName,
       IndexName: this.titleIndexName,
@@ -92,8 +86,6 @@ export class RecipeService {
     return this.recipeCache.makeCachedCall(
       async () => {
         const ownerEmail = this.sessionService.loggedInEmail();
-        if (!ownerEmail) throw 'No logged in email';
-
         const recipeByIdCommand = new QueryCommand({
           TableName: this.tableName,
           KeyConditionExpression: 'ownerEmail = :ownerEmail AND recipeId = :recipeId',
@@ -116,8 +108,6 @@ export class RecipeService {
 
   async deleteRecipeById(recipeId: string): Promise<void> {
     const ownerEmail = this.sessionService.loggedInEmail();
-    if (!ownerEmail) throw 'No logged in email';
-
     const deleteRecipeCommand = new DeleteItemCommand({
       TableName: this.tableName,
       Key: {

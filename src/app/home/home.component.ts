@@ -3,6 +3,7 @@ import { RecipeService } from '../services/recipe.service';
 import { Recipe } from '../types/recipe';
 import { Router } from '@angular/router';
 import { LayoutMode, ResponsiveLayoutService } from '../services/responsive-layout.service';
+import { MarkdownService } from '../services/markdown.service';
 
 @Component({
   selector: 'app-home',
@@ -14,6 +15,7 @@ export class HomeComponent implements OnInit {
     private readonly recipeService: RecipeService,
     private readonly router: Router,
     private readonly responsiveLayoutService: ResponsiveLayoutService,
+    readonly markdownService: MarkdownService,
   ) {}
 
   public allRecipes: Recipe[] = [];

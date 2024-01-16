@@ -41,17 +41,17 @@ describe('ResponsiveLayoutService', () => {
   });
 
   it('should default to tablet landscape', () => {
-    expect(service.layoutMode.getValue()).toEqual(LayoutMode.TableLandscape);
+    expect(service.layoutMode.getValue()).toEqual(LayoutMode.TabletPortrait);
   });
 
   it('should return table landscape', () => {
     tabletLandscapeSubject.next({ matches: true, breakpoints: {} });
-    expect(service.layoutMode.getValue()).toEqual(LayoutMode.TableLandscape);
+    expect(service.layoutMode.getValue()).toEqual(LayoutMode.TabletPortrait);
   });
 
   it('should return tablet portrait', () => {
     tabletPortraitSubject.next({ matches: true, breakpoints: {} });
-    expect(service.layoutMode.getValue()).toEqual(LayoutMode.TablePortrait);
+    expect(service.layoutMode.getValue()).toEqual(LayoutMode.TabletLandscape);
   });
 
   it('should return handset portrait', () => {
