@@ -212,12 +212,22 @@ locals {
   dist_folder = "../dist/recipe"
 }
 
-resource "aws_s3_object" "application" {
+resource "aws_s3_object" "root" {
   for_each = fileset(local.dist_folder, "*")
 
   bucket       = aws_s3_bucket.recipe_hosting.bucket
   key          = each.value
   source       = "../dist/recipe/${each.value}"
   etag         = filemd5("${local.dist_folder}/${each.value}")
+  content_type = lookup(local.ext_map, regex(".*(\\.[a-zA-Z0-9]+)$", each.value)[0], "text/plain")
+}
+
+resource "aws_s3_object" "browser" {
+  for_each = fileset("${local.dist_folder}/browser", "*")
+
+  bucket       = aws_s3_bucket.recipe_hosting.bucket
+  key          = each.value
+  source       = "../dist/recipe/browser/${each.value}"
+  etag         = filemd5("${local.dist_folder}/browser/${each.value}")
   content_type = lookup(local.ext_map, regex(".*(\\.[a-zA-Z0-9]+)$", each.value)[0], "text/plain")
 }
