@@ -24,8 +24,8 @@
     "@angular/platform-browser": "^18.2.12",
     "@angular/platform-browser-dynamic": "^18.2.12",
     "@angular/router": "^18.2.12",
-    "@aws-sdk/client-dynamodb": "^3.485.0",
     "@aws-sdk/client-cognito-identity": "^3.485.0",
+    "@aws-sdk/client-dynamodb": "^3.485.0",
     "@aws-sdk/credential-provider-cognito-identity": "^3.485.0",
     "amazon-cognito-identity-js": "^6.3.7",
     "marked": "^11.1.0",
@@ -50,7 +50,7 @@
     "karma-firefox-launcher": "^2.1.2",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "prettier": "^3.1.1",
+    "prettier": "^3.3.3",
     "typescript": "~5.5.4"
   }
 }
