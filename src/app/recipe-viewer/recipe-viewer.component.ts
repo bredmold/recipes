@@ -9,6 +9,7 @@ import { MarkdownService } from '../services/markdown.service';
   selector: 'app-recipe-viewer',
   templateUrl: './recipe-viewer.component.html',
   styleUrls: ['./recipe-viewer.component.sass'],
+  standalone: false,
 })
 export class RecipeViewerComponent {
   recipe?: Recipe;

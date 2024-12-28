@@ -12,6 +12,7 @@ interface NewPasswordChallenge {
   selector: 'app-sign-in',
   templateUrl: './sign-in.component.html',
   styleUrls: ['./sign-in.component.sass'],
+  standalone: false,
 })
 export class SignInComponent {
   isLoading: boolean = false;

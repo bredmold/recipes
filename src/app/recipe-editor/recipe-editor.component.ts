@@ -9,6 +9,7 @@ import { MarkdownService } from '../services/markdown.service';
   selector: 'app-recipe',
   templateUrl: './recipe-editor.component.html',
   styleUrls: ['./recipe-editor.component.sass'],
+  standalone: false,
 })
 export class RecipeEditorComponent {
   private static readonly TITLE_KEY = 'title';

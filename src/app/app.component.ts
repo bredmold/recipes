@@ -13,6 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.sass'],
+  standalone: false,
 })
 export class AppComponent {
   viewRecipe?: Recipe = undefined;

@@ -13,6 +13,7 @@ export interface DeleteDialogData {
 @Component({
   selector: 'delete-recipe-dialog',
   templateUrl: './delete-recipe-dialog.html',
+  standalone: false,
 })
 export class DeleteRecipeDialog {
   constructor(

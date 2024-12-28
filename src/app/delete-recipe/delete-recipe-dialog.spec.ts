@@ -16,6 +16,7 @@ import { MatButtonHarness } from '@angular/material/button/testing';
 @Component({
   selector: 'test-component',
   template: '',
+  standalone: false,
 })
 class DeleteRecipeTestComponent {
   constructor(private readonly dialog: MatDialog) {}

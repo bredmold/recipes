@@ -5,6 +5,7 @@ import { Recipe } from '../types/recipe';
 @Component({
   selector: 'dirty-recipe-dialog',
   templateUrl: './dirty-recipe-dialog.html',
+  standalone: false,
 })
 export class DirtyRecipeDialog {
   public allowNavigation: boolean = false;

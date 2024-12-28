@@ -15,6 +15,7 @@ interface CustomUnitsContext {
   selector: 'app-ingredients',
   templateUrl: './ingredients.component.html',
   styleUrls: ['./ingredients.component.sass'],
+  standalone: false,
 })
 export class IngredientsComponent {
   @Input() recipe?: Recipe;
@@ -158,6 +159,7 @@ export class IngredientsComponent {
 @Component({
   selector: 'custom-units-dialog',
   templateUrl: 'custom-units-dialog.html',
+  standalone: false,
 })
 export class CustomUnitsDialog {
   @ViewChild('customUnitsName') customUnitsName!: ElementRef<HTMLInputElement>;

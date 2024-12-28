@@ -8,6 +8,7 @@ import { MarkdownService } from '../services/markdown.service';
   selector: 'app-steps',
   templateUrl: './steps.component.html',
   styleUrls: ['./steps.component.sass'],
+  standalone: false,
 })
 export class StepsComponent {
   @Input() recipe?: Recipe;
