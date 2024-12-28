@@ -16,11 +16,11 @@ prepare() {
   npm version "$VERSION" &&
     npm run build:prod &&
     cd terraform &&
-    terraform plan -var "local_testing=false" -out tf.plan
+    tofu plan -var "local_testing=false" -out tf.plan
 }
 
 apply() {
-  cd terraform && terraform apply tf.plan
+  cd terraform && tofu apply tf.plan
 }
 
 PRG_DIR=$(dirname "$0")
