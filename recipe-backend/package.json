@@ -1,0 +1,37 @@
+{
+  "name": "recipe-backend",
+  "version": "0.1.0",
+  "description": "Recipe service backend lambda",
+  "scripts": {
+    "build": "rm -rf dist && node build.mjs",
+    "test": "rm -rf out-tsc && tsc && jasmine --config=jasmine.json",
+    "format": "prettier --write '**/*.ts'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/bredmold/recipes.git"
+  },
+  "keywords": [
+    "recipe",
+    "lambda"
+  ],
+  "author": "Aaron Goldstein",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bredmold/recipes/issues"
+  },
+  "homepage": "https://github.com/bredmold/recipes#readme",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.146",
+    "@types/jasmine": "^5.1.5",
+    "@types/lodash": "^4.17.13",
+    "axios": "^1.7.9",
+    "esbuild": "0.24.2",
+    "jasmine": "^5.5.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}

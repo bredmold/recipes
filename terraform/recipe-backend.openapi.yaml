@@ -1,0 +1,325 @@
+openapi: 3.0.3
+info:
+  title: Recipe API
+  description: |-
+    Recipe API - provides for creating, updating, and removing recipes
+  contact:
+    email: bredmold@gmail.com
+  version: ${recipe_version}
+tags:
+  - name: recipe
+    description: Manage your recipes
+paths:
+  /recipe:
+    get:
+      tags:
+        - recipe
+      summary: Query for recipes
+      description: Get a list of all recipes, or of recipes filtered by title
+      operationId: queryRecipes
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipeList'
+        '401':
+          description: Not authenticated
+      x-amazon-apigateway-integration:
+        type: AWS_PROXY
+        uri: ${backend_lambda_arn}
+        httpMethod: POST
+        payloadFormatVersion: 1.0
+        timeoutInMillis: 1000
+      x-amazon-apigateway-auth:
+        type: AWS_IAM
+    post:
+      tags:
+        - recipe
+      summary: Create a new recipe
+      description: Add a new recipe to the database
+      operationId: createRecipe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Recipe'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+        '401':
+          description: Not authenticated
+        '400':
+          description: Invalid recipe data
+      x-amazon-apigateway-integration:
+        type: AWS_PROXY
+        uri: ${backend_lambda_arn}
+        httpMethod: POST
+        payloadFormatVersion: 1.0
+        timeoutInMillis: 1000
+      x-amazon-apigateway-auth:
+        type: AWS_IAM
+  /recipe/{recipeId}:
+    get:
+      tags:
+        - recipe
+      summary: Find recipe by ID
+      operationId: getRecipeById
+      description: Retrieve a single recipe by its ID
+      parameters:
+        - name: recipeId
+          in: path
+          description: Recipe ID to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+        '401':
+          description: Not authenticated
+        '404':
+          description: Recipe not found
+      x-amazon-apigateway-integration:
+        type: AWS_PROXY
+        uri: ${backend_lambda_arn}
+        httpMethod: POST
+        payloadFormatVersion: 1.0
+        timeoutInMillis: 1000
+      x-amazon-apigateway-auth:
+        type: AWS_IAM
+    put:
+      tags:
+        - recipe
+      summary: Update a recipe
+      description: Submit an updated version of the recipe
+      operationId: updateRecipe
+      parameters:
+        - name: recipeId
+          in: path
+          description: Recipe ID to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Recipe'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+        '400':
+          description: Invalid recipe data
+        '401':
+          description: Not authenticated
+        '404':
+          description: Recipe not found
+      x-amazon-apigateway-integration:
+        type: AWS_PROXY
+        uri: ${backend_lambda_arn}
+        httpMethod: POST
+        payloadFormatVersion: 1.0
+        timeoutInMillis: 1000
+      x-amazon-apigateway-auth:
+        type: AWS_IAM
+    delete:
+      tags:
+        - recipe
+      summary: Delete a recipe
+      description: Delete recipe by Id
+      operationId: deleteRecipe
+      parameters:
+        - name: recipeId
+          in: path
+          description: Recipe ID to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Not authenticated
+        '404':
+          description: Recipe not found
+      x-amazon-apigateway-integration:
+        type: AWS_PROXY
+        uri: ${backend_lambda_arn}
+        httpMethod: POST
+        payloadFormatVersion: 1.0
+        timeoutInMillis: 1000
+      x-amazon-apigateway-auth:
+        type: AWS_IAM
+components:
+  schemas:
+    Recipe:
+      description: How the client describes a recipe to the service
+      type: object
+      properties:
+        id:
+          description: Unique identifier for the recipe
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          description: Recipe title
+          type: string
+          example: Hot Chocolate
+        description:
+          description: Human-readable recipe description (supports markdown)
+          type: string
+          example: Aaron's hot chocolate recipe
+        ingredients:
+          description: List of ingredients for this recipe
+          type: array
+          items:
+            $ref: '#/components/schemas/Ingredient'
+        steps:
+          description: List of steps for this recipe
+          type: array
+          items:
+            $ref: '#/components/schemas/Step'
+        customUnits:
+          description: Custom units defined for this recipe
+          type: array
+          items:
+            $ref: '#/components/schemas/QuantityUnitInformation'
+        version:
+          description: Recipe format version
+          type: string
+          enum:
+            - '2'
+      required:
+        - id
+        - title
+        - ingredients
+        - steps
+        - customUnits
+        - version
+    Ingredient:
+      description: A recipe ingredient
+      type: object
+      properties:
+        id:
+          description: Unique identifier for this ingredient
+          type: string
+          format: uuid
+        name:
+          description: Ingredient name
+          type: string
+          example: Garlic
+        description:
+          description: Human readable description of the ingredient
+          type: string
+          example: Garlic (minced)
+        amount:
+          $ref: '#/components/schemas/RecipeAmount'
+      required:
+        - id
+        - name
+        - amount
+    RecipeAmount:
+      description: A quantity for the recipe
+      type: object
+      properties:
+        quantity:
+          description: The number - how many pounds, quarts, cloves, etc
+          type: number
+          example: 1
+        units:
+          oneOf:
+            - $ref: '#/components/schemas/UnitsUsVolume'
+            - $ref: '#/components/schemas/UnitsUsWeight'
+            - $ref: '#/components/schemas/UnitsCustom'
+    UnitsUsVolume:
+      description: US units for volume
+      type: string
+      enum:
+        - us-volume-tsp
+        - us-volume-tbsp
+        - us-volume-oz
+        - us-volume-cup
+        - us-volume-pint
+        - us-volume-qt
+    UnitsUsWeight:
+      description: US units for weight
+      type: string
+      enum:
+        - us-weight-oz
+        - us-weight-lbs
+    UnitsCustom:
+      description: Custom units
+      type: string
+      format: uuid
+    RecipeList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Recipe'
+    Step:
+      description: A single step in the recipe
+      type: object
+      properties:
+        id:
+          description: Unique identifier for this recipe step
+          type: string
+          format: uuid
+        description:
+          description: Human readable text of the step (supports markdown)
+          type: string
+          example: Bring water to a boil
+        ingredients:
+          description: List of ingredient IDs that are relevant to this step
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+        - id
+        - ingredients
+        - description
+    QuantityUnitInformation:
+      description: Description of custom units for this recipe
+      type: object
+      properties:
+        id:
+          description: Unique identifier for this custom unit
+          type: string
+          format: uuid
+        name:
+          description: Unit name for display
+          type: string
+          example: clove
+        abbreviation:
+          description: Unit abbreviation for display
+          type: string
+          example: tsp
+      required:
+        - id
+        - name
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
