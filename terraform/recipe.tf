@@ -9,12 +9,6 @@ terraform {
   }
 }
 
-variable "local_testing" {
-  type        = bool
-  default     = true
-  description = "If true, run local testing"
-}
-
 provider "aws" {
   region = "us-west-2"
 

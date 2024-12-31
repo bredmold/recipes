@@ -5,8 +5,20 @@ die() {
   exit 1
 }
 
-prepare() {
-  VERSION="$1"
+tf() {
+  cd terraform && tofu "$@"
+}
+
+tfPlan() {
+  local APP_VERSION
+
+  APP_VERSION=$(jq -r .version < package.json)
+
+  tf plan -var "application_version=${APP_VERSION}" -var "local_testing=false" -out tf.plan
+}
+
+npmVersion() {
+  local VERSION="$1"
 
   if [ "$VERSION" = "" ]; then
     die "Prepare requires arg: major minor patch"
@@ -14,13 +26,18 @@ prepare() {
   shift
 
   npm version "$VERSION" &&
-    npm run build:prod &&
-    cd terraform &&
-    tofu plan -var "local_testing=false" -out tf.plan
+    npm run build:prod || die "npm run build:prod"
 }
 
-apply() {
-  cd terraform && tofu apply tf.plan
+buildBackend() {
+  cd recipe-backend || die "cd recipe-backend"
+  npm run build || die "npm run build"
+}
+
+prepare() {
+  npmVersion "$@"
+
+  tfPlan || die "tofu plan"
 }
 
 PRG_DIR=$(dirname "$0")
@@ -30,12 +47,36 @@ CMD="$1"
 shift
 
 case "$CMD" in
+major)
+  npmVersion major
+  ;;
+
+minor)
+  npmVersion minor
+  ;;
+
+patch)
+  npmVersion patch
+  ;;
+
 prepare)
   prepare "$@"
   ;;
 
+backend)
+  buildBackend "$@"
+  ;;
+
+init)
+  tf init -reconfigure -upgrade || die "tf init"
+  ;;
+
+plan)
+  tfPlan
+  ;;
+
 apply)
-  apply "$@"
+  tf apply tf.plan
   ;;
 
 *)

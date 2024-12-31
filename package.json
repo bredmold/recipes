@@ -2,6 +2,7 @@
   "name": "recipe",
   "version": "0.15.4",
   "scripts": {
+    "tofu:format": "cd terraform && tofu fmt",
     "format": "prettier --write '**/*.ts'",
     "ng": "ng",
     "start": "ng serve",
