@@ -80,6 +80,7 @@ resource "aws_iam_role_policy" "recipe_user_policy" {
     Version = "2012-10-17"
     Statement = [
       {
+        Sid    = "DDB"
         Effect = "Allow"
         Action = [
           "dynamodb:GetItem",
@@ -93,6 +94,14 @@ resource "aws_iam_role_policy" "recipe_user_policy" {
         Resource = [
           aws_dynamodb_table.recipe_table.arn,
           "${aws_dynamodb_table.recipe_table.arn}/*",
+        ]
+      },
+      {
+        Sid    = "APIGW"
+        Effect = "Allow"
+        Action = ["execute-api:Invoke"]
+        Resource = [
+          "arn:aws:execute-api:${data.aws_region.region.name}:${data.aws_caller_identity.current.account_id}:${aws_apigatewayv2_api.backend_api.id}/*/GET/recipe"
         ]
       }
     ]

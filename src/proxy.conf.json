@@ -1,0 +1,7 @@
+{
+  "/api": {
+    "target": "https://ua161d35m4.execute-api.us-west-2.amazonaws.com/",
+    "secure": false,
+    "logLevel": "debug"
+  }
+}
