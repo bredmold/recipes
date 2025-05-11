@@ -10,14 +10,16 @@ export const environment = {
     region: 'us-west-2',
     credentials: {
       accessKeyId: 'nope',
-      secretAccessKey: 'nope',
-    },
+      secretAccessKey: 'nope'
+    }
   },
   cognito: {
     clientId: '81sf9eo2hd7migok9r3hs96n3',
     userPoolId: 'us-west-2_djFbovgCe',
-    identityPoolId: 'us-west-2:c8065941-de2b-4969-84d2-502b5407579a',
+    identityPoolId: 'us-west-2:c8065941-de2b-4969-84d2-502b5407579a'
   },
+  apiGatewayUrl: 'https://ua161d35m4.execute-api.us-west-2.amazonaws.com',
+  backendUrl: 'http://localhost:4200/api'
 };
 
 /*

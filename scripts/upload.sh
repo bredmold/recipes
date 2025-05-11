@@ -79,6 +79,10 @@ apply)
   tf apply tf.plan
   ;;
 
+fmt)
+  tf fmt
+  ;;
+
 *)
   die "Unknown command: $CMD"
   ;;

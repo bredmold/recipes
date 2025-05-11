@@ -47,14 +47,14 @@ See the issues tab in GitHub for more information, as well.
 * Home screen
   * Case-insensitive sort for recipe list
   * Filter recipes by title
+  * Filter recipes by tags
 * Add new fields to recipe
-  * source - where did this recipe come from
-  * url - the URL associated with the source
   * tags - a list of tags for recipe search
-* Ingredient should be able to have "null" units
+* Ingredient should be able to have "count" units
 * Recipe editor should be able to select tabs via URL
 * Recipe doubling
 * Search by ingredients
+* Insert a shopping list into Google Keep
 * Export recipes
   * What export format?
   * Is there any kind of standard for representing recipes?

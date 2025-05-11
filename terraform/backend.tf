@@ -84,7 +84,7 @@ resource "aws_apigatewayv2_api" "backend_api" {
   })
 
   cors_configuration {
-    allow_origins = ["*"]
+    allow_origins = ["https://${aws_s3_bucket.recipe_hosting.bucket_regional_domain_name}"]
     allow_headers = ["*"]
     allow_methods = ["*"]
   }

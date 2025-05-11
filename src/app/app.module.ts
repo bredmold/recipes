@@ -27,6 +27,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { DeleteRecipeDialog } from './delete-recipe/delete-recipe-dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DirtyRecipeDialog } from './dirty-recipe/dirty-recipe-dialog';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { apiGatewayRequestSigner } from './auth/request-signer';
 
 @NgModule({
   declarations: [
@@ -62,7 +64,7 @@ import { DirtyRecipeDialog } from './dirty-recipe/dirty-recipe-dialog';
     ReactiveFormsModule,
     RouterModule,
   ],
-  providers: [],
+  providers: [provideHttpClient(withInterceptors([apiGatewayRequestSigner]))],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
