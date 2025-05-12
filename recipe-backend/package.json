@@ -4,7 +4,7 @@
   "description": "Recipe service backend lambda",
   "scripts": {
     "build": "rm -rf dist && node build.mjs",
-    "test": "rm -rf out-tsc && tsc && jasmine --config=jasmine.json",
+    "test": "jest",
     "format": "prettier --write '**/*.ts'"
   },
   "repository": {
@@ -22,16 +22,19 @@
   },
   "homepage": "https://github.com/bredmold/recipes#readme",
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@types/aws-lambda": "^8.10.146",
-    "@types/jasmine": "^5.1.5",
+    "@types/jest": "^29.5.14",
     "@types/lodash": "^4.17.13",
-    "axios": "^1.7.9",
-    "esbuild": "0.24.2",
-    "jasmine": "^5.5.0",
-    "prettier": "^3.4.2",
+    "axios": "1.8.2",
+    "esbuild": "0.25.4",
+    "jest": "^29.7.0",
+    "prettier": "^3.5.3",
+    "ts-jest": "^29.3.2",
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "winston": "^3.17.0"
   }
 }

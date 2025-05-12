@@ -7,4 +7,5 @@ await esbuild.build({
   platform: "node",
   target: "node20",
   outdir: 'dist',
+  external: ['@aws-sdk/*']
 });
