@@ -6,10 +6,10 @@ die() {
 }
 
 tf() {
-  cd terraform && tofu "$@"
+  cd deploy && tofu "$@"
 }
 
-tfPlan() {
+tofuPlan() {
   local APP_VERSION
 
   APP_VERSION=$(jq -r .version < package.json)
@@ -37,7 +37,7 @@ buildBackend() {
 prepare() {
   npmVersion "$@"
 
-  tfPlan || die "tofu plan"
+  tofuPlan || die "tofu plan"
 }
 
 PRG_DIR=$(dirname "$0")
@@ -68,11 +68,11 @@ backend)
   ;;
 
 init)
-  tf init -reconfigure -upgrade || die "tf init"
+  tf init -reconfigure -upgrade || die "tofu init"
   ;;
 
 plan)
-  tfPlan
+  tofuPlan
   ;;
 
 apply)

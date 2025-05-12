@@ -1,5 +1,7 @@
-import { APIGatewayEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayEvent, APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
 import _ from 'lodash';
+import { RequestLogger } from './logging';
+import { extractCognitoUserId } from './utils';
 
 class RecipeError extends Error {
   override readonly name = 'RecipeError';
@@ -9,16 +11,12 @@ class RecipeError extends Error {
   }
 }
 
-function scrubHeader(key: string, value: string | undefined): string | undefined {
-  return key.toLowerCase() === 'authorization' ? 'OMITTED' : value;
-}
-
 interface Recipe {}
 
 type RecipeOperation = 'Search' | 'Add' | 'GetById' | 'Update' | 'Delete';
 
 class RecipeAction {
-  private static parseBody(event: APIGatewayEvent): Recipe {
+  private static parseBody(event: APIGatewayProxyEvent): Recipe {
     if (typeof event.body === 'string') {
       return JSON.parse(event.body) as Recipe;
     } else {
@@ -31,8 +29,10 @@ class RecipeAction {
   public readonly operation: RecipeOperation;
   public readonly recipeId: string | undefined;
   public readonly recipeBody: Recipe | undefined;
+  public readonly cognitoUserId: string;
 
   constructor(event: APIGatewayEvent) {
+    this.cognitoUserId = extractCognitoUserId(event);
     const method = event.httpMethod.toUpperCase();
     const path = event.path;
 
@@ -62,26 +62,10 @@ class RecipeAction {
   }
 }
 
-function logEventDetails(event: APIGatewayEvent) {
-  const routeKey = `${event.httpMethod} ${event.path}`;
-  console.log(`routeKey=${routeKey}`);
-  if (event.pathParameters) {
-    for (const [key, value] of Object.entries(event.pathParameters)) {
-      console.log(`path param ${key}=${value}`);
-    }
-  }
-  if (event.headers) {
-    for (const [key, value] of Object.entries(event.headers)) {
-      const scrubbedValue = scrubHeader(key, value);
-      console.log(`header ${key}=${scrubbedValue}`);
-    }
-  }
-  if (event.body) {
-    console.log(`body with length ${event.body.length}`);
-  }
-}
-
 export const handler: APIGatewayProxyHandler = async (event) => {
+  const logger = new RequestLogger(event);
+  logger.logEventDetails();
+
   try {
     const action = new RecipeAction(event);
 
@@ -92,10 +76,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       body: JSON.stringify({ operation: action.operation, recipeId: action.recipeId }),
     } as APIGatewayProxyResult;
   } catch (e) {
-    logEventDetails(event);
     if (e instanceof Error) {
-      console.error(`ERROR name=${e.name}`);
-      console.error(`ERROR message=${e.message}`);
+      logger.logStructuredError(e);
       if (e.stack) console.error(e.stack);
       return {
         isBase64Encoded: false,
@@ -104,7 +86,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         body: JSON.stringify({ name: e.name, message: e.message }),
       } as APIGatewayProxyResult;
     } else {
-      console.error(e);
+      logger.logOtherError(e);
       return {
         isBase64Encoded: false,
         statusCode: 500,
