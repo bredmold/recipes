@@ -66,12 +66,13 @@ describe('logging', () => {
   it('should log the event details', async () => {
     const event = {
       httpMethod: 'GET',
-      path: '/recipe',
+      path: '/recipe/:recipeId',
       requestContext: {
         requestId: 'request-id',
         identity: { cognitoAuthenticationProvider: 'poolId:CognitoSignIn:cognito-user-id' },
       },
-      headers: {},
+      headers: { Authorization: 'Bearer token', Accept: 'application/json' } as Record<string, string>,
+      pathParameters: { recipeId: 'recipe-id' } as Record<string, string>,
     } as APIGatewayProxyEvent;
     const logger = new RequestLogger(event);
     const events = await loggingTest(logger.logger, () => logger.logEventDetails());
@@ -80,6 +81,8 @@ describe('logging', () => {
     const detailsEvent = events[0];
     expect(detailsEvent.cognitoUserId).toStrictEqual('cognito-user-id');
     expect(detailsEvent.requestId).toStrictEqual('request-id');
-    expect(detailsEvent.routeKey).toStrictEqual('GET /recipe');
+    expect(detailsEvent.routeKey).toStrictEqual('GET /recipe/:recipeId');
+    expect(detailsEvent.message.headers).toStrictEqual({ Authorization: 'OMITTED', Accept: 'application/json' });
+    expect(detailsEvent.message.pathParams).toStrictEqual({ recipeId: 'recipe-id' });
   });
 });

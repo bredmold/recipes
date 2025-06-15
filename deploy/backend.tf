@@ -43,6 +43,32 @@ resource "aws_iam_role_policy" "lambda_logging" {
   policy = data.aws_iam_policy_document.lambda_logging.json
 }
 
+data "aws_iam_policy_document" "dynamodb" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "dynamodb:GetItem",
+      "dynamodb:BatchGetItem",
+      "dynamodb:Query",
+      "dynamodb:PutItem",
+      "dynamodb:UpdateItem",
+      "dynamodb:DeleteItem",
+      "dynamodb:BatchWriteItem"
+    ]
+
+    resources = [
+      aws_dynamodb_table.recipe_table.arn,
+      "${aws_dynamodb_table.recipe_table.arn}/index/*",
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "dynamodb" {
+  role   = aws_iam_role.backend_role.name
+  policy = data.aws_iam_policy_document.dynamodb.json
+}
+
 data "archive_file" "lambda_zip" {
   type        = "zip"
   source_file = "${local.backend_dist}/index.js"
