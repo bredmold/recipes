@@ -66,17 +66,12 @@ async function signRequest(
     sha256: Sha256,
   });
 
-  console.log(angularRq);
   const awsRq = convertToAwsRequest(angularRq);
-  console.log(awsRq);
   const signedAwsRq = await sigv4.sign(awsRq);
-  console.log(signedAwsRq);
 
   // Copy all the headers from the signed request
   const signedHeaders = new HttpHeaders(signedAwsRq.headers);
-  const signedAngularRq = angularRq.clone({ headers: signedHeaders.delete('host') });
-  console.log(signedAngularRq);
-  return signedAngularRq;
+  return angularRq.clone({ headers: signedHeaders.delete('host') });
 }
 
 export function apiGatewayRequestSigner(
@@ -84,7 +79,6 @@ export function apiGatewayRequestSigner(
   next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> {
   const sessionService = inject(SessionService);
-  console.log(`auth interceptor: loggedInEmail=${sessionService.loggedInEmail()}`);
 
   const credentialsPromise = sessionService.sessionCredentials();
   const credentialsObservable = fromPromise(credentialsPromise);
@@ -92,7 +86,6 @@ export function apiGatewayRequestSigner(
     .pipe(
       mergeMap((credentials) => {
         if (credentials) {
-          console.log(`identityId=${credentials.identityId}`);
           return fromPromise(signRequest(req, credentials));
         } else throw new NotLoggedInError();
       }),

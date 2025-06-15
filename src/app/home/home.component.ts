@@ -4,7 +4,6 @@ import { Recipe } from '../types/recipe';
 import { Router } from '@angular/router';
 import { LayoutMode, ResponsiveLayoutService } from '../services/responsive-layout.service';
 import { MarkdownService } from '../services/markdown.service';
-import { BackendService } from '../services/backend.service';
 
 @Component({
   selector: 'app-home',
@@ -18,7 +17,6 @@ export class HomeComponent implements OnInit {
     private readonly router: Router,
     private readonly responsiveLayoutService: ResponsiveLayoutService,
     readonly markdownService: MarkdownService,
-    private readonly backendService: BackendService,
   ) {}
 
   public allRecipes: Recipe[] = [];
@@ -64,13 +62,5 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.reload();
-  }
-
-  backendPing(): void {
-    console.log('ping');
-    this.backendService.ping().then(
-      (response) => console.log(`Ping response=${response}`),
-      (error) => console.error(error),
-    );
   }
 }

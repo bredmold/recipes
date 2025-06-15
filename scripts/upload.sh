@@ -31,13 +31,13 @@ npmVersion() {
 
 buildBackend() {
   cd recipe-backend || die "cd recipe-backend"
-  npm run build || die "npm run build"
+  npm run build || die "FAILED: assemble backend binary"
 }
 
 prepare() {
   npmVersion "$@"
 
-  tofuPlan || die "tofu plan"
+  tofuPlan || die "FAILED: tofu plan"
 }
 
 PRG_DIR=$(dirname "$0")
