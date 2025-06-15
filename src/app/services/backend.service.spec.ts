@@ -1,16 +1,61 @@
 import { TestBed } from '@angular/core/testing';
 
 import { BackendService } from './backend.service';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { environment } from '../../environments/environment';
+import { Recipe } from '../types/recipe';
 
-describe('RecipeService', () => {
+describe('BackendService', () => {
   let service: BackendService;
+  let httpTesting: HttpTestingController;
+
+  const backendUrl = environment.backendUrl;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     service = TestBed.inject(BackendService);
+    httpTesting = TestBed.inject(HttpTestingController);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  describe('search', () => {
+    it('should return an empty recipe list', async () => {
+      const searchPromise = service.search();
+
+      const rq = httpTesting.expectOne(`${backendUrl}/recipe`, 'List recipes request');
+      expect(rq.request.method).toBe('GET');
+      rq.flush([]);
+
+      const response = await searchPromise;
+      expect(response).toEqual([]);
+    });
+
+    it('should return a single recipe', async () => {
+      const recipe = {
+        title: 'title',
+        description: 'desc',
+        steps: [],
+        ingredients: [],
+        customUnits: [],
+        id: 'id',
+        version: '2',
+      };
+
+      const searchPromise = service.search();
+
+      const rq = httpTesting.expectOne(`${backendUrl}/recipe`, 'List recipes request');
+      expect(rq.request.method).toBe('GET');
+      rq.flush([recipe]);
+
+      const response = await searchPromise;
+      expect(response).toHaveSize(1);
+      expect(response[0]).toBeInstanceOf(Recipe);
+    });
   });
 });

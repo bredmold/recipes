@@ -2,6 +2,7 @@ import { lastValueFrom } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { Recipe } from '../types/recipe';
 
 @Injectable({
   providedIn: 'root',
@@ -13,9 +14,9 @@ export class BackendService {
     this.baseUrl = environment.backendUrl;
   }
 
-  async ping(): Promise<boolean> {
+  async search(): Promise<Recipe[]> {
     const url = `${this.baseUrl}/recipe`;
-    const response = await lastValueFrom(this.http.get(url, { observe: 'response' }));
-    return response.status === 200;
+    const body = await lastValueFrom(this.http.get<any[]>(url, { observe: 'body' }));
+    return body.map((r) => Recipe.fromObject(r));
   }
 }

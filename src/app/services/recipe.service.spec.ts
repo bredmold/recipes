@@ -10,8 +10,10 @@ import { RecipeService } from './recipe.service';
 import { Recipe } from '../types/recipe';
 import { SessionService } from './session.service';
 import { CacheService, TypedCache } from './cache.service';
+import { BackendService } from './backend.service';
 
 describe('RecipeService', () => {
+  let backendService: jasmine.SpyObj<BackendService>;
   let ddbService: jasmine.SpyObj<DdbService>;
   let sessionService: jasmine.SpyObj<SessionService>;
   let service: RecipeService;
@@ -21,9 +23,14 @@ describe('RecipeService', () => {
     ddbService = jasmine.createSpyObj<DdbService>('DdbService', ['query', 'putItem', 'deleteItem']);
     sessionService = jasmine.createSpyObj<SessionService>('SessionService', ['loggedInEmail']);
     recipeCache = jasmine.createSpyObj<TypedCache<Recipe>>('TypedCache', ['makeCachedCall', 'invalidate']);
+    backendService = jasmine.createSpyObj<BackendService>('BackendService', ['search']);
 
     TestBed.configureTestingModule({
       providers: [
+        {
+          provide: BackendService,
+          useValue: backendService,
+        },
         {
           provide: DdbService,
           useValue: ddbService,
@@ -48,19 +55,13 @@ describe('RecipeService', () => {
   });
 
   it('empty recipe list', async () => {
-    sessionService.loggedInEmail.and.returnValue('user@example.com');
-    const queryResponse: QueryCommandOutput = {
-      Items: [],
-      $metadata: {},
-    };
-    ddbService.query.and.returnValue(Promise.resolve(queryResponse));
+    backendService.search.and.returnValue(Promise.resolve([]));
 
     const recipes = await service.listRecipes();
     expect(recipes).toHaveSize(0);
   });
 
   it('should return a single recipe', async () => {
-    sessionService.loggedInEmail.and.returnValue('user@example.com');
     const recipe = {
       title: 'title',
       description: 'desc',
@@ -70,16 +71,8 @@ describe('RecipeService', () => {
       id: 'id',
       version: '2',
     };
-    const queryResponse: QueryCommandOutput = {
-      Items: [
-        {
-          json: { S: JSON.stringify(recipe) },
-        },
-      ],
-      $metadata: {},
-    };
 
-    ddbService.query.and.returnValue(Promise.resolve(queryResponse));
+    backendService.search.and.returnValue(Promise.resolve([Recipe.fromObject(recipe)]));
 
     const recipes = await service.listRecipes();
     expect(recipes).toEqual([new Recipe('title', 'desc', [], [], [], 'id', true)]);

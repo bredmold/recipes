@@ -5,6 +5,7 @@ import { CacheService, TypedCache } from './cache.service';
 import { DdbService } from './ddb.service';
 import { SessionService } from './session.service';
 import { Recipe } from '../types/recipe';
+import { BackendService } from './backend.service';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +23,7 @@ export class RecipeService {
     private readonly sessionService: SessionService,
     cacheService: CacheService,
     private readonly ddbService: DdbService,
+    private readonly backendService: BackendService,
   ) {
     this.viewRecipe = new BehaviorSubject<Recipe | undefined>(undefined);
     this.editRecipe = new BehaviorSubject<Recipe | undefined>(undefined);
@@ -48,17 +50,7 @@ export class RecipeService {
   }
 
   async listRecipes(): Promise<Recipe[]> {
-    const ownerEmail = this.sessionService.loggedInEmail();
-    const listRecipesCommand = new QueryCommand({
-      TableName: this.tableName,
-      IndexName: this.titleIndexName,
-      KeyConditionExpression: 'ownerEmail = :ownerEmail',
-      ExpressionAttributeValues: {
-        ':ownerEmail': { S: ownerEmail },
-      },
-    });
-    const listRecipesResult = await this.ddbService.query(listRecipesCommand);
-    return this.parseQueryResponse(listRecipesResult);
+    return await this.backendService.search();
   }
 
   async isDuplicateTitle(recipeId: string, recipeTitle: string): Promise<boolean> {
