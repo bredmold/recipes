@@ -4,4 +4,6 @@ module.exports = {
   transform: {
     "^.+\.tsx?$": ["ts-jest",{}],
   },
+  collectCoverage: true,
+  testRegex: ".*\\.spec\\.ts$",
 };

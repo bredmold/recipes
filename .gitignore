@@ -35,6 +35,7 @@ chrome-profiler-events*.json
 /.angular/cache
 /.sass-cache
 /connect.lock
+/recipe-backend/coverage
 /coverage
 /libpeerconnection.log
 npm-debug.log
