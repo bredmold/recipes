@@ -58,4 +58,47 @@ describe('BackendService', () => {
       expect(response[0]).toBeInstanceOf(Recipe);
     });
   });
+
+  describe('getById', () => {
+    it('should return a recipe by id', async () => {
+      const recipe = {
+        title: 'title',
+        description: 'desc',
+        steps: [],
+        ingredients: [],
+        customUnits: [],
+        id: 'id',
+        version: '2',
+      };
+
+      const getByIdPromise = service.getById('recipe-id');
+
+      const rq = httpTesting.expectOne(`${backendUrl}/recipe/recipe-id`, 'List recipes request');
+      expect(rq.request.method).toBe('GET');
+      rq.flush(recipe);
+
+      const response = await getByIdPromise;
+      expect(response).toBeInstanceOf(Recipe);
+    });
+
+    it('should throw in response to a 404', async () => {
+      const recipe = {
+        title: 'title',
+        description: 'desc',
+        steps: [],
+        ingredients: [],
+        customUnits: [],
+        id: 'id',
+        version: '2',
+      };
+
+      const getByIdPromise = service.getById('recipe-id');
+
+      const rq = httpTesting.expectOne(`${backendUrl}/recipe/recipe-id`, 'List recipes request');
+      expect(rq.request.method).toBe('GET');
+      rq.flush({ name: 'NOT_FOUND', message: 'Recipe recipe-id not found' }, { status: 404, statusText: 'Not Found' });
+
+      await expectAsync(getByIdPromise).toBeRejectedWith('Unable to locate recipe recipe-id');
+    });
+  });
 });

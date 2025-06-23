@@ -75,27 +75,7 @@ export class RecipeService {
   }
 
   getRecipeById(recipeId: string): Promise<Recipe> {
-    return this.recipeCache.makeCachedCall(
-      async () => {
-        const ownerEmail = this.sessionService.loggedInEmail();
-        const recipeByIdCommand = new QueryCommand({
-          TableName: this.tableName,
-          KeyConditionExpression: 'ownerEmail = :ownerEmail AND recipeId = :recipeId',
-          ExpressionAttributeValues: {
-            ':ownerEmail': { S: ownerEmail },
-            ':recipeId': { S: recipeId },
-          },
-        });
-        const recipeByIdResult = await this.ddbService.query(recipeByIdCommand);
-        const recipes = this.parseQueryResponse(recipeByIdResult);
-        if (recipes.length > 0) {
-          return recipes[0];
-        } else {
-          throw `Unable to locate recipe: ${recipeId}`;
-        }
-      },
-      { key: recipeId, ttl: 300000 },
-    );
+    return this.recipeCache.makeCachedCall(() => this.backendService.getById(recipeId), { key: recipeId, ttl: 300000 });
   }
 
   async deleteRecipeById(recipeId: string): Promise<void> {
