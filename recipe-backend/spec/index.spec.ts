@@ -5,7 +5,7 @@ import { RecipeInput } from '../src/recipe';
 import { RecipeAction } from '../src/recipe-action';
 import { BadRequestError } from '../src/errors';
 
-const event = {
+const searchEvent = {
   httpMethod: 'GET',
   path: '/test/path',
   headers: {},
@@ -17,10 +17,18 @@ const event = {
   },
 } as APIGatewayEvent;
 
+const getByIdEvent = {
+  ...searchEvent,
+  path: '/recipe/:recipeId',
+  pathParameters: { recipeId: 'recipe-id' },
+} as APIGatewayEvent;
+
 jest.mock('../src/recipe-client', () => {
   class MockRecipeClient {
     static mockSearch = jest.fn();
+    static mockGetById = jest.fn();
     search = MockRecipeClient.mockSearch;
+    getById = MockRecipeClient.mockGetById;
   }
 
   const actual = jest.requireActual('../src/recipe-client');
@@ -33,6 +41,13 @@ jest.mock('../src/recipe-client', () => {
 const mockSearchAction = {
   operation: 'Search',
   recipeId: undefined,
+  recipeBody: undefined,
+  cognitoUserId: 'test-user-id',
+};
+
+const mockGetByIdAction = {
+  operation: 'GetById',
+  recipeId: 'recipe-id',
   recipeBody: undefined,
   cognitoUserId: 'test-user-id',
 };
@@ -54,11 +69,13 @@ const fakeRecipe: RecipeInput = {
 describe('Recipe backend handler', () => {
   const MockRecipeClient = jest.mocked(RecipeClient);
   const mockSearch = (MockRecipeClient as any).mockSearch as jest.Mock;
+  const mockGetById = (MockRecipeClient as any).mockGetById as jest.Mock;
 
   const MockRecipeAction = jest.mocked(RecipeAction);
 
   beforeEach(() => {
     mockSearch.mockReset();
+    mockGetById.mockReset();
     MockRecipeAction.mockReset();
   });
 
@@ -66,7 +83,7 @@ describe('Recipe backend handler', () => {
     mockSearch.mockResolvedValue([fakeRecipe]);
     MockRecipeAction.mockReturnValue(mockSearchAction as RecipeAction);
 
-    const response = await handler(event, {} as Context, () => {});
+    const response = await handler(searchEvent, {} as Context, () => {});
 
     expect(response).toEqual({
       statusCode: 200,
@@ -76,11 +93,25 @@ describe('Recipe backend handler', () => {
     });
   });
 
+  it('should return OK on a get-by-id request', async () => {
+    mockGetById.mockResolvedValue(fakeRecipe);
+    MockRecipeAction.mockReturnValue(mockGetByIdAction as RecipeAction);
+
+    const response = await handler(getByIdEvent, {} as Context, () => {});
+
+    expect(response).toEqual({
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      isBase64Encoded: false,
+      body: JSON.stringify(fakeRecipe),
+    });
+  });
+
   it('should return 400 for an invalid request', async () => {
     MockRecipeAction.mockImplementation(() => {
       throw new BadRequestError('test case');
     });
-    const response = await handler(event, {} as Context, () => {});
+    const response = await handler(searchEvent, {} as Context, () => {});
 
     expect(response).toEqual({
       statusCode: 400,
@@ -92,9 +123,9 @@ describe('Recipe backend handler', () => {
 
   it('should return 500 unknown error type', async () => {
     MockRecipeAction.mockImplementation(() => {
-      throw new Error("other error");
+      throw new Error('other error');
     });
-    const response = await handler(event, {} as Context, () => {});
+    const response = await handler(searchEvent, {} as Context, () => {});
 
     expect(response).toEqual({
       statusCode: 500,
@@ -108,7 +139,7 @@ describe('Recipe backend handler', () => {
     MockRecipeAction.mockImplementation(() => {
       throw 'some random error';
     });
-    const response = await handler(event, {} as Context, () => {});
+    const response = await handler(searchEvent, {} as Context, () => {});
 
     expect(response).toEqual({
       statusCode: 500,

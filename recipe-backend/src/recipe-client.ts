@@ -29,6 +29,25 @@ export class RecipeClient {
     return items.map((item) => this.parseItem(item));
   }
 
+  async getById(action: RecipeAction): Promise<RecipeOutput | undefined> {
+    const ownerEmail = action.cognitoUserId;
+    const recipeByIdCommand = new QueryCommand({
+      TableName: RecipeClient.TABLE_NAME,
+      KeyConditionExpression: 'ownerEmail = :ownerEmail AND recipeId = :recipeId',
+      ExpressionAttributeValues: {
+        ':ownerEmail': { S: ownerEmail },
+        ':recipeId': { S: action.recipeId! },
+      },
+    });
+
+    const queryResponse = await this.ddb.send(recipeByIdCommand);
+    if (queryResponse.Items && queryResponse.Items.length > 0) {
+      return this.parseItem(queryResponse.Items[0]);
+    } else {
+      return undefined;
+    }
+  }
+
   private parseItem(item: Record<string, AttributeValue>): RecipeOutput {
     if (item['json'] && item['json'].S) {
       return JSON.parse(item['json'].S);

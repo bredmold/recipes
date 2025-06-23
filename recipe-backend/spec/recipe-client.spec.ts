@@ -40,6 +40,17 @@ describe('RecipeClient', () => {
 
       const recipeResponse = await client.search(action);
       expect(recipeResponse).toStrictEqual([sampleRecipe]);
+
+      expect(mockDdb.calls()).toHaveLength(1);
+      const searchCommand = mockDdb.call(0).firstArg as QueryCommand;
+      expect(searchCommand.input).toStrictEqual({
+        TableName: 'recipes',
+        IndexName: 'owner-title',
+        KeyConditionExpression: 'ownerEmail = :ownerEmail',
+        ExpressionAttributeValues: {
+          ':ownerEmail': { S: 'user-id' },
+        },
+      });
     });
 
     it('should throw if the response is malformed', async () => {
@@ -70,6 +81,55 @@ describe('RecipeClient', () => {
       } as RecipeAction;
 
       await expect(() => client.search(action)).rejects.toThrow(RecipeError);
+    });
+  });
+
+  describe('getById', () => {
+    it('should query DDB for the recipe ID', async () => {
+      const action = {
+        operation: 'GetById',
+        recipeBody: undefined,
+        recipeId: 'recipe-id',
+        cognitoUserId: 'user-id',
+      } as RecipeAction;
+
+      mockDdb.on(QueryCommand).resolves({
+        Items: [
+          {
+            json: { S: JSON.stringify(sampleRecipe) },
+          },
+        ],
+      });
+
+      const recipeResponse = await client.getById(action);
+      expect(recipeResponse).toStrictEqual(sampleRecipe);
+
+      expect(mockDdb.calls()).toHaveLength(1);
+      const getByIdCommand = mockDdb.call(0).firstArg as QueryCommand;
+      expect(getByIdCommand.input).toStrictEqual({
+        TableName: 'recipes',
+        KeyConditionExpression: 'ownerEmail = :ownerEmail AND recipeId = :recipeId',
+        ExpressionAttributeValues: {
+          ':ownerEmail': { S: 'user-id' },
+          ':recipeId': { S: 'recipe-id' },
+        },
+      });
+    });
+
+    it('should return undefined for recipe not found', async () => {
+      const action = {
+        operation: 'GetById',
+        recipeBody: undefined,
+        recipeId: 'recipe-id',
+        cognitoUserId: 'user-id',
+      } as RecipeAction;
+
+      mockDdb.on(QueryCommand).resolves({
+        Items: [],
+      });
+
+      const recipeResponse = await client.getById(action);
+      expect(recipeResponse).toBeUndefined();
     });
   });
 });
