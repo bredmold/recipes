@@ -9,6 +9,7 @@ export class RecipeClient {
 
   constructor(private readonly ddb: DynamoDBClient) {}
 
+  // TODO need to think about pagination here
   async search(action: RecipeAction): Promise<RecipeOutput[]> {
     if (action.operation !== 'Search') {
       throw new RecipeError(`Routing error: attempting to search when operation=${action.operation}`);
@@ -26,6 +27,7 @@ export class RecipeClient {
 
     const queryResponse = await this.ddb.send(listRecipesCommand);
     const items = queryResponse.Items || [];
+    action.logger.logEventSuccess({ action: action.operation, count: items.length });
     return items.map((item) => this.parseItem(item));
   }
 
@@ -42,8 +44,10 @@ export class RecipeClient {
 
     const queryResponse = await this.ddb.send(recipeByIdCommand);
     if (queryResponse.Items && queryResponse.Items.length > 0) {
+      action.logger.logEventSuccess({ action: action.operation, result: 'found' });
       return this.parseItem(queryResponse.Items[0]);
     } else {
+      action.logger.logEventSuccess({ action: action.operation, result: 'not found' });
       return undefined;
     }
   }

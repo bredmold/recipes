@@ -31,7 +31,7 @@ paths:
         uri: ${backend_lambda_arn}
         httpMethod: POST
         payloadFormatVersion: 1.0
-        timeoutInMillis: 1000
+        timeoutInMillis: ${timeoutInMillis}
       x-amazon-apigateway-auth:
         type: AWS_IAM
     post:
@@ -61,7 +61,7 @@ paths:
         uri: ${backend_lambda_arn}
         httpMethod: POST
         payloadFormatVersion: 1.0
-        timeoutInMillis: 1000
+        timeoutInMillis: ${timeoutInMillis}
       x-amazon-apigateway-auth:
         type: AWS_IAM
   /recipe/{recipeId}:
@@ -95,7 +95,7 @@ paths:
         uri: ${backend_lambda_arn}
         httpMethod: POST
         payloadFormatVersion: 1.0
-        timeoutInMillis: 1000
+        timeoutInMillis: ${timeoutInMillis}
       x-amazon-apigateway-auth:
         type: AWS_IAM
     put:
@@ -135,7 +135,7 @@ paths:
         uri: ${backend_lambda_arn}
         httpMethod: POST
         payloadFormatVersion: 1.0
-        timeoutInMillis: 1000
+        timeoutInMillis: ${timeoutInMillis}
       x-amazon-apigateway-auth:
         type: AWS_IAM
     delete:
@@ -164,7 +164,7 @@ paths:
         uri: ${backend_lambda_arn}
         httpMethod: POST
         payloadFormatVersion: 1.0
-        timeoutInMillis: 1000
+        timeoutInMillis: ${timeoutInMillis}
       x-amazon-apigateway-auth:
         type: AWS_IAM
 components:

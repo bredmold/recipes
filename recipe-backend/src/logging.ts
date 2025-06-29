@@ -24,8 +24,24 @@ function sanitize(key: string, value: string): string {
 export class RequestLogger {
   public readonly logger: Logger;
 
+  private pathParams: Record<string, string> | undefined = undefined;
+
+  private getPathParams(): Record<string, string> {
+    if (!this.pathParams) {
+      const eventPathParams = this.event.pathParameters || {};
+      this.pathParams = Object.entries(eventPathParams).reduce(
+        (params, [key, value]) => {
+          if (value) params[key] = value;
+          return params;
+        },
+        {} as Record<string, string>,
+      );
+    }
+    return this.pathParams;
+  }
+
   constructor(private readonly event: APIGatewayProxyEvent) {
-    const routeKey = `${this.event.httpMethod} ${this.event.path}`;
+    const routeKey = `${this.event.httpMethod} ${this.event.resource}`;
 
     const logLevel = validateLogLevel(getEventHeader(event, 'log-level')) || process.env['LOG_LEVEL'] || 'info';
     this.logger = winston.createLogger({
@@ -42,15 +58,6 @@ export class RequestLogger {
   }
 
   logEventDetails() {
-    const eventPathParams = this.event.pathParameters || {};
-    const pathParams = Object.entries(eventPathParams).reduce(
-      (params, [key, value]) => {
-        if (value) params[key] = value;
-        return params;
-      },
-      {} as Record<string, string>,
-    );
-
     const headers = Object.entries(this.event.headers).reduce(
       (headers, [key, value]) => {
         if (value) headers[key] = sanitize(key, value);
@@ -59,7 +66,13 @@ export class RequestLogger {
       {} as Record<string, string>,
     );
 
+    const pathParams = this.getPathParams();
     this.logger.info({ pathParams, headers, body: this.event.body });
+  }
+
+  logEventSuccess(logFields: Record<string, any>) {
+    const pathParams = this.getPathParams();
+    this.logger.info({ ...logFields, pathParams });
   }
 
   logStructuredError(e: Error) {

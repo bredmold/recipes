@@ -18,6 +18,7 @@ describe('logging', () => {
     const event = {
       httpMethod: 'GET',
       path: '/recipe',
+      resource: '/recipe',
       requestContext: {
         requestId: 'request-id',
         identity: { cognitoAuthenticationProvider: 'poolId:CognitoSignIn:cognito-user-id' },
@@ -66,7 +67,8 @@ describe('logging', () => {
   it('should log the event details', async () => {
     const event = {
       httpMethod: 'GET',
-      path: '/recipe/:recipeId',
+      path: '/recipe/recipe-id',
+      resource: '/recipe/{recipeId}',
       requestContext: {
         requestId: 'request-id',
         identity: { cognitoAuthenticationProvider: 'poolId:CognitoSignIn:cognito-user-id' },
@@ -81,8 +83,32 @@ describe('logging', () => {
     const detailsEvent = events[0];
     expect(detailsEvent.cognitoUserId).toStrictEqual('cognito-user-id');
     expect(detailsEvent.requestId).toStrictEqual('request-id');
-    expect(detailsEvent.routeKey).toStrictEqual('GET /recipe/:recipeId');
+    expect(detailsEvent.routeKey).toStrictEqual('GET /recipe/{recipeId}');
     expect(detailsEvent.message.headers).toStrictEqual({ Authorization: 'OMITTED', Accept: 'application/json' });
     expect(detailsEvent.message.pathParams).toStrictEqual({ recipeId: 'recipe-id' });
+  });
+
+  it('should log event success', async () => {
+    const event = {
+      httpMethod: 'GET',
+      path: '/recipe/recipe-id',
+      resource: '/recipe/{recipeId}',
+      requestContext: {
+        requestId: 'request-id',
+        identity: { cognitoAuthenticationProvider: 'poolId:CognitoSignIn:cognito-user-id' },
+      },
+      headers: { Authorization: 'Bearer token', Accept: 'application/json' } as Record<string, string>,
+      pathParameters: { recipeId: 'recipe-id' } as Record<string, string>,
+    } as APIGatewayProxyEvent;
+    const logger = new RequestLogger(event);
+    const events = await loggingTest(logger.logger, () => logger.logEventSuccess({ test: 'unit' }));
+    expect(events).toHaveLength(1);
+
+    const detailsEvent = events[0];
+    expect(detailsEvent.cognitoUserId).toStrictEqual('cognito-user-id');
+    expect(detailsEvent.requestId).toStrictEqual('request-id');
+    expect(detailsEvent.routeKey).toStrictEqual('GET /recipe/{recipeId}');
+    expect(detailsEvent.message.pathParams).toStrictEqual({ recipeId: 'recipe-id' });
+    expect(detailsEvent.message.test).toStrictEqual('unit');
   });
 });

@@ -4,6 +4,7 @@ import { RecipeAction } from '../src/recipe-action';
 import { RecipeClient } from '../src/recipe-client';
 import { RecipeOutput } from '../src/recipe';
 import { RecipeError } from '../src/errors';
+import { RequestLogger } from '../src/logging';
 
 const sampleRecipe: RecipeOutput = {
   id: 'recipe-id',
@@ -15,8 +16,12 @@ describe('RecipeClient', () => {
   const mockDdb = mockClient(DynamoDBClient);
   let client: RecipeClient;
 
+  const mockRequestLogger = { logEventSuccess: jest.fn() };
+
   beforeEach(() => {
     mockDdb.reset();
+
+    mockRequestLogger.logEventSuccess.mockReset();
 
     client = new RecipeClient(new DynamoDBClient({}));
   });
@@ -28,6 +33,7 @@ describe('RecipeClient', () => {
         recipeBody: undefined,
         recipeId: undefined,
         cognitoUserId: 'user-id',
+        logger: mockRequestLogger as unknown as RequestLogger,
       } as RecipeAction;
 
       mockDdb.on(QueryCommand).resolves({
@@ -51,6 +57,7 @@ describe('RecipeClient', () => {
           ':ownerEmail': { S: 'user-id' },
         },
       });
+      expect(mockRequestLogger.logEventSuccess).toHaveBeenCalledWith({ action: 'Search', count: 1 });
     });
 
     it('should throw if the response is malformed', async () => {
@@ -59,6 +66,7 @@ describe('RecipeClient', () => {
         recipeBody: undefined,
         recipeId: undefined,
         cognitoUserId: 'user-id',
+        logger: mockRequestLogger as unknown as RequestLogger,
       } as RecipeAction;
 
       mockDdb.on(QueryCommand).resolves({
@@ -91,6 +99,7 @@ describe('RecipeClient', () => {
         recipeBody: undefined,
         recipeId: 'recipe-id',
         cognitoUserId: 'user-id',
+        logger: mockRequestLogger as unknown as RequestLogger,
       } as RecipeAction;
 
       mockDdb.on(QueryCommand).resolves({
@@ -114,6 +123,7 @@ describe('RecipeClient', () => {
           ':recipeId': { S: 'recipe-id' },
         },
       });
+      expect(mockRequestLogger.logEventSuccess).toHaveBeenCalledWith({ action: 'GetById', result: 'found' });
     });
 
     it('should return undefined for recipe not found', async () => {
@@ -122,6 +132,7 @@ describe('RecipeClient', () => {
         recipeBody: undefined,
         recipeId: 'recipe-id',
         cognitoUserId: 'user-id',
+        logger: mockRequestLogger as unknown as RequestLogger,
       } as RecipeAction;
 
       mockDdb.on(QueryCommand).resolves({
@@ -130,6 +141,7 @@ describe('RecipeClient', () => {
 
       const recipeResponse = await client.getById(action);
       expect(recipeResponse).toBeUndefined();
+      expect(mockRequestLogger.logEventSuccess).toHaveBeenCalledWith({ action: 'GetById', result: 'not found' });
     });
   });
 });

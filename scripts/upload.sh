@@ -34,6 +34,11 @@ buildBackend() {
   npm run build || die "FAILED: assemble backend binary"
 }
 
+testBackend() {
+  cd recipe-backend || die "cd recipe-backend"
+  npm run test || die "FAILED: backend unit tests"
+}
+
 prepare() {
   npmVersion "$@"
 
@@ -65,6 +70,10 @@ prepare)
 
 backend)
   buildBackend "$@"
+  ;;
+
+test)
+  testBackend "$@"
   ;;
 
 init)

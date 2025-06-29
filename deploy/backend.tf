@@ -107,6 +107,7 @@ resource "aws_apigatewayv2_api" "backend_api" {
   body = templatefile("recipe-backend.openapi.yaml", {
     recipe_version     = var.application_version
     backend_lambda_arn = aws_lambda_function.recipe_backend.invoke_arn
+    timeoutInMillis    = 2000
   })
 
   cors_configuration {
