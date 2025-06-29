@@ -70,6 +70,11 @@ export class RequestLogger {
     this.logger.info({ pathParams, headers, body: this.event.body });
   }
 
+  logWarning(message: string) {
+    const pathParams = this.getPathParams();
+    this.logger.warn({ pathParams, warning: message });
+  }
+
   logEventSuccess(logFields: Record<string, any>) {
     const pathParams = this.getPathParams();
     this.logger.info({ ...logFields, pathParams });

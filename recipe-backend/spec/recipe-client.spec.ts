@@ -1,9 +1,9 @@
 import { mockClient } from 'aws-sdk-client-mock';
-import { DynamoDBClient, QueryCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, PutItemCommand, QueryCommand } from '@aws-sdk/client-dynamodb';
 import { RecipeAction } from '../src/recipe-action';
 import { RecipeClient } from '../src/recipe-client';
-import { RecipeOutput } from '../src/recipe';
-import { RecipeError } from '../src/errors';
+import { RecipeInput, RecipeOutput } from '../src/recipe';
+import { RecipeConflictError, RecipeError } from '../src/errors';
 import { RequestLogger } from '../src/logging';
 
 const sampleRecipe: RecipeOutput = {
@@ -142,6 +142,79 @@ describe('RecipeClient', () => {
       const recipeResponse = await client.getById(action);
       expect(recipeResponse).toBeUndefined();
       expect(mockRequestLogger.logEventSuccess).toHaveBeenCalledWith({ action: 'GetById', result: 'not found' });
+    });
+  });
+
+  describe('add', () => {
+    it('should add a recipe', async () => {
+      const recipe: RecipeInput = { title: 'test recipe' };
+      const action = {
+        operation: 'Add',
+        recipeBody: recipe,
+        recipeId: undefined,
+        cognitoUserId: 'user-id',
+        logger: mockRequestLogger as unknown as RequestLogger,
+      } as RecipeAction;
+
+      mockDdb.on(QueryCommand).resolves({ Items: [] });
+      mockDdb.on(PutItemCommand).resolves({});
+
+      const recipeResponse = await client.add(action);
+      expect(recipeResponse).toMatchObject(recipe);
+      expect(typeof recipeResponse.id).toStrictEqual('string');
+    });
+
+    it('should throw RecipeConflictError if title validation fails', async () => {
+      const recipe: RecipeInput = { title: 'test recipe' };
+      const action = {
+        operation: 'Add',
+        recipeBody: recipe,
+        recipeId: undefined,
+        cognitoUserId: 'user-id',
+        logger: mockRequestLogger as unknown as RequestLogger,
+      } as RecipeAction;
+
+      mockDdb.on(QueryCommand).resolves({ Items: [{ recipeId: { S: 'recipe-id' } }] });
+
+      await expect(() => client.add(action)).rejects.toThrow(RecipeConflictError);
+    });
+
+    it('should discard the suggested recipe ID if it exists', async () => {
+      const recipe: RecipeInput = { title: 'test recipe' };
+      const storedRecipe: RecipeOutput = { ...recipe, id: 'recipe-id' };
+      const action = {
+        operation: 'Add',
+        recipeBody: recipe,
+        recipeId: 'recipe-id',
+        cognitoUserId: 'user-id',
+        logger: mockRequestLogger as unknown as RequestLogger,
+      } as RecipeAction;
+
+      mockDdb
+        .on(QueryCommand)
+        .resolvesOnce({ Items: [] })
+        .resolvesOnce({ Items: [{ json: { S: JSON.stringify(storedRecipe) } }] });
+      mockDdb.on(PutItemCommand).resolves({});
+
+      const recipeResponse = await client.add(action);
+      expect(recipeResponse.id).not.toStrictEqual('recipe-id');
+    });
+
+    it('should accept the suggested recipe ID if not exists', async () => {
+      const recipe: RecipeInput = { title: 'test recipe' };
+      const action = {
+        operation: 'Add',
+        recipeBody: recipe,
+        recipeId: 'recipe-id',
+        cognitoUserId: 'user-id',
+        logger: mockRequestLogger as unknown as RequestLogger,
+      } as RecipeAction;
+
+      mockDdb.on(QueryCommand).resolves({ Items: [] });
+      mockDdb.on(PutItemCommand).resolves({});
+
+      const recipeResponse = await client.add(action);
+      expect(recipeResponse.id).toStrictEqual('recipe-id');
     });
   });
 });
