@@ -3,6 +3,7 @@ import { APIGatewayEvent } from 'aws-lambda';
 import { RecipeInput } from '../src/recipe';
 import { BadRequestError } from '../src/errors';
 import { RequestLogger } from '../src/logging';
+import { randomUUID } from 'node:crypto';
 
 const TEMPLATE_EVENT = {
   requestContext: { identity: { cognitoAuthenticationProvider: 'p1:p2:user-id' } },
@@ -16,15 +17,20 @@ function testEvent(partialEvent: Partial<APIGatewayEvent>): APIGatewayEvent {
 }
 
 describe('RecipeAction', () => {
-  const logger = {};
+  const logger = { logWarning: jest.fn() };
+
+  beforeEach(() => {
+    logger.logWarning.mockReset();
+  });
 
   it('should interpret a search request', () => {
     const action = new RecipeAction(
       testEvent({
         httpMethod: 'GET',
         path: '/recipe',
+        resource: '/recipe',
       }),
-      logger as RequestLogger,
+      logger as unknown as RequestLogger,
     );
 
     expect(action.operation).toStrictEqual('Search');
@@ -43,7 +49,7 @@ describe('RecipeAction', () => {
           recipeId: 'recipe-id',
         },
       }),
-      logger as RequestLogger,
+      logger as unknown as RequestLogger,
     );
 
     expect(action.operation).toStrictEqual('GetById');
@@ -57,15 +63,48 @@ describe('RecipeAction', () => {
       testEvent({
         httpMethod: 'POST',
         path: '/recipe',
+        resource: '/recipe',
         body: JSON.stringify({ title: 'recipe name' } as RecipeInput),
       }),
-      logger as RequestLogger,
+      logger as unknown as RequestLogger,
     );
 
     expect(action.operation).toStrictEqual('Add');
     expect(action.recipeId).toBeUndefined();
     expect(action.recipeBody).toStrictEqual({ title: 'recipe name' });
     expect(action.cognitoUserId).toStrictEqual('user-id');
+  });
+
+  it('should reject a malformed client recipe ID in a create-recipe request', () => {
+    const action = new RecipeAction(
+      testEvent({
+        httpMethod: 'POST',
+        path: '/recipe',
+        resource: '/recipe',
+        headers: { 'x-recipe-id': 'nope' },
+        body: JSON.stringify({ title: 'recipe name' } as RecipeInput),
+      }),
+      logger as unknown as RequestLogger,
+    );
+
+    expect(action.recipeId).toBeUndefined();
+    expect(logger.logWarning).toHaveBeenCalledTimes(1);
+  });
+
+  it("should accept a type 4 uuid in the x-recipe-id header for create-recipe request", () => {
+    const recipeId = randomUUID();
+    const action = new RecipeAction(
+      testEvent({
+        httpMethod: 'POST',
+        path: '/recipe',
+        resource: '/recipe',
+        headers: { 'x-recipe-id': recipeId },
+        body: JSON.stringify({ title: 'recipe name' } as RecipeInput),
+      }),
+      logger as unknown as RequestLogger,
+    );
+
+    expect(action.recipeId).toStrictEqual(recipeId);
   });
 
   it('should interpret an update-recipe request', () => {
@@ -77,7 +116,7 @@ describe('RecipeAction', () => {
         pathParameters: { recipeId: 'recipe-id' },
         body: JSON.stringify({ title: 'recipe name' } as RecipeInput),
       }),
-      logger as RequestLogger,
+      logger as unknown as RequestLogger,
     );
 
     expect(action.operation).toStrictEqual('Update');
@@ -94,7 +133,7 @@ describe('RecipeAction', () => {
         resource: '/recipe/{recipeId}',
         pathParameters: { recipeId: 'recipe-id' },
       }),
-      logger as RequestLogger,
+      logger as unknown as RequestLogger,
     );
 
     expect(action.operation).toStrictEqual('Delete');
@@ -112,7 +151,7 @@ describe('RecipeAction', () => {
             path: '/recipe',
             body: undefined,
           }),
-          logger as RequestLogger,
+          logger as unknown as RequestLogger,
         ),
     ).toThrow(BadRequestError);
   });
@@ -128,7 +167,7 @@ describe('RecipeAction', () => {
             pathParameters: { recipeId: 'recipe-id' },
             body: undefined,
           }),
-          logger as RequestLogger,
+          logger as unknown as RequestLogger,
         ),
     ).toThrow(BadRequestError);
   });
@@ -144,7 +183,7 @@ describe('RecipeAction', () => {
             pathParameters: { recipeId: 'recipe-id' },
             body: undefined,
           }),
-          logger as RequestLogger,
+          logger as unknown as RequestLogger,
         ),
     ).toThrow(BadRequestError);
   });

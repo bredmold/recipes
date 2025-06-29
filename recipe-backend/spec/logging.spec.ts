@@ -111,4 +111,25 @@ describe('logging', () => {
     expect(detailsEvent.message.pathParams).toStrictEqual({ recipeId: 'recipe-id' });
     expect(detailsEvent.message.test).toStrictEqual('unit');
   });
+
+  it('should log a warning', async () => {
+    const event = {
+      httpMethod: 'GET',
+      path: '/recipe/recipe-id',
+      resource: '/recipe/{recipeId}',
+      requestContext: {
+        requestId: 'request-id',
+        identity: { cognitoAuthenticationProvider: 'poolId:CognitoSignIn:cognito-user-id' },
+      },
+      headers: { Authorization: 'Bearer token', Accept: 'application/json' } as Record<string, string>,
+      pathParameters: { recipeId: 'recipe-id' } as Record<string, string>,
+    } as APIGatewayProxyEvent;
+    const logger = new RequestLogger(event);
+    const events = await loggingTest(logger.logger, () => logger.logWarning('test warning'));
+    expect(events).toHaveLength(1);
+
+    const detailsEvent = events[0];
+    expect(detailsEvent.level).toStrictEqual('warn');
+    expect(detailsEvent.message.warning).toStrictEqual('test warning');
+  });
 });

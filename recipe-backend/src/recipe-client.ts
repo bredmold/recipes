@@ -1,7 +1,8 @@
-import { AttributeValue, DynamoDBClient, QueryCommand } from '@aws-sdk/client-dynamodb';
+import { AttributeValue, DynamoDBClient, PutItemCommand, QueryCommand } from '@aws-sdk/client-dynamodb';
 import { RecipeAction } from './recipe-action';
-import { RecipeOutput } from './recipe';
-import { RecipeError } from './errors';
+import { RecipeInput, RecipeOutput } from './recipe';
+import { RecipeConflictError, RecipeError } from './errors';
+import { v4 as uuidv4 } from 'uuid';
 
 export class RecipeClient {
   private static readonly TABLE_NAME = 'recipes';
@@ -52,11 +53,69 @@ export class RecipeClient {
     }
   }
 
+  async add(action: RecipeAction): Promise<RecipeOutput> {
+    const recipeId = await this.validateSaveAction(action);
+    const recipe: RecipeOutput = {
+      ...action.recipeBody!,
+      id: recipeId,
+    };
+
+    const ownerEmail = action.cognitoUserId;
+    const putItemCommand = new PutItemCommand({
+      TableName: RecipeClient.TABLE_NAME,
+      Item: {
+        ownerEmail: { S: ownerEmail },
+        recipeId: { S: recipeId },
+        recipeTitle: { S: recipe.title },
+        json: { S: JSON.stringify(recipe) },
+      },
+    });
+    await this.ddb.send(putItemCommand);
+    action.logger.logEventSuccess({ action: action.operation, result: 'added' });
+    return recipe;
+  }
+
   private parseItem(item: Record<string, AttributeValue>): RecipeOutput {
     if (item['json'] && item['json'].S) {
       return JSON.parse(item['json'].S);
     } else {
       throw new RecipeError('Malformed recipe item, missing json field');
     }
+  }
+
+  /**
+   * Validate business logic before saving the recipe:
+   * - owner + title is unique
+   * - client requested recipe ID is unique
+
+   * @throws RecipeConflictError if business logic fails
+   */
+  private async validateSaveAction(action: RecipeAction): Promise<string> {
+    // TODO this really feels like it should be part of a conditional write operation
+    const body: RecipeInput = action.recipeBody!;
+    // Can I do a conditional update for this?
+    const ownerTitleResponse = await this.ddb.send(
+      new QueryCommand({
+        TableName: RecipeClient.TABLE_NAME,
+        IndexName: RecipeClient.TITLE_INDEX_NAME,
+        ProjectionExpression: 'recipeId',
+        KeyConditionExpression: 'ownerEmail = :ownerEmail AND title = :title',
+        ExpressionAttributeValues: {
+          ':ownerEmail': { S: action.cognitoUserId },
+          ':title': { S: body.title },
+        },
+      }),
+    );
+    if (ownerTitleResponse.Items && ownerTitleResponse.Items.length > 0) {
+      throw new RecipeConflictError(`Recipe exists: owner=${action.cognitoUserId} title=${body.title}`);
+    }
+
+    if (action.recipeId) {
+      // Check for existence of requested recipe ID
+      const recipeById = await this.getById(action);
+      if (!recipeById) return action.recipeId;
+    }
+
+    return uuidv4();
   }
 }
