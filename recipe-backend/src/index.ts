@@ -34,10 +34,14 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         return okResponse(recipeList);
 
       case 'GetById':
-        const recipe = await recipeClient.getById(action);
-        return recipe
-          ? okResponse(recipe)
+        const recipeById = await recipeClient.getById(action);
+        return recipeById
+          ? okResponse(recipeById)
           : proxyResponse(404, { name: 'NOT_FOUND', message: `Recipe ${action.recipeId} not found` });
+
+      case 'Add':
+        const newRecipe = await recipeClient.add(action);
+        return okResponse(newRecipe);
 
       default:
         return okResponse({ operation: action.operation, recipeId: action.recipeId });

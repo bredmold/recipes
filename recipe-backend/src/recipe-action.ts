@@ -1,9 +1,10 @@
 import { APIGatewayEvent, APIGatewayProxyEvent } from 'aws-lambda';
 import { RecipeInput } from './recipe';
-import { extractCognitoUserId } from './utils';
+import { extractCognitoUserId, getEventHeader } from './utils';
 import { BadRequestError } from './errors';
 import _ from 'lodash';
 import { RequestLogger } from './logging';
+import { validate as uuidValidate, version as uuidVersion } from 'uuid';
 
 export type RecipeOperation = 'Search' | 'Add' | 'GetById' | 'Update' | 'Delete';
 
@@ -16,6 +17,7 @@ export class RecipeAction {
     }
   }
 
+  private static readonly RECIPE_ID_RESOURCE = '/recipe/{recipeId}';
   private static readonly RECIPE_ID_KEY = 'pathParameters.recipeId';
 
   public readonly operation: RecipeOperation;
@@ -29,30 +31,53 @@ export class RecipeAction {
   ) {
     this.cognitoUserId = extractCognitoUserId(event);
     const method = event.httpMethod.toUpperCase();
-    const path = event.path;
+    const resource = event.resource;
 
-    if (method === 'GET' && path === '/recipe') {
+    if (method === 'GET' && resource === '/recipe') {
       this.operation = 'Search';
       this.recipeId = undefined;
       this.recipeBody = undefined;
-    } else if (method === 'POST' && path === '/recipe') {
+    } else if (method === 'POST' && resource === '/recipe') {
       this.operation = 'Add';
-      this.recipeId = undefined;
+      this.recipeId = this.validateClientRecipeId(event);
       this.recipeBody = RecipeAction.parseBody(event);
-    } else if (method === 'GET' && _.has(event, RecipeAction.RECIPE_ID_KEY)) {
+    } else if (
+      method === 'GET' &&
+      resource === RecipeAction.RECIPE_ID_RESOURCE &&
+      _.has(event, RecipeAction.RECIPE_ID_KEY)
+    ) {
       this.operation = 'GetById';
       this.recipeId = _.get(event, RecipeAction.RECIPE_ID_KEY) as string;
       this.recipeBody = undefined;
-    } else if (method === 'PUT' && _.has(event, RecipeAction.RECIPE_ID_KEY)) {
+    } else if (
+      method === 'PUT' &&
+      resource === RecipeAction.RECIPE_ID_RESOURCE &&
+      _.has(event, RecipeAction.RECIPE_ID_KEY)
+    ) {
       this.operation = 'Update';
       this.recipeId = _.get(event, RecipeAction.RECIPE_ID_KEY) as string;
       this.recipeBody = RecipeAction.parseBody(event);
-    } else if (method === 'DELETE' && _.has(event, RecipeAction.RECIPE_ID_KEY)) {
+    } else if (
+      method === 'DELETE' &&
+      resource === RecipeAction.RECIPE_ID_RESOURCE &&
+      _.has(event, RecipeAction.RECIPE_ID_KEY)
+    ) {
       this.operation = 'Delete';
       this.recipeId = _.get(event, RecipeAction.RECIPE_ID_KEY) as string;
       this.recipeBody = undefined;
     } else {
       throw new BadRequestError('Unable to determine recipe action');
     }
+  }
+
+  private validateClientRecipeId(event: APIGatewayProxyEvent): string | undefined {
+    const recipeId = getEventHeader(event, 'x-recipe-id');
+    if (recipeId) {
+      if (uuidValidate(recipeId) && uuidVersion(recipeId) === 4) return recipeId;
+      else {
+        this.logger.logWarning('Customer submitted an inappropriate UUID, ignoring');
+      }
+    }
+    return undefined;
   }
 }

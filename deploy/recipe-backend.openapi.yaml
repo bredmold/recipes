@@ -56,6 +56,8 @@ paths:
           description: Not authenticated
         '400':
           description: Invalid recipe data
+        '409':
+          description: Recipe data conflict on save
       x-amazon-apigateway-integration:
         type: AWS_PROXY
         uri: ${backend_lambda_arn}
