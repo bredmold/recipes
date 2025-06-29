@@ -3,6 +3,7 @@ import { RecipeInput } from './recipe';
 import { extractCognitoUserId } from './utils';
 import { BadRequestError } from './errors';
 import _ from 'lodash';
+import { RequestLogger } from './logging';
 
 export type RecipeOperation = 'Search' | 'Add' | 'GetById' | 'Update' | 'Delete';
 
@@ -22,7 +23,10 @@ export class RecipeAction {
   public readonly recipeBody: RecipeInput | undefined;
   public readonly cognitoUserId: string;
 
-  constructor(event: APIGatewayEvent) {
+  constructor(
+    event: APIGatewayEvent,
+    public readonly logger: RequestLogger,
+  ) {
     this.cognitoUserId = extractCognitoUserId(event);
     const method = event.httpMethod.toUpperCase();
     const path = event.path;

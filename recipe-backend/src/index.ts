@@ -26,7 +26,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   logger.logEventDetails();
 
   try {
-    const action = new RecipeAction(event);
+    const action = new RecipeAction(event, logger);
 
     switch (action.operation) {
       case 'Search':

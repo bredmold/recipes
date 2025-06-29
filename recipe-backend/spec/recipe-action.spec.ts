@@ -2,6 +2,7 @@ import { RecipeAction } from '../src/recipe-action';
 import { APIGatewayEvent } from 'aws-lambda';
 import { RecipeInput } from '../src/recipe';
 import { BadRequestError } from '../src/errors';
+import { RequestLogger } from '../src/logging';
 
 const TEMPLATE_EVENT = {
   requestContext: { identity: { cognitoAuthenticationProvider: 'p1:p2:user-id' } },
@@ -15,12 +16,15 @@ function testEvent(partialEvent: Partial<APIGatewayEvent>): APIGatewayEvent {
 }
 
 describe('RecipeAction', () => {
+  const logger = {};
+
   it('should interpret a search request', () => {
     const action = new RecipeAction(
       testEvent({
         httpMethod: 'GET',
         path: '/recipe',
       }),
+      logger as RequestLogger,
     );
 
     expect(action.operation).toStrictEqual('Search');
@@ -29,16 +33,17 @@ describe('RecipeAction', () => {
     expect(action.cognitoUserId).toStrictEqual('user-id');
   });
 
-  // TODO validate the way API GW fills in path parameters
   it('should interpret a get-by-id request', () => {
     const action = new RecipeAction(
       testEvent({
         httpMethod: 'GET',
-        path: '/recipe/:recipeId',
+        path: '/recipe/recipe-id',
+        resource: '/recipe/{recipeId}',
         pathParameters: {
           recipeId: 'recipe-id',
         },
       }),
+      logger as RequestLogger,
     );
 
     expect(action.operation).toStrictEqual('GetById');
@@ -54,6 +59,7 @@ describe('RecipeAction', () => {
         path: '/recipe',
         body: JSON.stringify({ title: 'recipe name' } as RecipeInput),
       }),
+      logger as RequestLogger,
     );
 
     expect(action.operation).toStrictEqual('Add');
@@ -66,10 +72,12 @@ describe('RecipeAction', () => {
     const action = new RecipeAction(
       testEvent({
         httpMethod: 'PUT',
-        path: '/recipe/:recipeId',
+        path: '/recipe/recipe-id',
+        resource: '/recipe/{recipeId}',
         pathParameters: { recipeId: 'recipe-id' },
         body: JSON.stringify({ title: 'recipe name' } as RecipeInput),
       }),
+      logger as RequestLogger,
     );
 
     expect(action.operation).toStrictEqual('Update');
@@ -78,13 +86,15 @@ describe('RecipeAction', () => {
     expect(action.cognitoUserId).toStrictEqual('user-id');
   });
 
-  it("should interpret a delete-recipe request", () => {
+  it('should interpret a delete-recipe request', () => {
     const action = new RecipeAction(
       testEvent({
         httpMethod: 'DELETE',
-        path: '/recipe/:recipeId',
+        path: '/recipe/recipe-id',
+        resource: '/recipe/{recipeId}',
         pathParameters: { recipeId: 'recipe-id' },
       }),
+      logger as RequestLogger,
     );
 
     expect(action.operation).toStrictEqual('Delete');
@@ -102,6 +112,7 @@ describe('RecipeAction', () => {
             path: '/recipe',
             body: undefined,
           }),
+          logger as RequestLogger,
         ),
     ).toThrow(BadRequestError);
   });
@@ -112,10 +123,28 @@ describe('RecipeAction', () => {
         new RecipeAction(
           testEvent({
             httpMethod: 'PUT',
-            path: '/recipe/:recipeId',
+            path: '/recipe/recipe-id',
+            resource: '/recipe/{recipeId}',
             pathParameters: { recipeId: 'recipe-id' },
             body: undefined,
           }),
+          logger as RequestLogger,
+        ),
+    ).toThrow(BadRequestError);
+  });
+
+  it('should reject an unclassifiable request', () => {
+    expect(
+      () =>
+        new RecipeAction(
+          testEvent({
+            httpMethod: 'PATCH',
+            path: '/recipe/recipe-id',
+            resource: '/recipe/{recipeId}',
+            pathParameters: { recipeId: 'recipe-id' },
+            body: undefined,
+          }),
+          logger as RequestLogger,
         ),
     ).toThrow(BadRequestError);
   });
