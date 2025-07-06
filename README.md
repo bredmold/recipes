@@ -33,6 +33,10 @@ After this, you will be able to visit the application at: https://recipe-hosting
 
 See the issues tab in GitHub for more information, as well.
 
+* Logging out from recipe view, then logging back in presents a warning on login
+  * The warning should be shown before logout, and the recipe discarded at that time
+* Present a useful error the user when we fail to save a recipe
+* Backend needs a search by partial title
 * Use CloudFront or another hosting provider to host the application bundle
 * OAuth integration
   * Log in with your Google account
@@ -41,6 +45,11 @@ See the issues tab in GitHub for more information, as well.
 * Recipe service
   * API GW + Lambda function
   * Mediate access to storage
+  * Search recipes :white_check_mark:
+  * Get by id :white_check_mark:
+  * Create recipe :white_check_mark:
+  * Update recipe
+  * Delete recipe
 * Online help features
   * Basic online help in response to F1
   * Help icons next to most controls

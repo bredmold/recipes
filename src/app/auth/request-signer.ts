@@ -44,13 +44,23 @@ function convertToAwsRequest(angularRq: HttpRequest<unknown>): SmithyHttpRequest
   const awsHeaders = convertToAwsHeaders(angularRq);
   awsHeaders['host'] = url.host;
 
+  // Convert body to a string in order to sign the request
+  let awsBody: string | undefined;
+  if (typeof angularRq.body === 'object') {
+    awsBody = JSON.stringify(angularRq.body);
+  } else if (typeof angularRq.body === 'string') {
+    awsBody = angularRq.body;
+  } else {
+    awsBody = undefined;
+  }
+
   return {
     protocol: url.protocol,
     hostname: url.hostname,
     path: url.pathname,
     query: convertToAwsQuery(url),
     method: angularRq.method,
-    body: angularRq.body,
+    body: awsBody,
     headers: awsHeaders,
   };
 }
@@ -71,7 +81,7 @@ async function signRequest(
 
   // Copy all the headers from the signed request
   const signedHeaders = new HttpHeaders(signedAwsRq.headers);
-  return angularRq.clone({ headers: signedHeaders.delete('host') });
+  return angularRq.clone({ headers: signedHeaders.delete('host'), body: signedAwsRq.body });
 }
 
 export function apiGatewayRequestSigner(

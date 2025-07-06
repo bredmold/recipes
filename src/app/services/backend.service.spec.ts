@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { BackendService } from './backend.service';
+import { BackendService, RecipeConflictError } from './backend.service';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { environment } from '../../environments/environment';
@@ -82,16 +82,6 @@ describe('BackendService', () => {
     });
 
     it('should throw in response to a 404', async () => {
-      const recipe = {
-        title: 'title',
-        description: 'desc',
-        steps: [],
-        ingredients: [],
-        customUnits: [],
-        id: 'id',
-        version: '2',
-      };
-
       const getByIdPromise = service.getById('recipe-id');
 
       const rq = httpTesting.expectOne(`${backendUrl}/recipe/recipe-id`, 'List recipes request');
@@ -99,6 +89,33 @@ describe('BackendService', () => {
       rq.flush({ name: 'NOT_FOUND', message: 'Recipe recipe-id not found' }, { status: 404, statusText: 'Not Found' });
 
       await expectAsync(getByIdPromise).toBeRejectedWith('Unable to locate recipe recipe-id');
+    });
+  });
+
+  describe('addRecipe', () => {
+    it('should POST the recipe', async () => {
+      const recipeToSave = new Recipe('title', 'desc', [], [], [], 'id');
+      const addPromise = service.addRecipe(recipeToSave);
+
+      const rq = httpTesting.expectOne(`${backendUrl}/recipe`, 'Add recipe request');
+      expect(rq.request.method).toBe('POST');
+      expect(rq.request.headers.get('x-recipe-id')).toEqual('id');
+      rq.flush(recipeToSave.toObject());
+
+      const response = await addPromise;
+      expect(response).toBeInstanceOf(Recipe);
+    });
+
+    it('should throw RecipeConflictError on a 409', async () => {
+      const recipeToSave = new Recipe('title', 'desc', [], [], [], 'id');
+      const addPromise = service.addRecipe(recipeToSave);
+
+      const rq = httpTesting.expectOne(`${backendUrl}/recipe`, 'Add recipe request');
+      expect(rq.request.method).toBe('POST');
+      expect(rq.request.headers.get('x-recipe-id')).toEqual('id');
+      rq.flush({ name: 'RecipeConflictError', message: 'conflict' }, { status: 409, statusText: 'Conflict' });
+
+      await expectAsync(addPromise).toBeRejectedWith(new RecipeConflictError('conflict'));
     });
   });
 });

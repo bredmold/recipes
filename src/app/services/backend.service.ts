@@ -4,6 +4,14 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Recipe } from '../types/recipe';
 
+export class RecipeConflictError extends Error {
+  override name = 'RecipeConflictError';
+
+  constructor(msg: string) {
+    super(msg);
+  }
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -16,7 +24,7 @@ export class BackendService {
 
   /**
    * Retry 5XX errors up to three times
-  */
+   */
   private async retryRequest<T>(rq: Observable<T>): Promise<T> {
     const withRetries = rq.pipe(
       retry({
@@ -49,6 +57,24 @@ export class BackendService {
     } catch (e) {
       if (e instanceof HttpErrorResponse && e.status === 404) {
         throw `Unable to locate recipe ${recipeId}`;
+      } else throw e;
+    }
+  }
+
+  async addRecipe(recipe: Recipe): Promise<Recipe> {
+    const url = `${this.baseUrl}/recipe`;
+    const rqBody = recipe.toObject();
+    const rq = this.http.post<any>(url, rqBody, {
+      observe: 'body',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'x-recipe-id': recipe.id },
+    });
+    try {
+      const rsBody = await this.retryRequest(rq);
+      return Recipe.fromObject(rsBody);
+    } catch (e) {
+      if (e instanceof HttpErrorResponse && e.status === 409) {
+        const message = e.error.message;
+        throw new RecipeConflictError(message);
       } else throw e;
     }
   }

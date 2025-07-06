@@ -162,6 +162,12 @@ describe('RecipeClient', () => {
       const recipeResponse = await client.add(action);
       expect(recipeResponse).toMatchObject(recipe);
       expect(typeof recipeResponse.id).toStrictEqual('string');
+
+      expect(mockDdb.calls()).toHaveLength(2);
+      const queryCommand = mockDdb.call(0).firstArg as QueryCommand;
+      expect(queryCommand.input.KeyConditionExpression).toStrictEqual(
+        'ownerEmail = :ownerEmail AND recipeTitle = :title',
+      );
     });
 
     it('should throw RecipeConflictError if title validation fails', async () => {

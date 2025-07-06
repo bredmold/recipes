@@ -23,7 +23,7 @@ describe('RecipeService', () => {
     ddbService = jasmine.createSpyObj<DdbService>('DdbService', ['query', 'putItem', 'deleteItem']);
     sessionService = jasmine.createSpyObj<SessionService>('SessionService', ['loggedInEmail']);
     recipeCache = jasmine.createSpyObj<TypedCache<Recipe>>('TypedCache', ['makeCachedCall', 'invalidate']);
-    backendService = jasmine.createSpyObj<BackendService>('BackendService', ['search', 'getById']);
+    backendService = jasmine.createSpyObj<BackendService>('BackendService', ['search', 'getById', 'addRecipe']);
 
     TestBed.configureTestingModule({
       providers: [
@@ -185,34 +185,58 @@ describe('RecipeService', () => {
     });
   });
 
-  it('saveRecipe should call putItem', async () => {
-    sessionService.loggedInEmail.and.returnValue('user@example.com');
-    const putItemResponse: PutItemCommandOutput = {
-      $metadata: {},
-    };
+  describe('saveRecipe', () => {
+    it('saving a new recipe should POST', async () => {
+      const recipeToSave = new Recipe('title', 'desc', [], [], [], 'id');
+      backendService.addRecipe.and.resolveTo(recipeToSave);
 
-    let putItemCommand: PutItemCommand | undefined;
-    ddbService.putItem.and.callFake((args: PutItemCommand) => {
-      putItemCommand = args;
-      return Promise.resolve(putItemResponse);
+      const recipeResponse: Recipe = await service.saveRecipe(recipeToSave);
+
+      expect(recipeResponse).toEqual(recipeToSave);
     });
 
-    const recipeToSave = new Recipe('title', 'desc', [], [], [], 'id');
-    const recipeResponse: Recipe = await service.saveRecipe(recipeToSave);
+    it('should correctly process a new recipe ID on create', async () => {
+      const recipeToSave = new Recipe('title', 'desc', [], [], [], 'id1');
+      const recipeToReturn = new Recipe('title', 'desc', [], [], [], 'id2');
+      backendService.addRecipe.and.resolveTo(recipeToReturn);
+      service.editRecipe.next(recipeToSave);
 
-    expect(recipeResponse).toEqual(recipeToSave);
+      await service.saveRecipe(recipeToSave);
 
-    expect(putItemCommand?.input).toEqual(
-      new PutItemCommand({
-        TableName: 'recipes',
-        Item: {
-          ownerEmail: { S: 'user@example.com' },
-          recipeId: { S: 'id' },
-          recipeTitle: { S: 'title' },
-          json: { S: JSON.stringify(recipeToSave.toObject()) },
-        },
-      }).input,
-    );
+      expect(recipeCache.invalidate).toHaveBeenCalledTimes(1);
+      expect(service.viewRecipe.getValue()).toBeUndefined();
+      expect(service.editRecipe.getValue()).toEqual(recipeToReturn);
+    });
+
+    it('saveRecipe should call putItem', async () => {
+      sessionService.loggedInEmail.and.returnValue('user@example.com');
+      const putItemResponse: PutItemCommandOutput = {
+        $metadata: {},
+      };
+
+      let putItemCommand: PutItemCommand | undefined;
+      ddbService.putItem.and.callFake((args: PutItemCommand) => {
+        putItemCommand = args;
+        return Promise.resolve(putItemResponse);
+      });
+
+      const recipeToSave = new Recipe('title', 'desc', [], [], [], 'id', true);
+      const recipeResponse: Recipe = await service.saveRecipe(recipeToSave);
+
+      expect(recipeResponse).toEqual(recipeToSave);
+
+      expect(putItemCommand?.input).toEqual(
+        new PutItemCommand({
+          TableName: 'recipes',
+          Item: {
+            ownerEmail: { S: 'user@example.com' },
+            recipeId: { S: 'id' },
+            recipeTitle: { S: 'title' },
+            json: { S: JSON.stringify(recipeToSave.toObject()) },
+          },
+        }).input,
+      );
+    });
   });
 
   it('should set the view recipe', () => {
