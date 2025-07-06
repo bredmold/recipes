@@ -32,21 +32,33 @@ export class RecipeService {
   }
 
   async saveRecipe(recipe: Recipe): Promise<Recipe> {
-    const ownerEmail = this.sessionService.loggedInEmail();
-    this.recipeCache.invalidate(recipe.id);
-    const putItemCommand = new PutItemCommand({
-      TableName: this.tableName,
-      Item: {
-        ownerEmail: { S: ownerEmail },
-        recipeId: { S: recipe.id },
-        recipeTitle: { S: recipe.title },
-        json: { S: JSON.stringify(recipe.toObject()) },
-      },
-    });
-    const putItemResult = await this.ddbService.putItem(putItemCommand);
-    console.log(putItemResult);
-    recipe.saved();
-    return recipe;
+    let response: Recipe;
+    if (recipe.hasBeenSaved()) {
+      const ownerEmail = this.sessionService.loggedInEmail();
+      this.recipeCache.invalidate(recipe.id);
+      const putItemCommand = new PutItemCommand({
+        TableName: this.tableName,
+        Item: {
+          ownerEmail: { S: ownerEmail },
+          recipeId: { S: recipe.id },
+          recipeTitle: { S: recipe.title },
+          json: { S: JSON.stringify(recipe.toObject()) },
+        },
+      });
+      await this.ddbService.putItem(putItemCommand);
+      response = recipe;
+    } else {
+      const addedRecipe = await this.backendService.addRecipe(recipe);
+      if (addedRecipe.id === recipe.id) {
+        response = recipe;
+      } else {
+        response = addedRecipe;
+        this.invalidateEditRecipe();
+        this.setEditRecipe(addedRecipe);
+      }
+    }
+    response.saved();
+    return response;
   }
 
   async listRecipes(): Promise<Recipe[]> {
@@ -90,18 +102,6 @@ export class RecipeService {
     const deleteItemResponse = await this.ddbService.deleteItem(deleteRecipeCommand);
     console.log(deleteItemResponse);
     this.recipeCache.invalidate(recipeId);
-  }
-
-  private parseQueryResponse(queryResponse: QueryCommandOutput): Recipe[] {
-    if (queryResponse.Items) {
-      return queryResponse.Items.map((item) => {
-        const json = item['json'].S;
-        const parsed = JSON.parse(json as string);
-        return Recipe.fromObject(parsed);
-      });
-    } else {
-      return [];
-    }
   }
 
   invalidateEditRecipe() {

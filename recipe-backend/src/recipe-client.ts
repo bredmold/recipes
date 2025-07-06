@@ -99,7 +99,7 @@ export class RecipeClient {
         TableName: RecipeClient.TABLE_NAME,
         IndexName: RecipeClient.TITLE_INDEX_NAME,
         ProjectionExpression: 'recipeId',
-        KeyConditionExpression: 'ownerEmail = :ownerEmail AND title = :title',
+        KeyConditionExpression: 'ownerEmail = :ownerEmail AND recipeTitle = :title',
         ExpressionAttributeValues: {
           ':ownerEmail': { S: action.cognitoUserId },
           ':title': { S: body.title },
