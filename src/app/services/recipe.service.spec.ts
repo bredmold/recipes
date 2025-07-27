@@ -1,10 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import {
-  DeleteItemCommandOutput,
-  PutItemCommand,
-  PutItemCommandOutput,
-  QueryCommandOutput,
-} from '@aws-sdk/client-dynamodb';
+import { DeleteItemCommandOutput, PutItemCommand, PutItemCommandOutput } from '@aws-sdk/client-dynamodb';
 import { DdbService } from './ddb.service';
 import { RecipeService } from './recipe.service';
 import { Recipe } from '../types/recipe';
@@ -82,53 +77,44 @@ describe('RecipeService', () => {
 
   describe('isDuplicateTitle', () => {
     it('title matches, id matches', async () => {
-      sessionService.loggedInEmail.and.returnValue('user@example.com');
-      const queryResponse: QueryCommandOutput = {
-        Items: [
-          {
-            recipeId: { S: 'recipe-id' },
-          },
-        ],
-        Count: 1,
-        $metadata: {},
+      const recipe = {
+        title: 'title',
+        description: 'desc',
+        steps: [],
+        ingredients: [],
+        customUnits: [],
+        id: 'recipe-id',
+        version: '2',
       };
 
-      ddbService.query.and.returnValue(Promise.resolve(queryResponse));
+      backendService.search.and.returnValue(Promise.resolve([Recipe.fromObject(recipe)]));
 
       const isDuplicate = await service.isDuplicateTitle('recipe-id', 'title');
       expect(isDuplicate).toBeFalse();
     });
 
     it('title matches, id mismatch', async () => {
-      sessionService.loggedInEmail.and.returnValue('user@example.com');
-      const queryResponse: QueryCommandOutput = {
-        Items: [
-          {
-            recipeId: { S: 'other-recipe-id' },
-          },
-        ],
-        Count: 1,
-        $metadata: {},
+      const recipe = {
+        title: 'title',
+        description: 'desc',
+        steps: [],
+        ingredients: [],
+        customUnits: [],
+        id: 'other-recipe-id',
+        version: '2',
       };
 
-      ddbService.query.and.returnValue(Promise.resolve(queryResponse));
+      backendService.search.and.returnValue(Promise.resolve([Recipe.fromObject(recipe)]));
 
       const isDuplicate = await service.isDuplicateTitle('recipe-id', 'title');
       expect(isDuplicate).toBeTrue();
     });
 
     it('title mismatch', async () => {
-      sessionService.loggedInEmail.and.returnValue('user@example.com');
-      const queryResponse: QueryCommandOutput = {
-        Items: [],
-        Count: 0,
-        $metadata: {},
-      };
+      backendService.search.and.returnValue(Promise.resolve([]));
 
-      ddbService.query.and.returnValue(Promise.resolve(queryResponse));
-
-      const hasRecipe = await service.isDuplicateTitle('recipe-id', 'title');
-      expect(hasRecipe).toBeFalse();
+      const isDuplicate = await service.isDuplicateTitle('recipe-id', 'title');
+      expect(isDuplicate).toBeFalse();
     });
   });
 

@@ -42,15 +42,15 @@ describe('RecipeAction', () => {
   it('should interpret a search-by-title request', () => {
     const action = new RecipeAction(
       testEvent({
-        httpMethod: 'HEAD',
-        path: '/recipe/title/test',
-        resource: '/recipe/title/{recipeTitle}',
-        pathParameters: { recipeTitle: 'test' },
+        httpMethod: 'GET',
+        path: '/recipe',
+        resource: '/recipe',
+        queryStringParameters: { title: 'test' },
       }),
       logger as unknown as RequestLogger,
     );
 
-    expect(action.operation).toStrictEqual('HeadSearch');
+    expect(action.operation).toStrictEqual('Search');
     expect(action.criteria).toStrictEqual({ title: 'test' });
     expect(action.recipeBody).toBeUndefined();
     expect(action.cognitoUserId).toStrictEqual('user-id');

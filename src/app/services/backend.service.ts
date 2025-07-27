@@ -12,6 +12,10 @@ export class RecipeConflictError extends Error {
   }
 }
 
+export interface RecipeSearchCriteria {
+  title?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -41,26 +45,20 @@ export class BackendService {
     return lastValueFrom(withRetries);
   }
 
-  async search(): Promise<Recipe[]> {
-    const url = `${this.baseUrl}/recipe`;
-    const rq = this.http.get<any[]>(url, { observe: 'body' });
-    const body = await this.retryRequest(rq);
-    return body.map((r) => Recipe.fromObject(r));
+  private buildQueryParams(criteria: RecipeSearchCriteria): Record<string, string> {
+    let query: Record<string, string> = {};
+
+    if (criteria.title) query['title'] = criteria.title;
+
+    return query;
   }
 
-  async searchByTitle(recipeTitle: string): Promise<boolean> {
-    const url = `${this.baseUrl}/recipe/title/${recipeTitle}`;
-    const rq = this.http.head(url, { observe: 'response' });
-    try {
-      await lastValueFrom(rq);
-      return true;
-    } catch (e) {
-      if (e instanceof HttpErrorResponse && e.status === 404) {
-        return false;
-      } else {
-        throw e;
-      }
-    }
+  async search(criteria: RecipeSearchCriteria): Promise<Recipe[]> {
+    const queryParams = this.buildQueryParams(criteria);
+    const url = `${this.baseUrl}/recipe`;
+    const rq = this.http.get<any[]>(url, { observe: 'body', params: queryParams });
+    const body = await this.retryRequest(rq);
+    return body.map((r) => Recipe.fromObject(r));
   }
 
   async getById(recipeId: string): Promise<Recipe> {

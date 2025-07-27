@@ -60,6 +60,40 @@ describe('RecipeClient', () => {
       expect(mockRequestLogger.logEventSuccess).toHaveBeenCalledWith({ action: 'Search', count: 1 });
     });
 
+    it('should query DDB on a title search', async () => {
+      const action = {
+        operation: 'Search',
+        recipeBody: undefined,
+        criteria: { recipeId: undefined, title: 'title' },
+        cognitoUserId: 'user-id',
+        logger: mockRequestLogger as unknown as RequestLogger,
+      } as RecipeAction;
+
+      mockDdb.on(QueryCommand).resolves({
+        Items: [
+          {
+            json: { S: JSON.stringify(sampleRecipe) },
+          },
+        ],
+      });
+
+      const recipeResponse = await client.search(action);
+      expect(recipeResponse).toStrictEqual([sampleRecipe]);
+
+      expect(mockDdb.calls()).toHaveLength(1);
+      const searchCommand = mockDdb.call(0).firstArg as QueryCommand;
+      expect(searchCommand.input).toStrictEqual({
+        TableName: 'recipes',
+        IndexName: 'owner-title',
+        KeyConditionExpression: 'ownerEmail = :ownerEmail AND title = :title',
+        ExpressionAttributeValues: {
+          ':ownerEmail': { S: 'user-id' },
+          ':title': { S: 'title' },
+        },
+      });
+      expect(mockRequestLogger.logEventSuccess).toHaveBeenCalledWith({ action: 'Search', count: 1 });
+    });
+
     it('should throw if the response is malformed', async () => {
       const action = {
         operation: 'Search',
@@ -89,58 +123,6 @@ describe('RecipeClient', () => {
       } as RecipeAction;
 
       await expect(() => client.search(action)).rejects.toThrow(RecipeError);
-    });
-  });
-
-  describe('idSearch', () => {
-    it('should return a list of matching recipe IDs', async () => {
-      const action = {
-        operation: 'HeadSearch',
-        recipeBody: undefined,
-        criteria: { title: 'recipe title' },
-        cognitoUserId: 'user-id',
-        logger: mockRequestLogger as unknown as RequestLogger,
-      } as RecipeAction;
-
-      mockDdb.on(QueryCommand).resolves({
-        Items: [
-          {
-            recipeId: { S: 'recipe-id' },
-          },
-        ],
-      });
-
-      const recipeResponse = await client.idSearch(action);
-      expect(recipeResponse).toStrictEqual(['recipe-id']);
-
-      expect(mockDdb.calls()).toHaveLength(1);
-      const searchCommand = mockDdb.call(0).firstArg as QueryCommand;
-      expect(searchCommand.input).toStrictEqual({
-        TableName: 'recipes',
-        IndexName: 'owner-title',
-        KeyConditionExpression: 'ownerEmail = :ownerEmail AND recipeTitle = :title',
-        ExpressionAttributeValues: {
-          ':ownerEmail': { S: 'user-id' },
-          ':title': { S: 'recipe title' },
-        },
-        ProjectionExpression: 'recipeId',
-      });
-      expect(mockRequestLogger.logEventSuccess).toHaveBeenCalledWith({
-        action: 'HeadSearch',
-        title: 'recipe title',
-        count: 1,
-      });
-    });
-
-    it('should throw on invalid action', async () => {
-      const action = {
-        operation: 'Update',
-        recipeBody: undefined,
-        criteria: { recipeId: undefined },
-        cognitoUserId: 'user-id',
-      } as RecipeAction;
-
-      await expect(() => client.idSearch(action)).rejects.toThrow(RecipeError);
     });
   });
 

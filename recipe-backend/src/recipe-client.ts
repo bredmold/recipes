@@ -17,14 +17,13 @@ export class RecipeClient {
     }
 
     const ownerEmail = action.cognitoUserId;
-    const listRecipesCommand = new QueryCommand({
-      TableName: RecipeClient.TABLE_NAME,
-      IndexName: RecipeClient.TITLE_INDEX_NAME,
-      KeyConditionExpression: 'ownerEmail = :ownerEmail',
-      ExpressionAttributeValues: {
-        ':ownerEmail': { S: ownerEmail },
-      },
-    });
+    const listRecipesCommand: QueryCommand = (() => {
+      if (action.criteria.title) {
+        return this.searchByTitleCommand(ownerEmail, action.criteria.title);
+      } else {
+        return this.searchAllRecipesCommand(ownerEmail);
+      }
+    })();
 
     const queryResponse = await this.ddb.send(listRecipesCommand);
     const items = queryResponse.Items || [];
@@ -32,28 +31,27 @@ export class RecipeClient {
     return items.map((item) => this.parseItem(item));
   }
 
-  async idSearch(action: RecipeAction): Promise<string[]> {
-    if (action.operation !== 'HeadSearch') {
-      throw new RecipeError(`Routing error: attempting to search IDs when operation=${action.operation}`);
-    }
-
-    const ownerEmail = action.cognitoUserId;
-    const recipeTitle = action.criteria.title!;
-    const titleSearchCommand = new QueryCommand({
+  private searchAllRecipesCommand(ownerEmail: string): QueryCommand {
+    return new QueryCommand({
       TableName: RecipeClient.TABLE_NAME,
       IndexName: RecipeClient.TITLE_INDEX_NAME,
-      KeyConditionExpression: 'ownerEmail = :ownerEmail AND recipeTitle = :title',
+      KeyConditionExpression: 'ownerEmail = :ownerEmail',
       ExpressionAttributeValues: {
         ':ownerEmail': { S: ownerEmail },
-        ':title': { S: recipeTitle },
       },
-      ProjectionExpression: 'recipeId',
     });
+  }
 
-    const queryResponse = await this.ddb.send(titleSearchCommand);
-    const items = queryResponse.Items || [];
-    action.logger.logEventSuccess({ action: action.operation, title: recipeTitle, count: items.length });
-    return items.map((item) => item['recipeId'].S as string);
+  private searchByTitleCommand(ownerEmail: string, title: string): QueryCommand {
+    return new QueryCommand({
+      TableName: RecipeClient.TABLE_NAME,
+      IndexName: RecipeClient.TITLE_INDEX_NAME,
+      KeyConditionExpression: 'ownerEmail = :ownerEmail AND title = :title',
+      ExpressionAttributeValues: {
+        ':ownerEmail': { S: ownerEmail },
+        ':title': { S: title },
+      },
+    });
   }
 
   async getById(action: RecipeAction): Promise<RecipeOutput | undefined> {

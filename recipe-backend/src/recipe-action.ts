@@ -1,12 +1,12 @@
 import { APIGatewayEvent, APIGatewayProxyEvent } from 'aws-lambda';
 import { RecipeInput } from './recipe';
-import { extractCognitoUserId, getEventHeader } from './utils';
+import { extractCognitoUserId, getEventHeader, getQueryParam } from './utils';
 import { BadRequestError } from './errors';
 import _ from 'lodash';
 import { RequestLogger } from './logging';
 import { validate as uuidValidate, version as uuidVersion } from 'uuid';
 
-export type RecipeOperation = 'Search' | 'HeadSearch' | 'Add' | 'GetById' | 'Update' | 'Delete';
+export type RecipeOperation = 'Search' | 'Add' | 'GetById' | 'Update' | 'Delete';
 
 export interface RecipeCriteria {
   recipeId?: string;
@@ -40,16 +40,12 @@ export class RecipeAction {
 
     if (method === 'GET' && resource === '/recipe') {
       this.operation = 'Search';
-      this.criteria = {};
+      this.criteria = this.validateSearchParams(event);
       this.recipeBody = undefined;
     } else if (method === 'POST' && resource === '/recipe') {
       this.operation = 'Add';
       this.criteria = this.validateClientRecipeId(event);
       this.recipeBody = RecipeAction.parseBody(event);
-    } else if (method === 'HEAD' && resource === '/recipe/title/{recipeTitle}') {
-      this.operation = 'HeadSearch';
-      this.criteria = { title: event.pathParameters!['recipeTitle'] };
-      this.recipeBody = undefined;
     } else if (
       method === 'GET' &&
       resource === RecipeAction.RECIPE_ID_RESOURCE &&
@@ -88,5 +84,14 @@ export class RecipeAction {
       }
     }
     return {};
+  }
+
+  private validateSearchParams(event: APIGatewayProxyEvent): RecipeCriteria {
+    let criteria: RecipeCriteria = {};
+
+    const title = getQueryParam(event, 'title');
+    if (title) criteria.title = title;
+
+    return criteria;
   }
 }

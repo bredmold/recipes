@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { BackendService, RecipeConflictError } from './backend.service';
-import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
+import { HttpParams, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { environment } from '../../environments/environment';
 import { Recipe } from '../types/recipe';
@@ -26,7 +26,7 @@ describe('BackendService', () => {
 
   describe('search', () => {
     it('should return an empty recipe list', async () => {
-      const searchPromise = service.search();
+      const searchPromise = service.search({});
 
       const rq = httpTesting.expectOne(`${backendUrl}/recipe`, 'List recipes request');
       expect(rq.request.method).toBe('GET');
@@ -47,7 +47,7 @@ describe('BackendService', () => {
         version: '2',
       };
 
-      const searchPromise = service.search();
+      const searchPromise = service.search({});
 
       const rq = httpTesting.expectOne(`${backendUrl}/recipe`, 'List recipes request');
       expect(rq.request.method).toBe('GET');
@@ -57,39 +57,30 @@ describe('BackendService', () => {
       expect(response).toHaveSize(1);
       expect(response[0]).toBeInstanceOf(Recipe);
     });
-  });
 
-  describe('searchByTitle', () => {
-    it('should return true for a 200', async () => {
-      const searchByTitlePromise = service.searchByTitle('title');
+    it('should search by title', async () => {
+      const recipe = {
+        title: 'title',
+        description: 'desc',
+        steps: [],
+        ingredients: [],
+        customUnits: [],
+        id: 'id',
+        version: '2',
+      };
 
-      const rq = httpTesting.expectOne(`${backendUrl}/recipe/title/title`, 'Recipe title request');
-      expect(rq.request.method).toBe('HEAD');
-      rq.flush('');
+      const searchPromise = service.search({ title: 'title' });
 
-      const response = await searchByTitlePromise;
-      expect(response).toBeTrue();
-    });
+      const rq = httpTesting.expectOne(
+        (request) => request.url === `${backendUrl}/recipe` && request.params.has('title'),
+      );
+      expect(rq.request.method).toBe('GET');
+      expect(rq.request.params).toEqual(new HttpParams({ fromObject: { title: 'title' } }));
+      rq.flush([recipe]);
 
-    it('should return false for a 404', async () => {
-      const searchByTitlePromise = service.searchByTitle('title');
-
-      const rq = httpTesting.expectOne(`${backendUrl}/recipe/title/title`, 'Recipe title request');
-      expect(rq.request.method).toBe('HEAD');
-      rq.flush(null, { status: 404, statusText: 'Not Found' });
-
-      const response = await searchByTitlePromise;
-      expect(response).toBeFalse();
-    });
-
-    it('should throw for any other status code', async () => {
-      const searchByTitlePromise = service.searchByTitle('title');
-
-      const rq = httpTesting.expectOne(`${backendUrl}/recipe/title/title`, 'Recipe title request');
-      expect(rq.request.method).toBe('HEAD');
-      rq.flush(null, { status: 401, statusText: 'Unauthorized' });
-
-      await expectAsync(searchByTitlePromise).toBeRejected();
+      const response = await searchPromise;
+      expect(response).toHaveSize(1);
+      expect(response[0]).toBeInstanceOf(Recipe);
     });
   });
 
