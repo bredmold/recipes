@@ -35,7 +35,7 @@ See the issues tab in GitHub for more information, as well.
 
 * Logging out from recipe view, then logging back in presents a warning on login
   * The warning should be shown before logout, and the recipe discarded at that time
-* Present a useful error the user when we fail to save a recipe
+* Present a useful error to the user when we fail to save a recipe
 * Backend needs a search by partial title
 * Use CloudFront or another hosting provider to host the application bundle
 * OAuth integration

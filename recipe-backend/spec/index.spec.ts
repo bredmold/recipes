@@ -28,6 +28,14 @@ const searchEvent = {
   },
 } as APIGatewayEvent;
 
+const searchByTitleEvent = {
+  ...searchEvent,
+  httpMethod: 'HEAD',
+  path: '/recipe/title/title',
+  resource: '/recipe/title/{recipeTitle}',
+  pathParameters: { title: 'title' },
+} as APIGatewayEvent;
+
 const getByIdEvent = {
   ...searchEvent,
   path: '/recipe/recipe-id',
@@ -43,21 +51,28 @@ const addRecipeEvent = {
 
 const mockSearchAction = {
   operation: 'Search',
-  recipeId: undefined,
+  criteria: {},
+  recipeBody: undefined,
+  cognitoUserId: 'test-user-id',
+};
+
+const mockSearchByTitleAction = {
+  operation: 'HeadSearch',
+  criteria: { title: 'title' },
   recipeBody: undefined,
   cognitoUserId: 'test-user-id',
 };
 
 const mockGetByIdAction = {
   operation: 'GetById',
-  recipeId: 'recipe-id',
+  criteria: { recipeId: 'recipe-id' },
   recipeBody: undefined,
   cognitoUserId: 'test-user-id',
 };
 
 const mockAddAction = {
   operation: 'Add',
-  recipeId: undefined,
+  criteria: {},
   recipeBody: fakeRecipe,
   cognitoUserId: 'test-user-id',
 };
@@ -65,9 +80,11 @@ const mockAddAction = {
 jest.mock('../src/recipe-client', () => {
   class MockRecipeClient {
     static mockSearch = jest.fn();
+    static mockIdSearch = jest.fn();
     static mockGetById = jest.fn();
     static mockAdd = jest.fn();
     search = MockRecipeClient.mockSearch;
+    idSearch = MockRecipeClient.mockIdSearch;
     getById = MockRecipeClient.mockGetById;
     add = MockRecipeClient.mockAdd;
   }
@@ -91,6 +108,7 @@ jest.mock('../src/recipe-action', () => {
 describe('Recipe backend handler', () => {
   const MockRecipeClient = jest.mocked(RecipeClient);
   const mockSearch = (MockRecipeClient as any).mockSearch as jest.Mock;
+  const mockIdSearch = (MockRecipeClient as any).mockIdSearch as jest.Mock;
   const mockGetById = (MockRecipeClient as any).mockGetById as jest.Mock;
   const mockAdd = (MockRecipeClient as any).mockAdd as jest.Mock;
 
@@ -98,6 +116,7 @@ describe('Recipe backend handler', () => {
 
   beforeEach(() => {
     mockSearch.mockReset();
+    mockIdSearch.mockReset();
     mockGetById.mockReset();
     mockAdd.mockReset();
     MockRecipeAction.mockReset();
@@ -114,6 +133,34 @@ describe('Recipe backend handler', () => {
       headers: { 'Content-Type': 'application/json' },
       isBase64Encoded: false,
       body: JSON.stringify([fakeRecipe]),
+    });
+  });
+
+  it('should return OK if search-by-title returns a result', async () => {
+    mockIdSearch.mockResolvedValue(['recipe-id']);
+    MockRecipeAction.mockReturnValue(mockSearchByTitleAction as RecipeAction);
+
+    const response = await handler(searchByTitleEvent, {} as Context, () => {});
+
+    expect(response).toEqual({
+      statusCode: 200,
+      headers: {},
+      isBase64Encoded: false,
+      body: '',
+    });
+  });
+
+  it('should return 404 if search-by-title returns an empty array', async () => {
+    mockIdSearch.mockResolvedValue([]);
+    MockRecipeAction.mockReturnValue(mockSearchByTitleAction as RecipeAction);
+
+    const response = await handler(searchByTitleEvent, {} as Context, () => {});
+
+    expect(response).toEqual({
+      statusCode: 404,
+      headers: {},
+      isBase64Encoded: false,
+      body: '',
     });
   });
 

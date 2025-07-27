@@ -6,7 +6,12 @@ import _ from 'lodash';
 import { RequestLogger } from './logging';
 import { validate as uuidValidate, version as uuidVersion } from 'uuid';
 
-export type RecipeOperation = 'Search' | 'Add' | 'GetById' | 'Update' | 'Delete';
+export type RecipeOperation = 'Search' | 'HeadSearch' | 'Add' | 'GetById' | 'Update' | 'Delete';
+
+export interface RecipeCriteria {
+  recipeId?: string;
+  title?: string;
+}
 
 export class RecipeAction {
   private static parseBody(event: APIGatewayProxyEvent): RecipeInput {
@@ -21,7 +26,7 @@ export class RecipeAction {
   private static readonly RECIPE_ID_KEY = 'pathParameters.recipeId';
 
   public readonly operation: RecipeOperation;
-  public readonly recipeId: string | undefined;
+  public readonly criteria: RecipeCriteria;
   public readonly recipeBody: RecipeInput | undefined;
   public readonly cognitoUserId: string;
 
@@ -35,19 +40,23 @@ export class RecipeAction {
 
     if (method === 'GET' && resource === '/recipe') {
       this.operation = 'Search';
-      this.recipeId = undefined;
+      this.criteria = {};
       this.recipeBody = undefined;
     } else if (method === 'POST' && resource === '/recipe') {
       this.operation = 'Add';
-      this.recipeId = this.validateClientRecipeId(event);
+      this.criteria = this.validateClientRecipeId(event);
       this.recipeBody = RecipeAction.parseBody(event);
+    } else if (method === 'HEAD' && resource === '/recipe/title/{recipeTitle}') {
+      this.operation = 'HeadSearch';
+      this.criteria = { title: event.pathParameters!['recipeTitle'] };
+      this.recipeBody = undefined;
     } else if (
       method === 'GET' &&
       resource === RecipeAction.RECIPE_ID_RESOURCE &&
       _.has(event, RecipeAction.RECIPE_ID_KEY)
     ) {
       this.operation = 'GetById';
-      this.recipeId = _.get(event, RecipeAction.RECIPE_ID_KEY) as string;
+      this.criteria = { recipeId: _.get(event, RecipeAction.RECIPE_ID_KEY) as string };
       this.recipeBody = undefined;
     } else if (
       method === 'PUT' &&
@@ -55,7 +64,7 @@ export class RecipeAction {
       _.has(event, RecipeAction.RECIPE_ID_KEY)
     ) {
       this.operation = 'Update';
-      this.recipeId = _.get(event, RecipeAction.RECIPE_ID_KEY) as string;
+      this.criteria = { recipeId: _.get(event, RecipeAction.RECIPE_ID_KEY) as string };
       this.recipeBody = RecipeAction.parseBody(event);
     } else if (
       method === 'DELETE' &&
@@ -63,21 +72,21 @@ export class RecipeAction {
       _.has(event, RecipeAction.RECIPE_ID_KEY)
     ) {
       this.operation = 'Delete';
-      this.recipeId = _.get(event, RecipeAction.RECIPE_ID_KEY) as string;
+      this.criteria = { recipeId: _.get(event, RecipeAction.RECIPE_ID_KEY) as string };
       this.recipeBody = undefined;
     } else {
       throw new BadRequestError('Unable to determine recipe action');
     }
   }
 
-  private validateClientRecipeId(event: APIGatewayProxyEvent): string | undefined {
+  private validateClientRecipeId(event: APIGatewayProxyEvent): RecipeCriteria {
     const recipeId = getEventHeader(event, 'x-recipe-id');
     if (recipeId) {
-      if (uuidValidate(recipeId) && uuidVersion(recipeId) === 4) return recipeId;
+      if (uuidValidate(recipeId) && uuidVersion(recipeId) === 4) return { recipeId };
       else {
         this.logger.logWarning('Customer submitted an inappropriate UUID, ignoring');
       }
     }
-    return undefined;
+    return {};
   }
 }

@@ -32,6 +32,30 @@ export class RecipeClient {
     return items.map((item) => this.parseItem(item));
   }
 
+  async idSearch(action: RecipeAction): Promise<string[]> {
+    if (action.operation !== 'HeadSearch') {
+      throw new RecipeError(`Routing error: attempting to search IDs when operation=${action.operation}`);
+    }
+
+    const ownerEmail = action.cognitoUserId;
+    const recipeTitle = action.criteria.title!;
+    const titleSearchCommand = new QueryCommand({
+      TableName: RecipeClient.TABLE_NAME,
+      IndexName: RecipeClient.TITLE_INDEX_NAME,
+      KeyConditionExpression: 'ownerEmail = :ownerEmail AND recipeTitle = :title',
+      ExpressionAttributeValues: {
+        ':ownerEmail': { S: ownerEmail },
+        ':title': { S: recipeTitle },
+      },
+      ProjectionExpression: 'recipeId',
+    });
+
+    const queryResponse = await this.ddb.send(titleSearchCommand);
+    const items = queryResponse.Items || [];
+    action.logger.logEventSuccess({ action: action.operation, title: recipeTitle, count: items.length });
+    return items.map((item) => item['recipeId'].S as string);
+  }
+
   async getById(action: RecipeAction): Promise<RecipeOutput | undefined> {
     const ownerEmail = action.cognitoUserId;
     const recipeByIdCommand = new QueryCommand({
@@ -39,7 +63,7 @@ export class RecipeClient {
       KeyConditionExpression: 'ownerEmail = :ownerEmail AND recipeId = :recipeId',
       ExpressionAttributeValues: {
         ':ownerEmail': { S: ownerEmail },
-        ':recipeId': { S: action.recipeId! },
+        ':recipeId': { S: action.criteria.recipeId! },
       },
     });
 
@@ -110,10 +134,10 @@ export class RecipeClient {
       throw new RecipeConflictError(`Recipe exists: owner=${action.cognitoUserId} title=${body.title}`);
     }
 
-    if (action.recipeId) {
+    if (action.criteria.recipeId) {
       // Check for existence of requested recipe ID
       const recipeById = await this.getById(action);
-      if (!recipeById) return action.recipeId;
+      if (!recipeById) return action.criteria.recipeId;
     }
 
     return uuidv4();

@@ -66,6 +66,34 @@ paths:
         timeoutInMillis: ${timeoutInMillis}
       x-amazon-apigateway-auth:
         type: AWS_IAM
+  /recipe/title/{recipeTitle}:
+    head:
+      tags:
+        - recipe
+      summary: Query for existing recipe by title
+      operationId: recipeExists
+      parameters:
+        - name: recipeTitle
+          in: path
+          description: Recipe title to search for
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Recipe title exists for current user
+        '401':
+          description: Not authenticated
+        '404':
+          description: Recipe not found
+      x-amazon-apigateway-integration:
+        type: AWS_PROXY
+        uri: ${backend_lambda_arn}
+        httpMethod: POST
+        payloadFormatVersion: 1.0
+        timeoutInMillis: ${timeoutInMillis}
+      x-amazon-apigateway-auth:
+        type: AWS_IAM
   /recipe/{recipeId}:
     get:
       tags:

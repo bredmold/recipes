@@ -23,7 +23,7 @@ describe('RecipeAction', () => {
     logger.logWarning.mockReset();
   });
 
-  it('should interpret a search request', () => {
+  it('should interpret a general search request', () => {
     const action = new RecipeAction(
       testEvent({
         httpMethod: 'GET',
@@ -34,7 +34,24 @@ describe('RecipeAction', () => {
     );
 
     expect(action.operation).toStrictEqual('Search');
-    expect(action.recipeId).toBeUndefined();
+    expect(action.criteria).toStrictEqual({});
+    expect(action.recipeBody).toBeUndefined();
+    expect(action.cognitoUserId).toStrictEqual('user-id');
+  });
+
+  it('should interpret a search-by-title request', () => {
+    const action = new RecipeAction(
+      testEvent({
+        httpMethod: 'HEAD',
+        path: '/recipe/title/test',
+        resource: '/recipe/title/{recipeTitle}',
+        pathParameters: { recipeTitle: 'test' },
+      }),
+      logger as unknown as RequestLogger,
+    );
+
+    expect(action.operation).toStrictEqual('HeadSearch');
+    expect(action.criteria).toStrictEqual({ title: 'test' });
     expect(action.recipeBody).toBeUndefined();
     expect(action.cognitoUserId).toStrictEqual('user-id');
   });
@@ -53,7 +70,7 @@ describe('RecipeAction', () => {
     );
 
     expect(action.operation).toStrictEqual('GetById');
-    expect(action.recipeId).toStrictEqual('recipe-id');
+    expect(action.criteria).toStrictEqual({ recipeId: 'recipe-id' });
     expect(action.recipeBody).toBeUndefined();
     expect(action.cognitoUserId).toStrictEqual('user-id');
   });
@@ -70,7 +87,7 @@ describe('RecipeAction', () => {
     );
 
     expect(action.operation).toStrictEqual('Add');
-    expect(action.recipeId).toBeUndefined();
+    expect(action.criteria).toStrictEqual({});
     expect(action.recipeBody).toStrictEqual({ title: 'recipe name' });
     expect(action.cognitoUserId).toStrictEqual('user-id');
   });
@@ -87,11 +104,11 @@ describe('RecipeAction', () => {
       logger as unknown as RequestLogger,
     );
 
-    expect(action.recipeId).toBeUndefined();
+    expect(action.criteria).toStrictEqual({});
     expect(logger.logWarning).toHaveBeenCalledTimes(1);
   });
 
-  it("should accept a type 4 uuid in the x-recipe-id header for create-recipe request", () => {
+  it('should accept a type 4 uuid in the x-recipe-id header for create-recipe request', () => {
     const recipeId = randomUUID();
     const action = new RecipeAction(
       testEvent({
@@ -104,7 +121,7 @@ describe('RecipeAction', () => {
       logger as unknown as RequestLogger,
     );
 
-    expect(action.recipeId).toStrictEqual(recipeId);
+    expect(action.criteria).toStrictEqual({ recipeId });
   });
 
   it('should interpret an update-recipe request', () => {
@@ -120,7 +137,7 @@ describe('RecipeAction', () => {
     );
 
     expect(action.operation).toStrictEqual('Update');
-    expect(action.recipeId).toStrictEqual('recipe-id');
+    expect(action.criteria).toStrictEqual({ recipeId: 'recipe-id' });
     expect(action.recipeBody).toStrictEqual({ title: 'recipe name' });
     expect(action.cognitoUserId).toStrictEqual('user-id');
   });
@@ -137,7 +154,7 @@ describe('RecipeAction', () => {
     );
 
     expect(action.operation).toStrictEqual('Delete');
-    expect(action.recipeId).toStrictEqual('recipe-id');
+    expect(action.criteria).toStrictEqual({ recipeId: 'recipe-id' });
     expect(action.recipeBody).toBeUndefined();
     expect(action.cognitoUserId).toStrictEqual('user-id');
   });

@@ -23,6 +23,26 @@ export function getEventHeader(event: APIGatewayProxyEvent, header: string): str
   return undefined;
 }
 
+export function getQueryParam(event: APIGatewayProxyEvent, name: string): string | undefined {
+  if (
+    event.queryStringParameters &&
+    event.queryStringParameters.hasOwnProperty(name) &&
+    typeof event.queryStringParameters[name] === 'string'
+  ) {
+    return event.queryStringParameters[name];
+  } else if (
+    event.multiValueQueryStringParameters &&
+    event.multiValueQueryStringParameters.hasOwnProperty(name) &&
+    event.multiValueQueryStringParameters.hasOwnProperty(name) &&
+    Array.isArray(event.multiValueQueryStringParameters[name]) &&
+    event.multiValueQueryStringParameters[name].length > 0
+  ) {
+    return event.multiValueQueryStringParameters[name][0];
+  } else {
+    return undefined;
+  }
+}
+
 export function extractCognitoUserId(event: APIGatewayProxyEvent): string {
   const authProvider = event.requestContext.identity.cognitoAuthenticationProvider!;
   const authProviderParts = authProvider.split(':');

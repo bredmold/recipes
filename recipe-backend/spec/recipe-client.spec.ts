@@ -31,7 +31,7 @@ describe('RecipeClient', () => {
       const action = {
         operation: 'Search',
         recipeBody: undefined,
-        recipeId: undefined,
+        criteria: { recipeId: undefined },
         cognitoUserId: 'user-id',
         logger: mockRequestLogger as unknown as RequestLogger,
       } as RecipeAction;
@@ -64,7 +64,7 @@ describe('RecipeClient', () => {
       const action = {
         operation: 'Search',
         recipeBody: undefined,
-        recipeId: undefined,
+        criteria: { recipeId: undefined },
         cognitoUserId: 'user-id',
         logger: mockRequestLogger as unknown as RequestLogger,
       } as RecipeAction;
@@ -84,11 +84,63 @@ describe('RecipeClient', () => {
       const action = {
         operation: 'Update',
         recipeBody: undefined,
-        recipeId: undefined,
+        criteria: { recipeId: undefined },
         cognitoUserId: 'user-id',
       } as RecipeAction;
 
       await expect(() => client.search(action)).rejects.toThrow(RecipeError);
+    });
+  });
+
+  describe('idSearch', () => {
+    it('should return a list of matching recipe IDs', async () => {
+      const action = {
+        operation: 'HeadSearch',
+        recipeBody: undefined,
+        criteria: { title: 'recipe title' },
+        cognitoUserId: 'user-id',
+        logger: mockRequestLogger as unknown as RequestLogger,
+      } as RecipeAction;
+
+      mockDdb.on(QueryCommand).resolves({
+        Items: [
+          {
+            recipeId: { S: 'recipe-id' },
+          },
+        ],
+      });
+
+      const recipeResponse = await client.idSearch(action);
+      expect(recipeResponse).toStrictEqual(['recipe-id']);
+
+      expect(mockDdb.calls()).toHaveLength(1);
+      const searchCommand = mockDdb.call(0).firstArg as QueryCommand;
+      expect(searchCommand.input).toStrictEqual({
+        TableName: 'recipes',
+        IndexName: 'owner-title',
+        KeyConditionExpression: 'ownerEmail = :ownerEmail AND recipeTitle = :title',
+        ExpressionAttributeValues: {
+          ':ownerEmail': { S: 'user-id' },
+          ':title': { S: 'recipe title' },
+        },
+        ProjectionExpression: 'recipeId',
+      });
+      expect(mockRequestLogger.logEventSuccess).toHaveBeenCalledWith({
+        action: 'HeadSearch',
+        title: 'recipe title',
+        count: 1,
+      });
+    });
+
+    it('should throw on invalid action', async () => {
+      const action = {
+        operation: 'Update',
+        recipeBody: undefined,
+        criteria: { recipeId: undefined },
+        cognitoUserId: 'user-id',
+      } as RecipeAction;
+
+      await expect(() => client.idSearch(action)).rejects.toThrow(RecipeError);
     });
   });
 
@@ -97,7 +149,7 @@ describe('RecipeClient', () => {
       const action = {
         operation: 'GetById',
         recipeBody: undefined,
-        recipeId: 'recipe-id',
+        criteria: { recipeId: 'recipe-id' },
         cognitoUserId: 'user-id',
         logger: mockRequestLogger as unknown as RequestLogger,
       } as RecipeAction;
@@ -130,7 +182,7 @@ describe('RecipeClient', () => {
       const action = {
         operation: 'GetById',
         recipeBody: undefined,
-        recipeId: 'recipe-id',
+        criteria: { recipeId: 'recipe-id' },
         cognitoUserId: 'user-id',
         logger: mockRequestLogger as unknown as RequestLogger,
       } as RecipeAction;
@@ -151,7 +203,7 @@ describe('RecipeClient', () => {
       const action = {
         operation: 'Add',
         recipeBody: recipe,
-        recipeId: undefined,
+        criteria: { recipeId: undefined },
         cognitoUserId: 'user-id',
         logger: mockRequestLogger as unknown as RequestLogger,
       } as RecipeAction;
@@ -175,7 +227,7 @@ describe('RecipeClient', () => {
       const action = {
         operation: 'Add',
         recipeBody: recipe,
-        recipeId: undefined,
+        criteria: { recipeId: undefined },
         cognitoUserId: 'user-id',
         logger: mockRequestLogger as unknown as RequestLogger,
       } as RecipeAction;
@@ -191,7 +243,7 @@ describe('RecipeClient', () => {
       const action = {
         operation: 'Add',
         recipeBody: recipe,
-        recipeId: 'recipe-id',
+        criteria: { recipeId: 'recipe-id' },
         cognitoUserId: 'user-id',
         logger: mockRequestLogger as unknown as RequestLogger,
       } as RecipeAction;
@@ -211,7 +263,7 @@ describe('RecipeClient', () => {
       const action = {
         operation: 'Add',
         recipeBody: recipe,
-        recipeId: 'recipe-id',
+        criteria: { recipeId: 'recipeId' },
         cognitoUserId: 'user-id',
         logger: mockRequestLogger as unknown as RequestLogger,
       } as RecipeAction;
@@ -220,7 +272,7 @@ describe('RecipeClient', () => {
       mockDdb.on(PutItemCommand).resolves({});
 
       const recipeResponse = await client.add(action);
-      expect(recipeResponse.id).toStrictEqual('recipe-id');
+      expect(recipeResponse.id).toStrictEqual('recipeId');
     });
   });
 });
