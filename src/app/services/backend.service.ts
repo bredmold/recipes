@@ -48,6 +48,21 @@ export class BackendService {
     return body.map((r) => Recipe.fromObject(r));
   }
 
+  async searchByTitle(recipeTitle: string): Promise<boolean> {
+    const url = `${this.baseUrl}/recipe/title/${recipeTitle}`;
+    const rq = this.http.head(url, { observe: 'response' });
+    try {
+      await lastValueFrom(rq);
+      return true;
+    } catch (e) {
+      if (e instanceof HttpErrorResponse && e.status === 404) {
+        return false;
+      } else {
+        throw e;
+      }
+    }
+  }
+
   async getById(recipeId: string): Promise<Recipe> {
     const url = `${this.baseUrl}/recipe/${recipeId}`;
     try {

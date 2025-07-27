@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { BackendService, RecipeConflictError } from './backend.service';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { environment } from '../../environments/environment';
 import { Recipe } from '../types/recipe';
@@ -56,6 +56,40 @@ describe('BackendService', () => {
       const response = await searchPromise;
       expect(response).toHaveSize(1);
       expect(response[0]).toBeInstanceOf(Recipe);
+    });
+  });
+
+  describe('searchByTitle', () => {
+    it('should return true for a 200', async () => {
+      const searchByTitlePromise = service.searchByTitle('title');
+
+      const rq = httpTesting.expectOne(`${backendUrl}/recipe/title/title`, 'Recipe title request');
+      expect(rq.request.method).toBe('HEAD');
+      rq.flush('');
+
+      const response = await searchByTitlePromise;
+      expect(response).toBeTrue();
+    });
+
+    it('should return false for a 404', async () => {
+      const searchByTitlePromise = service.searchByTitle('title');
+
+      const rq = httpTesting.expectOne(`${backendUrl}/recipe/title/title`, 'Recipe title request');
+      expect(rq.request.method).toBe('HEAD');
+      rq.flush(null, { status: 404, statusText: 'Not Found' });
+
+      const response = await searchByTitlePromise;
+      expect(response).toBeFalse();
+    });
+
+    it('should throw for any other status code', async () => {
+      const searchByTitlePromise = service.searchByTitle('title');
+
+      const rq = httpTesting.expectOne(`${backendUrl}/recipe/title/title`, 'Recipe title request');
+      expect(rq.request.method).toBe('HEAD');
+      rq.flush(null, { status: 401, statusText: 'Unauthorized' });
+
+      await expectAsync(searchByTitlePromise).toBeRejected();
     });
   });
 
