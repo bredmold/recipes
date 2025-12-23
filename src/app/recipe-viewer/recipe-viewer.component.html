@@ -6,17 +6,19 @@
     <div class="ingredients-view">
       <div>Ingredients list</div>
       <mat-list>
-        <mat-list-item *ngFor="let ingredient of ingredients()">
-          <input [id]="ingredient.id" type="checkbox" />
-          <label [for]="ingredient.id">{{ ingredient.render(recipe) }}</label>
-        </mat-list-item>
+        @for (ingredient of ingredients(); track ingredient) {
+          <mat-list-item>
+            <input [id]="ingredient.id" type="checkbox" />
+            <label [for]="ingredient.id">{{ ingredient.render(recipe) }}</label>
+          </mat-list-item>
+        }
       </mat-list>
     </div>
     <div class="steps-view">
       <div>Steps list</div>
       @for (step of steps(); track step.id) {
         <div class="recipe-step" [innerHTML]="markdownService.renderAsHtml(step.description)"></div>
-      } @empty {
+        } @empty {
         <p>Use the recipe editor to add some instructions to this recipe</p>
       }
     </div>
